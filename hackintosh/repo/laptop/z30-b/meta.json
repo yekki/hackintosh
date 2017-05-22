@@ -1,0 +1,60 @@
+{
+  "series": "z30-b",
+  "description": "Toshiba Portege z30-b",
+  "author": "Gary Niu",
+  "device": {
+    "cpu": {
+      "number": "i5-5300U",
+      "code_name": "Broadwell"
+    },
+    "graphics_card": "HD5500",
+    "sound_card": "ALC255",
+    "ethernet_card": "Intel"
+  },
+  "kexts":[
+    "os-x-acpi-battery-driver",
+    "os-x-usb-inject-all"
+  ],
+  "acpi": {
+    "bios": "3.20",
+    "patches": {
+      "dsdt": [
+        "graphics_Rename-B0D3",
+        "usb_prw_0x6d_xhc",
+        "graphics_Rename-GFX0",
+        "system_Mutex",
+        "system_IRQ",
+        "system_SMBUS",
+        "system_HPET",
+        "system_MCHC",
+        "system_IMEI",
+        "system_OSYS_win8",
+        "misc_Lid_PRW",
+        "system_RTC",
+        "system_WAK2",
+        "system_ADP1",
+        "fix_PLD",
+        "system_Shutdown2"
+      ],
+      "ssdt": {
+        "ssdt-2": [
+          "fix_PSS"
+        ],
+        "ssdt-8": [
+          "SSDT-8",
+          "graphics_Rename-GFX0",
+          "graphics_Rename-B0D3"
+        ],
+        "ssdt_names": [
+          "SSDT-0",
+          "SSDT-1",
+          "SSDT-2",
+          "SSDT-3",
+          "SSDT-8",
+          "USB",
+          "PNLF"
+        ]
+      }
+    }
+  }
+}

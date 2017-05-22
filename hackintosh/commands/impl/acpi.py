@@ -1,0 +1,82 @@
+from shutil import copyfile
+from hackintosh.utils import dir_copy, dir_del, run
+
+import hackintosh.logger as logger
+import os, glob
+
+COMMANDS = (
+'_initialize', '_prepare_acpi_files', '_decompile', '_apply_dsdt_patches', '_apply_ssdt_patches', '_compile_acpi',
+'_customize')
+
+
+def _apply_patch(ctx, patch_file, patch_list):
+    with open(patch_file, 'w') as outfile:
+        for p in patch_list:
+            patch = f'{ctx.repo_path}/patches/{p}.txt'
+
+            # check whether patch in system repo, if not, check laptop's patch
+            if not os.path.isfile(patch):
+                patch = f'{ctx.laptop_path}/patches/{p}.txt'
+
+            if os.path.isfile(patch):
+                with open(patch) as infile:
+                    outfile.write(infile.read())
+            else:
+                logger.info(f'lost patch at {patch}')
+
+
+def _initialize(ctx):
+    if os.path.isfile('/usr/local/bin/iasl'):
+        acpi_list = ctx.laptop['acpi']['patches']['ssdt']['ssdt_names']
+        acpi_list.append('DSDT')
+        ctx.laptop['ACPI_LIST'] = acpi_list
+    else:
+        logger.critical('please install iasl commandline tools firstly.')
+
+
+def _prepare_acpi_files(ctx):
+    native_acpi_dir = os.path.join(ctx.laptop_path, 'origin', ctx.laptop['acpi']['bios'])
+    dir_copy(native_acpi_dir, 'stage', [f'{item}.aml' for item in ctx.laptop['ACPI_LIST']])
+
+
+def _decompile(ctx):
+    refs_file = os.path.join(ctx.laptop_path, 'patches', 'refs.txt')
+    if os.path.isfile(refs_file):
+        copyfile(refs_file, os.path.join(os.getcwd(), 'refs.txt'))
+    cmd = ['/usr/local/bin/iasl -da -dl ./stage/DSDT.aml ./stage/SSDT*.aml']
+    run(cmd, msg='decompiled %d .aml files' % len(ctx.laptop['ACPI_LIST']), show_stdout=False)
+    dir_del('stage', 'aml')
+    dir_copy(f'{ctx.laptop_path}/patches', 'stage',
+             [f'{item}.dsl' for item in ctx.laptop['ACPI_LIST']])
+
+
+def _apply_dsdt_patches(ctx):
+    _apply_patch(ctx, './stage/DSDT_PATCHES.txt', ctx.laptop['acpi']['patches']['dsdt'])
+    cmd = ['/usr/local/bin/patchmatic ./stage/DSDT.dsl ./stage/DSDT_PATCHES.txt ./stage/DSDT.dsl']
+    run(cmd)
+
+
+def _apply_ssdt_patches(ctx):
+    keys = [x.upper() for x in ctx.laptop['acpi']['patches']['ssdt'].keys()]
+    ssdts = ctx.laptop['acpi']['patches']['ssdt']['ssdt_names']
+
+    ssdt_list = set(keys).intersection(set(ssdts))
+
+    for ssdt in ssdt_list:
+        dsl_file = f'./stage/{ssdt}.dsl'
+        patch_file = f'./stage/{ssdt}_PATCH.txt'
+        _apply_patch(ctx, patch_file, ctx.laptop['acpi']['patches']['ssdt'][ssdt.lower()])
+
+        cmd = [f'/usr/local/bin/patchmatic {dsl_file} {patch_file} {dsl_file}']
+        run(cmd)
+
+
+def _compile_acpi(ctx):
+    for f in glob.glob('./stage/*.dsl'):
+        filename = os.path.basename(f).split('.')[0]
+        cmd = [f'/usr/local/bin/iasl -vr -w1 -p ./output/{filename}.aml ./stage/{filename}.dsl']
+        run(cmd)
+
+
+def _customize(ctx):
+    dir_copy(f'{ctx.laptop_path}/patches', './output', [f'{item}.aml' for item in ctx.laptop['ACPI_LIST']])

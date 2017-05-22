@@ -1,0 +1,68 @@
+{
+  "supported":[
+    "x220",
+    "t440p",
+    "z30-b"
+  ],
+
+  "general":{
+    "kexts":[
+    "ACPIBatteryManager",
+    "FakeSMC",
+    "VoodooPS2Controller",
+    "IntelMausiEthernet"
+    ],
+    "clover":{
+      "kexts_to_patch":[
+      {
+        "name":"IOGraphicsFamily",
+        "find":"01000075 25",
+        "replace":"010000eb 25",
+        "comment":"Boot graphics glitch, 10.12.dp1"
+      },
+      {
+        "name":"com.apple.driver.AppleBacklight",
+        "find":"25303478",
+        "replace":"78787878",
+        "comment":"change %04x to xxxx for AppleBacklightInjector.kext"
+      },
+      {
+        "name":"IOAHCIBlockStorage",
+        "find":"004150504c452053534400",
+        "replace":"0000000000000000000000",
+        "comment":"Enable TRIM for SSD"
+      }
+    ]
+    }
+  },
+  "external_device":{
+    "bluetooth":[],
+    "wifi":[],
+    "combo":[{
+    "bcm94352z":{
+      "kexts":[],
+      "clover":{
+       "kexts_to_patch":[
+          {
+            "name":"AirPortBrcm4360",
+            "find":"31db4c3b7dd87512",
+            "replace":"31dbffc390909090",
+            "comment":"AirPortBrcm4360 whitelist patch (board-id), 10.12.dp1, credit RehabMan"
+          },
+          {
+            "name":"AirPortBrcm4360",
+            "find":"81f952aa00007529 ",
+            "replace":"81f952aa00006690 ",
+            "comment":"AirPortBrcm4360 - fcvo, 10.12.x (credit the-darkvoid)"
+          },
+          {
+            "name":"AirPortBrcm4360",
+            "find":"81f952aa00007529 ",
+            "replace":"81f952aa00006690 ",
+            "comment":"AirPortBrcm4360 - fcvo, 10.12.x (credit the-darkvoid)"
+          }
+        ]
+      }
+    }
+  }]
+}}
