@@ -7,7 +7,7 @@ import json
 
 
 def download_rehabman(project_name):
-    url = f'https://bitbucket.org/RehabMan/%s/downloads/{project_name}'
+    url = f'https://bitbucket.org/RehabMan/{project_name}/downloads/'
     soup = BeautifulSoup(urlopen(url), 'html.parser')
 
     # find the latest version

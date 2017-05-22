@@ -1,6 +1,6 @@
 import click
 
-from hackintosh.utils import cleanup, execute, whoami, Context, Path
+from hackintosh.utils import cleanup, Context, Path
 
 import hackintosh.logger as logger
 import inspect, os, sys

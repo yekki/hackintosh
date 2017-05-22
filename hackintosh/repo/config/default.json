@@ -5,13 +5,30 @@
     "z30-b"
   ],
 
-  "general":{
-    "kexts":[
-    "ACPIBatteryManager",
-    "FakeSMC",
-    "VoodooPS2Controller",
-    "IntelMausiEthernet"
+  "kext":{
+    "supported":[
+      "os-x-voodoo-ps2-controller",
+      "os-x-acpi-debug",
+      "os-x-usb-inject-all",
+      "os-x-generic-usb3",
+      "os-x-brcmpatchram",
+      "os-x-acpi-keyboard",
+      "os-x-acpi-debug",
+      "os-x-acpi-battery-driver",
+      "os-x-intel-backlight",
+      "os-x-fakesmc-kozlek",
+      "os-x-eapd-codec-commander",
+      "os-x-fake-pci-id",
+      "os-x-intel-network"
     ],
+    "essential":[
+      "os-x-acpi-battery-driver",
+      "os-x-fakesmc-kozlek",
+      "os-x-voodoo-ps2-controller",
+      "os-x-intel-network"
+    ]
+  },
+  "general":{
     "clover":{
       "kexts_to_patch":[
       {

@@ -1,3 +1,5 @@
+from distutils.dir_util import copy_tree
+
 import hackintosh.logger as logger
 import importlib, requests, sys, click, json, subprocess, os, cgi, zipfile, shutil, glob, inspect
 
@@ -149,7 +151,7 @@ def execute(ctx, name):
     assert ctx != None
     assert name != None
 
-    module = importlib.import_module(f'hackintosh.commands.impl.{name}')
+    module = importlib.import_module(f'hackintosh.{name}')
     cmd_list = getattr(module, 'COMMANDS')
 
     for cmd in cmd_list:
@@ -178,7 +180,18 @@ def run(cmds, msg=None, show_stdout=True):
 def cleanup():
     cleanup_dirs(Path.STAGE_DIR, Path.OUTPUT_DIR)
 
+def unzip():
+    unzip_dir(Path.STAGE_DIR, Path.OUTPUT_DIR)
+    path = os.path.join(Path.OUTPUT_DIR, 'Release')
+    if os.path.isdir(path):
+        copy_tree(path, Path.OUTPUT_DIR)
+        shutil.rmtree(path)
 
-def whoami():
-    frame = inspect.currentframe()
-    return inspect.getframeinfo(frame = inspect.currentframe()).function
+    for f in ('AppleALC.kext.dSYM', '__MACOSX', 'Debug', 'HWMonitor.app',
+              'FakeSMC_ACPISensors.kext', 'FakeSMC_CPUSensors.kext',
+              'FakeSMC_GPUSensors.kext', 'FakeSMC_LPCSensors.kext'):
+        path = os.path.join(Path.OUTPUT_DIR, f)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        elif os.path.isfile(path):
+            os.remove(path)
