@@ -6,7 +6,7 @@
 /stage
 /hackintosh.egg-info
 /*.log
-
+/__pycache__
 
 # User-specific stuff:
 .idea/**/workspace.xml
