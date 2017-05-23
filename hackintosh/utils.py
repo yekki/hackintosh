@@ -1,7 +1,8 @@
 from distutils.dir_util import copy_tree
-
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
 import hackintosh.logger as logger
-import importlib, requests, sys, click, json, subprocess, os, cgi, zipfile, shutil, glob, inspect
+import importlib, requests, stat, sys, click, json, subprocess, os, cgi, zipfile, shutil, glob, inspect
 
 
 class Path:
@@ -73,7 +74,7 @@ def check_py_ver():
         raise alert
 
 
-def download(url, folder, filename=None):
+def download(url, folder=Path.STAGE_DIR, filename=None):
     assert os.path.isdir(folder)
     """Function for downloading stuff"""
     r = requests.get(url, stream=True)
@@ -96,6 +97,7 @@ def download(url, folder, filename=None):
                 f.write(chunk)
                 f.flush()
 
+    return filename
 
 def unzip_dir(from_dir, to_dir, extension='.zip'):
     assert os.path.isdir(from_dir)
@@ -103,10 +105,17 @@ def unzip_dir(from_dir, to_dir, extension='.zip'):
 
     for item in os.listdir(from_dir):
         if item.endswith(extension):
-            file_name = os.path.join(from_dir, item)
-            zip_ref = zipfile.ZipFile(file_name)
-            zip_ref.extractall(to_dir)
-            zip_ref.close()
+            file = os.path.join(from_dir, item)
+            unzip_file(file, to_dir)
+
+
+def unzip_file(file, dest_dir):
+    assert os.path.isfile(file)
+    assert os.path.isdir(dest_dir)
+
+    zip_ref = zipfile.ZipFile(file)
+    zip_ref.extractall(dest_dir)
+    zip_ref.close()
 
 
 def cleanup_dirs(*dirs):
@@ -119,7 +128,7 @@ def cleanup_dirs(*dirs):
 def dir_del(src, ext='*'):
     assert os.path.isdir(src)
 
-    files = glob.glob('%s/*.%s' % (src, ext))
+    files = glob.glob(f'{src}/*.{ext}')
     for f in files:
         os.remove(f)
 
@@ -158,7 +167,7 @@ def execute(ctx, name):
         getattr(module, cmd)(ctx)
 
 
-def run(cmds, msg=None, show_stdout=True):
+def run(cmds, msg=None, show_out=True, ignore_error=False):
     assert cmds != None
 
     if logger.RECORDER:
@@ -169,16 +178,24 @@ def run(cmds, msg=None, show_stdout=True):
             os.remove(Path.RECORDER_FILE)
 
     ret = subprocess.run(cmds, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+
     output = ret.stderr.decode()
-    if output: logger.error(output)
+    if output and output != 'None' and show_out:
+        if ignore_error:
+            logger.info(output)
+        else:
+            logger.error(output)
+
     output = ret.stdout.decode()
-    if output and show_stdout: logger.info(output)
+
+    if output and output != 'None' and show_out: logger.info(output)
 
     if msg: logger.info(msg)
 
 
 def cleanup():
     cleanup_dirs(Path.STAGE_DIR, Path.OUTPUT_DIR)
+
 
 def unzip():
     unzip_dir(Path.STAGE_DIR, Path.OUTPUT_DIR)
@@ -195,3 +212,26 @@ def unzip():
             shutil.rmtree(path)
         elif os.path.isfile(path):
             os.remove(path)
+
+def cprint(msg, color='green'):
+    click.echo(click.style(msg, fg=color))
+
+# only delete files
+def delete_files(dir):
+    for dirpath, dirnames, filenames in os.walk(dir):
+        for filename in filenames:
+            os.unlink(os.path.join(dirpath, filename))
+
+
+def download_rehabman(project_name, filter=None):
+    url = f'https://bitbucket.org/RehabMan/{project_name}/downloads/'
+    soup = BeautifulSoup(urlopen(url), 'html.parser')
+    try:
+        list = [i.text for i in soup.findAll('a', {"class": "execute"})]
+        if filter:
+            list = [ i for i in list if filter in i]
+
+        return download(f'{url}{list[0]}', Path.STAGE_DIR, list[0])
+    except AttributeError as e:
+        logger.error(f'can not found tag:{e}')
+

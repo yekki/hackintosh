@@ -1,5 +1,5 @@
 from shutil import copyfile
-from hackintosh.utils import dir_copy, dir_del, run
+from hackintosh.utils import dir_copy, dir_del, run, Path
 
 import hackintosh.logger as logger
 import os, glob
@@ -8,6 +8,8 @@ COMMANDS = (
 '_initialize', '_prepare_acpi_files', '_decompile', '_apply_dsdt_patches', '_apply_ssdt_patches', '_compile_acpi',
 '_customize')
 
+_IASL = os.path.join(Path.PKG_ROOT, 'bin', 'iasl')
+_PATCHMATIC= os.path.join(Path.PKG_ROOT, 'bin', 'patchmatic')
 
 def _apply_patch(ctx, patch_file, patch_list):
     with open(patch_file, 'w') as outfile:
@@ -26,7 +28,7 @@ def _apply_patch(ctx, patch_file, patch_list):
 
 
 def _initialize(ctx):
-    if os.path.isfile('/usr/local/bin/iasl'):
+    if os.path.isfile(os.path.join(Path.PKG_ROOT, 'bin', 'iasl')):
         acpi_list = ctx.laptop['acpi']['patches']['ssdt']['ssdt_names']
         acpi_list.append('DSDT')
         ctx.laptop['ACPI_LIST'] = acpi_list
@@ -43,8 +45,9 @@ def _decompile(ctx):
     refs_file = os.path.join(ctx.laptop_path, 'patches', 'refs.txt')
     if os.path.isfile(refs_file):
         copyfile(refs_file, os.path.join(os.getcwd(), 'refs.txt'))
-    cmd = ['/usr/local/bin/iasl -da -dl ./stage/DSDT.aml ./stage/SSDT*.aml']
-    run(cmd, msg='decompiled %d .aml files' % len(ctx.laptop['ACPI_LIST']), show_stdout=False)
+
+    cmd = [f'{_IASL} -da -dl ./stage/DSDT.aml ./stage/SSDT*.aml']
+    run(cmd, msg='decompiled %d .aml files' % len(ctx.laptop['ACPI_LIST']), ignore_error=True)
     dir_del('stage', 'aml')
     dir_copy(f'{ctx.laptop_path}/patches', 'stage',
              [f'{item}.dsl' for item in ctx.laptop['ACPI_LIST']])
@@ -52,8 +55,8 @@ def _decompile(ctx):
 
 def _apply_dsdt_patches(ctx):
     _apply_patch(ctx, './stage/DSDT_PATCHES.txt', ctx.laptop['acpi']['patches']['dsdt'])
-    cmd = ['/usr/local/bin/patchmatic ./stage/DSDT.dsl ./stage/DSDT_PATCHES.txt ./stage/DSDT.dsl']
-    run(cmd)
+    cmd = [f'{_PATCHMATIC} ./stage/DSDT.dsl ./stage/DSDT_PATCHES.txt ./stage/DSDT.dsl']
+    run(cmd, ignore_error=True)
 
 
 def _apply_ssdt_patches(ctx):
@@ -67,15 +70,16 @@ def _apply_ssdt_patches(ctx):
         patch_file = f'./stage/{ssdt}_PATCH.txt'
         _apply_patch(ctx, patch_file, ctx.laptop['acpi']['patches']['ssdt'][ssdt.lower()])
 
-        cmd = [f'/usr/local/bin/patchmatic {dsl_file} {patch_file} {dsl_file}']
-        run(cmd)
+        cmd = [f'{_PATCHMATIC} {dsl_file} {patch_file} {dsl_file}']
+        run(cmd, ignore_error=True)
 
 
 def _compile_acpi(ctx):
+
     for f in glob.glob('./stage/*.dsl'):
         filename = os.path.basename(f).split('.')[0]
-        cmd = [f'/usr/local/bin/iasl -vr -w1 -p ./output/{filename}.aml ./stage/{filename}.dsl']
-        run(cmd)
+        cmd = [f'{_IASL} -vr -w1 -p ./output/{filename}.aml ./stage/{filename}.dsl']
+        run(cmd, ignore_error=True)
 
 
 def _customize(ctx):

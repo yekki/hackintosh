@@ -6,19 +6,6 @@ import hackintosh.logger as logger
 import json
 
 
-def download_rehabman(project_name):
-    url = f'https://bitbucket.org/RehabMan/{project_name}/downloads/'
-    soup = BeautifulSoup(urlopen(url), 'html.parser')
-
-    # find the latest version
-    try:
-        list = sorted([i.text for i in soup.findAll('a', {"class": "execute"})], reverse=True)
-        url += list[0]
-        download(url, Path.STAGE_DIR, list[0])
-    except AttributeError as e:
-        logger.error(f'can not found tag:{e}')
-
-
 def download_alc():
     url = 'https://api.github.com/repos/vit9696/AppleALC/releases/latest'
     resp = json.loads(urlopen(url).read())

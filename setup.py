@@ -10,6 +10,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        hackintosh=hackintosh.main:cli
+        yekki=hackintosh.main:cli
     ''',
 )

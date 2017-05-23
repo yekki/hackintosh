@@ -19,7 +19,8 @@
       "os-x-fakesmc-kozlek",
       "os-x-eapd-codec-commander",
       "os-x-fake-pci-id",
-      "os-x-intel-network"
+      "os-x-intel-network",
+      "acpica"
     ],
     "essential":[
       "os-x-acpi-battery-driver",
