@@ -1,8 +1,9 @@
 from distutils.dir_util import copy_tree
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
+from inspect import signature
 import hackintosh.logger as logger
-import importlib, requests, stat, sys, click, json, subprocess, os, cgi, zipfile, shutil, glob, inspect
+import importlib, requests, re, sys, click, json, subprocess, os, cgi, zipfile, shutil, glob, inspect
 
 
 class Path:
@@ -75,8 +76,6 @@ def check_py_ver():
 
 
 def download(url, folder=Path.STAGE_DIR, filename=None):
-    assert os.path.isdir(folder)
-    """Function for downloading stuff"""
     r = requests.get(url, stream=True)
 
     if not filename:
@@ -99,10 +98,8 @@ def download(url, folder=Path.STAGE_DIR, filename=None):
 
     return filename
 
-def unzip_dir(from_dir, to_dir, extension='.zip'):
-    assert os.path.isdir(from_dir)
-    assert os.path.isdir(to_dir)
 
+def unzip_dir(from_dir, to_dir, extension='.zip'):
     for item in os.listdir(from_dir):
         if item.endswith(extension):
             file = os.path.join(from_dir, item)
@@ -110,9 +107,6 @@ def unzip_dir(from_dir, to_dir, extension='.zip'):
 
 
 def unzip_file(file, dest_dir):
-    assert os.path.isfile(file)
-    assert os.path.isdir(dest_dir)
-
     zip_ref = zipfile.ZipFile(file)
     zip_ref.extractall(dest_dir)
     zip_ref.close()
@@ -126,17 +120,12 @@ def cleanup_dirs(*dirs):
 
 
 def dir_del(src, ext='*'):
-    assert os.path.isdir(src)
-
     files = glob.glob(f'{src}/*.{ext}')
     for f in files:
         os.remove(f)
 
 
 def dir_copy(src, dst, filter=None):
-    assert os.path.exists(src)
-    assert os.path.exists(dst)
-
     item_list = os.listdir(src)
 
     if filter != None:
@@ -149,27 +138,40 @@ def dir_copy(src, dst, filter=None):
 
 
 def load_json(filename):
-    assert os.path.isfile(filename)
     with open(filename) as f:
         data = json.load(f)
 
     return data
 
 
-def execute(ctx, name):
-    assert ctx != None
-    assert name != None
+def execute_module(module_name, context=None):
+    module = importlib.import_module(f'hackintosh.{module_name}')
+    functions = sorted(filter((lambda x: re.search(r'^_\d+', x)), dir(module)))
+    print(len(functions))
+    '''
+    for f in functions:
+        func = getattr(module, f)
+        sig = signature(func)
 
+        if 'ctx' in sig.parameters.keys():
+            pass
+            #func(context)
+        else:
+            func()
+    '''
+
+def execute(name, ctx=None):
     module = importlib.import_module(f'hackintosh.{name}')
     cmd_list = getattr(module, 'COMMANDS')
 
     for cmd in cmd_list:
-        getattr(module, cmd)(ctx)
+        if ctx:
+            getattr(module, cmd)(ctx)
+        else:
+            getattr(module, cmd)()
 
 
 def run(cmds, msg=None, show_out=True, ignore_error=False):
-    assert cmds != None
-
     if logger.RECORDER:
         for c in cmds:
             logger.record(c)
@@ -213,8 +215,10 @@ def unzip():
         elif os.path.isfile(path):
             os.remove(path)
 
+
 def cprint(msg, color='green'):
     click.echo(click.style(msg, fg=color))
+
 
 # only delete files
 def delete_files(dir):
@@ -229,9 +233,8 @@ def download_rehabman(project_name, filter=None):
     try:
         list = [i.text for i in soup.findAll('a', {"class": "execute"})]
         if filter:
-            list = [ i for i in list if filter in i]
+            list = [i for i in list if filter in i]
 
         return download(f'{url}{list[0]}', Path.STAGE_DIR, list[0])
     except AttributeError as e:
         logger.error(f'can not found tag:{e}')
-

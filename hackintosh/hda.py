@@ -1,8 +1,7 @@
-from bs4 import BeautifulSoup
 from urllib.request import urlopen
-from hackintosh.utils import download, Path
+from bs4 import BeautifulSoup
+from hackintosh.utils import download, logger, Path
 
-import hackintosh.logger as logger
 import json
 
 

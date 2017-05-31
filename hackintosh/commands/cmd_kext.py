@@ -1,8 +1,7 @@
 import click
 
-from hackintosh.kext import download_alc, download_voodoohda, download_rehabman
 from hackintosh.main import pass_context
-from hackintosh.utils import unzip
+from hackintosh.utils import unzip, download_rehabman
 
 @click.group(help='All kext related commands')
 def cli():
@@ -14,15 +13,11 @@ def post(ctx):
     unzip()
 
 @cli.command(short_help='Download kexts.')
-@click.option('-a', '--alc', is_flag=True, help='Download alc kext.')
-@click.option('-v', '--voodoohda', is_flag=True, help='Download voodoohda kext.')
-@click.option('-e', '--essential', is_flag=True, help='Download essential kexts.')
+@click.option('-e', '--essential', is_flag=True, help='Download essential kexts to support laptop startup.')
 @click.argument('kexts', nargs=-1, type=click.STRING)
 @pass_context
-def download(ctx, kexts, alc, voodoohda, essential):
 
-    if alc: download_alc()
-    if voodoohda: download_voodoohda()
+def download(ctx, kexts, essential):
 
     if essential:
         for k in ctx.config['kext']['essential']:
@@ -31,11 +26,6 @@ def download(ctx, kexts, alc, voodoohda, essential):
     for k in kexts:
         if k in ctx.config['kext']['supported']:
             download_rehabman(k)
-
-@click.command(short_help='Download essential kexts to support laptop startup.')
-@pass_context
-def essential(ctx):
-    pass
 
 
 @cli.command(short_help='Download kexts for some laptop.')

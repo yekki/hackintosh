@@ -1,0 +1,73 @@
+{
+  "title": "Hackintosh Workbench for Laptop",
+  "type": "menu",
+  "subtitle": "Please select an option...",
+  "options": [
+    {
+      "title": "ACPI",
+      "type": "menu",
+      "subtitle": "Please select an option...",
+      "options": [
+        {
+          "title": "Patch & Build ACPI Files",
+          "type": "command",
+          "command": "yekki acpi build"
+        },
+        {
+          "title": "Show Patches",
+          "type": "command",
+          "command": "yekki acpi show"
+        }
+      ]
+    },
+    {
+      "title": "HDA",
+      "type": "menu",
+      "subtitle": "Please select AppleHDA patcher...",
+      "options": [
+        {
+          "title": "AppleALC",
+          "type": "command",
+          "command": "yekki hda -a"
+        },
+        {
+          "title": "VoodooHDA",
+          "type": "command",
+          "command": "yekki hda -v"
+        },
+        {
+          "title": "AppleHDAPatcher from Mirone",
+          "type": "command",
+          "command": "yekki hda -p"
+        }
+      ]
+    },
+    {
+      "title": "Tools",
+      "type": "menu",
+      "subtitle": "Please select the tool which will be updated...",
+      "options": [
+        {
+          "title": "iasl",
+          "type": "command",
+          "command": "yekki tool -t iasl"
+        },
+        {
+          "title": "pathmatic",
+          "type": "command",
+          "command": "yekki tool -t patchmatic"
+        },
+        {
+          "title": "DSDT & SSDT(s) patches from Rehabman",
+          "type": "command",
+          "command": "yekki tool -t patches"
+        },
+        {
+          "title": "ssdtPRGen",
+          "type": "command",
+          "command": "yekki tool -t ssdtPRGen"
+        }
+      ]
+    }
+  ]
+}

@@ -1,18 +1,18 @@
 import logging, click, os
 
-RECORDER = True
+RECORDER = False
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
 
-_recoder = logging.getLogger('recorder')
-_recoder.setLevel(logging.INFO)
+#_recoder = logging.getLogger('recorder')
+#_recoder.setLevel(logging.INFO)
 
-_handler = logging.FileHandler(os.path.join(os.getcwd(), 'recorder.log'), mode='w')
-_handler.setLevel(logging.INFO)
-_handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
+#_handler = logging.FileHandler(os.path.join(os.getcwd(), 'recorder.log'), mode='w')
+#_handler.setLevel(logging.INFO)
+#_handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
 
 # add the handlers to the logger
-_recoder.addHandler(_handler)
+#_recoder.addHandler(_handler)
 
 
 def info(msg):

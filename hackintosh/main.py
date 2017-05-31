@@ -1,9 +1,9 @@
 import click
 
 from hackintosh.utils import cleanup, Context, Path
-
 import hackintosh.logger as logger
-import inspect, os, sys
+import os, sys
+
 
 class HackintoshCLI(click.MultiCommand):
     def list_commands(self, ctx):
@@ -29,7 +29,9 @@ class HackintoshCLI(click.MultiCommand):
 CONTEXT_SETTINGS = dict(auto_envvar_prefix='yekki')
 pass_context = click.make_pass_decorator(Context, ensure=True)
 
+
 @click.command(cls=HackintoshCLI, context_settings=CONTEXT_SETTINGS)
+
 @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
 @click.option('-l', '--local', is_flag=True,
               help='Use the repository located at current directory.')
@@ -37,7 +39,4 @@ pass_context = click.make_pass_decorator(Context, ensure=True)
               help='Record all commands to recorder.log.')
 @pass_context
 def cli(ctx, verbose, local, record):
-    ctx.verbose = verbose
-    ctx.is_local_repo = local
-    logger.RECORDER = record
-    cleanup()
+    pass

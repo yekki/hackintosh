@@ -3,6 +3,8 @@ from hackintosh.utils import unzip_file, run, delete_files, download_rehabman, d
 import hackintosh.logger as logger
 import os, shutil, glob, stat
 
+COMMANDS = ('update_patches', 'update_ssdtPRGen', 'update_patchmatic', 'update_iasl')
+
 
 def _update_tool(zip_file, cmd_name):
     file = os.path.join(Path.STAGE_DIR, zip_file)
@@ -24,7 +26,7 @@ def _update_tool(zip_file, cmd_name):
         logger.error(f'lost zip file at {file}')
 
 
-def update_ssdt():
+def update_ssdtPRgen():
     download('https://codeload.github.com/Piker-Alpha/ssdtPRGen.sh/zip/Beta', filename='ssdtPRGen.sh-Beta.zip')
     ssdtPRGen_root = os.path.join(os.path.expanduser('~'), 'Library', 'ssdtPRGen')
 
@@ -37,6 +39,9 @@ def update_ssdt():
 
     if os.path.isdir(path):
         shutil.copytree(path, ssdtPRGen_root)
+
+    logger.info('updated ssdtPRGen')
+
 
 def update_patches():
     cmd = [f'git clone https://github.com/RehabMan/Laptop-DSDT-Patch.git {Path.STAGE_DIR}/patches']
@@ -55,8 +60,10 @@ def update_patches():
 def update_iasl():
     filename = download_rehabman('acpica')
     _update_tool(filename, 'iasl')
+    logger.info('updated iasl')
 
 
 def update_patchmatic():
     filename = download_rehabman('os-x-maciasl-patchmatic', filter='patchmatic')
     _update_tool(filename, 'patchmatic')
+    logger.info('updated patchmatic')
