@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.request import urlopen
 from inspect import signature
 import hackintosh.logger as logger
-import importlib, requests, re, sys, click, json, subprocess, os, cgi, zipfile, shutil, glob, inspect
+import importlib, requests, errno, re, sys, click, json, subprocess, os, cgi, zipfile, shutil, glob
 
 
 class Path:
@@ -112,11 +112,11 @@ def unzip_file(file, dest_dir):
     zip_ref.close()
 
 
-def cleanup_dirs(*dirs):
+def cleanup_dirs(*dirs, rmdir=False):
     for dir in dirs:
         if os.path.exists(dir):
             shutil.rmtree(dir)
-        os.makedirs(dir)
+        if not rmdir: os.makedirs(dir)
 
 
 def dir_del(src, ext='*'):
@@ -147,18 +147,15 @@ def load_json(filename):
 def execute_module(module_name, context=None):
     module = importlib.import_module(f'hackintosh.{module_name}')
     functions = sorted(filter((lambda x: re.search(r'^_\d+', x)), dir(module)))
-    print(len(functions))
-    '''
     for f in functions:
         func = getattr(module, f)
         sig = signature(func)
 
         if 'ctx' in sig.parameters.keys():
-            pass
-            #func(context)
+            func(context)
         else:
             func()
-    '''
+
 
 def execute(name, ctx=None):
     module = importlib.import_module(f'hackintosh.{name}')
@@ -196,7 +193,12 @@ def run(cmds, msg=None, show_out=True, ignore_error=False):
 
 
 def cleanup():
-    cleanup_dirs(Path.STAGE_DIR, Path.OUTPUT_DIR)
+    if os.path.join(os.getcwd(), 'hackintosh') == Path.PKG_ROOT:
+        cleanup_dirs(Path.STAGE_DIR, Path.OUTPUT_DIR, rmdir=True)
+    else:
+        cleanup_dirs(Path.STAGE_DIR, Path.OUTPUT_DIR)
+
+    delete_file(os.path.join(os.getcwd(), 'refs.txt'))
 
 
 def unzip():
@@ -225,6 +227,14 @@ def delete_files(dir):
     for dirpath, dirnames, filenames in os.walk(dir):
         for filename in filenames:
             os.unlink(os.path.join(dirpath, filename))
+
+
+def delete_file(filename):
+    try:
+        os.remove(filename)
+    except OSError as e:
+        if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
+            raise
 
 
 def download_rehabman(project_name, filter=None):

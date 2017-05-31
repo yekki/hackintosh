@@ -9,6 +9,14 @@ _PATCHMATIC = os.path.join(Path.PKG_ROOT, 'bin', 'patchmatic')
 
 
 def _apply_patch(ctx, patch_file, patch_list):
+    """
+    To fetch patch files according patch-name list and combine them in one patch file.
+    
+    :param ctx: context variable of click
+    :param patch_file: the patch file which contains merged patches from patch_list 
+    :param patch_list: patch name list
+    :return: 
+    """
     with open(patch_file, 'w') as outfile:
         for p in patch_list:
             patch = f'{ctx.repo_path}/patches/{p}.txt'
