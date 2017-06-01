@@ -1,6 +1,4 @@
-from hackintosh.commands import cleanup
-
-import click
+from hackintosh import *
 
 
 @click.command()

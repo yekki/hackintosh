@@ -1,5 +1,4 @@
 from hackintosh import *
-from hackintosh.commands import unzip, cleanup
 
 
 @click.group(help='All kext related commands')
@@ -40,8 +39,10 @@ def laptop(ctx, series):
 @cli.command(short_help='Download kext for external device')
 @click.option('-d', '--device', default='bcm94352z', required=True, type=click.Choice(['bcm94352z']),
               help='Choose the external device')
-def device(ctx, device):
-    pass
+def device(device):
+    if device == 'bcm94352z':
+        download_rehabman('os-x-brcmpatchram')
+        download_rehabman('os-x-fake-pci-id')
 
 
 @cli.command(short_help='Show all supported kexts.')

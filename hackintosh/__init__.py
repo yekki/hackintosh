@@ -1,9 +1,10 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
+from inspect import signature
+from distutils.dir_util import copy_tree
 
-
-import requests, errno, subprocess, cgi, zipfile
-import os, click, json, sys, shutil, glob, logging, re, importlib
+import requests, errno, subprocess, cgi, zipfile, stat
+import pprint, os, click, json, sys, shutil, glob, logging, re, importlib
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
 
@@ -14,6 +15,7 @@ class Path:
     PKG_ROOT = os.path.dirname(os.path.abspath(__file__))
     PKG_REPO = os.path.join(PKG_ROOT, 'repo')
     CWD_REPO = os.path.join(os.getcwd(), 'repo')
+    CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.yekki.json')
 
 
 class MainCLI(click.MultiCommand):
@@ -42,16 +44,6 @@ class Context:
     def __init__(self):
         self._config = {}
         self._laptop = {}
-        self._series = None
-        self._is_local_repo = False
-
-    @property
-    def is_local_repo(self):
-        return self._is_local_repo
-
-    @is_local_repo.setter
-    def is_local_repo(self, local):
-        self._is_local_repo = local
         self._config = json.load(open(os.path.join(self.repo_path, 'config', 'default.json')))
 
     @property
@@ -63,28 +55,23 @@ class Context:
         return self._config
 
     @property
-    def series(self):
-        return self._series
-
-    @series.setter
-    def series(self, s):
-        self._series = s
-
-    @property
     def repo_path(self):
-        if self.is_local_repo:
+        if CONFIG['repo_location'] == 'local':
             return Path.CWD_REPO
-        else:
+        elif CONFIG['repo_location'] == 'pkg':
             return Path.PKG_REPO
+        else:
+            raise ValueError
 
     @property
     def laptop_path(self):
-        return os.path.join(self.repo_path, 'laptop', self.series)
+        return os.path.join(self.repo_path, 'laptop', CONFIG['current_series'])
 
     @property
     def laptop(self):
-        if (not self._laptop) or (self._laptop and self._laptop['series'] != self._series):
-            self._laptop = json.load(open((os.path.join(self.repo_path, 'laptop', self._series, 'meta.json'))))
+        if (not self._laptop) or (self._laptop and self._laptop['series'] != CONFIG['current_series']):
+            self._laptop = json.load(
+                open((os.path.join(self.repo_path, 'laptop', CONFIG['current_series'], 'meta.json'))))
 
         return self._laptop
 
@@ -155,7 +142,7 @@ def del_dir(src, ext='*'):
 def copy_dir(src, dst, filter=None):
     item_list = os.listdir(src)
 
-    if filter != None:
+    if filter:
         item_list = [i for i in item_list if i in filter]
 
     for item in item_list:
@@ -217,10 +204,67 @@ def delete_files(path):
                 raise
 
 
-CONTEXT_SETTINGS = dict(auto_envvar_prefix='yekki')
-SUPPORTED_SERIES = ('z30-b', 't440p')
+def cleanup():
+    if os.path.join(os.getcwd(), 'hackintosh') == Path.PKG_ROOT:
+        cleanup_dirs(Path.STAGE_DIR, Path.OUTPUT_DIR, rmdir=True)
+    else:
+        cleanup_dirs(Path.STAGE_DIR, Path.OUTPUT_DIR)
+
+    delete_files(os.path.join(os.getcwd(), 'refs.txt'))
+
+
+def unzip():
+    unzip_dir(Path.STAGE_DIR, Path.OUTPUT_DIR)
+    path = os.path.join(Path.OUTPUT_DIR, 'Release')
+    if os.path.isdir(path):
+        copy_tree(path, Path.OUTPUT_DIR)
+        shutil.rmtree(path)
+
+    for f in ('AppleALC.kext.dSYM', '__MACOSX', 'Debug', 'HWMonitor.app',
+              'FakeSMC_ACPISensors.kext', 'FakeSMC_CPUSensors.kext',
+              'FakeSMC_GPUSensors.kext', 'FakeSMC_LPCSensors.kext'):
+        path = os.path.join(Path.OUTPUT_DIR, f)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        elif os.path.isfile(path):
+            os.remove(path)
+
+
+def execute_module(module_name, context=None):
+    module = importlib.import_module(f'hackintosh.commands.impl.{module_name}_impl')
+    functions = sorted(filter((lambda x: re.search(r'^_\d+', x)), dir(module)))
+    for f in functions:
+        func = getattr(module, f)
+        sig = signature(func)
+
+        if 'ctx' in sig.parameters.keys():
+            func(context)
+        else:
+            func()
+
+
+_DEFAUT_CONF = {'version': '1.1', 'repo_location': 'pkg', 'current_series': 'z30-b',
+                'supported_series': ('z30-b', 't440p'),
+                'context_settings': dict(auto_envvar_prefix='yekki')}
+
+
+def save_conf(data=_DEFAUT_CONF):
+    with open(Path.CONFIG_FILE, 'w', encoding='utf8') as f:
+        f.write(json.dumps(data,
+                           indent=4, sort_keys=True,
+                           separators=(',', ': '), ensure_ascii=False))
+    return data
+
 
 pass_context = click.make_pass_decorator(Context, ensure=True)
 
 if sys.version_info < (3, 4):
     raise 'Must be using Python 3.4 or above'
+
+if not os.path.isfile(Path.CONFIG_FILE):
+    CONFIG = save_conf()
+else:
+    CONFIG = json.load(open(Path.CONFIG_FILE, 'r'))
+
+if CONFIG.get('version', -1) != _DEFAUT_CONF['version']:
+    CONFIG = save_conf()

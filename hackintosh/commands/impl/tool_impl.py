@@ -1,7 +1,5 @@
 from hackintosh import *
 
-import os, shutil, glob, stat
-
 
 def _update_tool(zip_file, cmd_name):
     file = os.path.join(Path.STAGE_DIR, zip_file)
