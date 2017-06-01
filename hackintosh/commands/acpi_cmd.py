@@ -1,15 +1,16 @@
-from hackintosh.main import pass_context
-from hackintosh.utils import execute_module, cleanup
+from hackintosh import *
+from hackintosh.commands import execute_module, cleanup
 
 import click, pprint
 
 
 @click.group()
-@click.option('-s', '--series', default='z30-b', required=True, type=click.Choice(['t440-p', 'z30-b']),
+@click.option('-s', '--series', default=SUPPORTED_SERIES[0], required=True, type=click.Choice(SUPPORTED_SERIES),
               help='Choose your laptop series.')
 @pass_context
 def cli(ctx, series):
     ctx.series = series
+
 
 @cli.command(short_help='Build & patch ACPI files.')
 @pass_context

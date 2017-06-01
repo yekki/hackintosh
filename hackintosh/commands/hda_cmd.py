@@ -1,11 +1,8 @@
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
-from hackintosh.utils import download, logger, Path
-
-import json
+from hackintosh import *
+from hackintosh.commands import unzip
 
 
-def download_alc():
+def _download_alc():
     url = 'https://api.github.com/repos/vit9696/AppleALC/releases/latest'
     resp = json.loads(urlopen(url).read())
     for asset in resp['assets']:
@@ -13,7 +10,7 @@ def download_alc():
             download(asset['browser_download_url'], Path.STAGE_DIR, asset['name'])
 
 
-def download_voodoohda():
+def _download_voodoohda():
     url = 'https://sourceforge.net/projects/voodoohda/files'
     soup = BeautifulSoup(urlopen(url), 'html.parser')
 
@@ -26,4 +23,17 @@ def download_voodoohda():
                 download(url, Path.STAGE_DIR, filename)
                 break
     except AttributeError as e:
-        logger.error(f'can not found tag:{e}')
+        error(f'can not found tag:{e}')
+
+
+@click.command(short_help='All hda related commands')
+@click.option('-a', '--alc', is_flag=True, help='Download AppleALC kext')
+@click.option('-v', '--voodoohda', is_flag=True, help='Download VoodooHDA pkg')
+@click.option('-p', '--patcher', is_flag=True, help='Download AppleHDA Patcher app & patches')
+def cli(alc, voodoohda, patcher):
+    if alc: _download_alc()
+    if voodoohda: _download_voodoohda()
+    if patcher: download('https://codeload.github.com/Mirone/AppleHDAPatcher/zip/master',
+                         filename='AppleHDAPatcher-master.zip')
+
+    unzip()

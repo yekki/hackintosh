@@ -1,4 +1,4 @@
-from hackintosh.utils import cleanup, delete_file, Path
+from hackintosh.commands import cleanup
 
 import click
 
