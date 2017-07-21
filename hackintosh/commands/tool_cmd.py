@@ -11,7 +11,7 @@ def cli(all, tool):
         execute_module('tool')
     else:
         if tool:
-            module = importlib.import_module(f'hackintosh.commands.tool_impl')
+            module = importlib.import_module(f'hackintosh.commands.impl.tool_impl')
             r = r'^_\d+_' + re.escape(tool)
             function = list(filter((lambda x: re.search(r, x)), dir(module)))[0]
             if function:

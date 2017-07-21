@@ -2,20 +2,23 @@ from bs4 import BeautifulSoup
 from urllib.request import urlopen
 from inspect import signature
 from distutils.dir_util import copy_tree
+from enum import Enum, unique
 
 import requests, errno, subprocess, cgi, zipfile, stat
-import pprint, os, click, json, sys, shutil, glob, logging, re, importlib
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
+import os, click, json, sys, shutil, glob, logging, re, importlib
 
 
-class Path:
+@unique
+class Path(Enum):
     STAGE_DIR = os.path.join(os.getcwd(), 'stage')
     OUTPUT_DIR = os.path.join(os.getcwd(), 'output')
     PKG_ROOT = os.path.dirname(os.path.abspath(__file__))
-    PKG_REPO = os.path.join(PKG_ROOT, 'repo')
+    PKG_REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'repo')
     CWD_REPO = os.path.join(os.getcwd(), 'repo')
     CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.yekki.json')
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
 
 
 class MainCLI(click.MultiCommand):
@@ -243,28 +246,31 @@ def execute_module(module_name, context=None):
             func()
 
 
-_DEFAUT_CONF = {'version': '1.1', 'repo_location': 'pkg', 'current_series': 'z30-b',
-                'supported_series': ('z30-b', 't440p'),
-                'context_settings': dict(auto_envvar_prefix='yekki')}
+def save_conf(data=None):
+    if not data:
+        data = _DEFAUT_CONF
 
-
-def save_conf(data=_DEFAUT_CONF):
     with open(Path.CONFIG_FILE, 'w', encoding='utf8') as f:
         f.write(json.dumps(data,
                            indent=4, sort_keys=True,
                            separators=(',', ': '), ensure_ascii=False))
     return data
 
+#### main ####
+
+_DEFAUT_CONF = {'version': '1.1', 'repo_location': 'pkg', 'current_series': 'z30-b',
+                'supported_series': ('z30-b', 't440p'),
+                'context_settings': dict(auto_envvar_prefix='yekki')}
 
 pass_context = click.make_pass_decorator(Context, ensure=True)
 
 if sys.version_info < (3, 4):
     raise 'Must be using Python 3.4 or above'
 
-if not os.path.isfile(Path.CONFIG_FILE):
-    CONFIG = save_conf()
+if os.path.isfile(Path.CONFIG_FILE):
+    CONFIG = save_conf(data=json.load(open(Path.CONFIG_FILE, 'r')))
 else:
-    CONFIG = json.load(open(Path.CONFIG_FILE, 'r'))
+    CONFIG = save_conf()
 
 if CONFIG.get('version', -1) != _DEFAUT_CONF['version']:
     CONFIG = save_conf()

@@ -1,8 +1,10 @@
 from hackintosh import *
 
+
 @click.group()
 def cli():
     pass
+
 
 @cli.command(short_help='Switch Repo location: pkg or local.')
 def switch_repo():
@@ -19,7 +21,6 @@ def switch_repo():
 
 @cli.command(short_help='Set default laptop series.')
 def laptop():
-
     while True:
         value = click.prompt('Please enter a valid laptop series', type=str)
         if value in CONFIG['supported_series']:
@@ -27,4 +28,3 @@ def laptop():
             save_conf(CONFIG)
             info(f'Your current laptop series is {value}')
             break
-

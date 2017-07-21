@@ -26,12 +26,9 @@ def download(ctx, kexts, essential):
 
 
 @cli.command(short_help='Download kexts for some laptop.')
-@click.option('-s', '--series', default=SUPPORTED_SERIES[0], required=True, type=click.Choice(SUPPORTED_SERIES),
-              help='Choose your laptop series.')
 @pass_context
-def laptop(ctx, series):
-    ctx.series = series
-    for k in ctx.config['kext']:
+def laptop(ctx):
+    for k in ctx.laptop['kexts']:
         download_rehabman(k)
         info(f'{k} downloaded')
 

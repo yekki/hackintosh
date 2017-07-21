@@ -1,5 +1,4 @@
 from hackintosh import *
-from hackintosh.commands import unzip
 
 
 def _download_alc():
