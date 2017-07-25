@@ -51,7 +51,7 @@
           "SSDT-3",
           "SSDT-8",
           "USB",
-          "PNLF"
+          "SSDT-PNLF"
         ]
       }
     }
