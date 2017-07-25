@@ -4,7 +4,7 @@ from inspect import signature
 from distutils.dir_util import copy_tree
 from enum import Enum, unique
 
-import requests, errno, subprocess, cgi, zipfile, stat
+import requests, errno, subprocess, cgi, zipfile, stat, pprint
 import os, click, json, sys, shutil, glob, logging, re, importlib
 
 
