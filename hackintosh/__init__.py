@@ -17,6 +17,16 @@ class Path(Enum):
     CWD_REPO = os.path.join(os.getcwd(), 'repo')
     CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.yekki.json')
 
+    @classmethod
+    def REPO_LOCATION(cls):
+        abbr = CONFIG['repo_location']
+        if abbr == 'local':
+            return Path.CWD_REPO
+        elif abbr == 'pkg':
+            return Path.PKG_REPO
+        else:
+            raise ValueError
+
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
 
@@ -33,10 +43,7 @@ class MainCLI(click.MultiCommand):
 
     def get_command(self, ctx, name):
         try:
-            if sys.version_info[0] == 2:
-                name = name.encode('ascii', 'replace')
             mod = __import__(f'hackintosh.commands.{name}_cmd', None, None, ['cli'])
-
         except ImportError as e:
             critical(e)
         else:
@@ -44,38 +51,34 @@ class MainCLI(click.MultiCommand):
 
 
 class Context:
+    """Context class for click
+    Attributes:
+        config(dict): meta data for hackintosh.
+        laptop(dict): meta data for current laptop
+        repo_path(string): meta data repository location. local: your working directory. pkg:hackintosh pkg directory.
+    """
+
     def __init__(self):
-        self._config = {}
-        self._laptop = {}
+        self._repo_loc = Path.REPO_LOCATION
+        self._laptop_path = os.path.join(self.repo_path, 'laptop', CONFIG['current_series'])
         self._config = json.load(open(os.path.join(self.repo_path, 'config', 'default.json')))
+        self._laptop = json.load(
+            open((os.path.join(self.repo_path, 'laptop', CONFIG['current_series'], 'meta.json'))))
 
     @property
     def config(self):
-
-        if not self._config:
-            self._config = json.load(open(os.path.join(Path.PKG_REPO, 'config', 'default.json')))
-
         return self._config
 
     @property
     def repo_path(self):
-        if CONFIG['repo_location'] == 'local':
-            return Path.CWD_REPO
-        elif CONFIG['repo_location'] == 'pkg':
-            return Path.PKG_REPO
-        else:
-            raise ValueError
+        return self._repo_loc
 
     @property
     def laptop_path(self):
-        return os.path.join(self.repo_path, 'laptop', CONFIG['current_series'])
+        return self._laptop_path
 
     @property
     def laptop(self):
-        if (not self._laptop) or (self._laptop and self._laptop['series'] != CONFIG['current_series']):
-            self._laptop = json.load(
-                open((os.path.join(self.repo_path, 'laptop', CONFIG['current_series'], 'meta.json'))))
-
         return self._laptop
 
 
@@ -172,7 +175,9 @@ def run(cmds, msg=None, show_out=True, ignore_error=False):
     if msg: info(msg)
 
 
-def cprint(msg, color='green'):
+def cprint(msg, color=None):
+    if color is None:
+        color = 'green'
     click.echo(click.style(msg, fg=color))
 
 
@@ -256,16 +261,12 @@ def save_conf(data=None):
                            separators=(',', ': '), ensure_ascii=False))
     return data
 
+
 #### main ####
 
 _DEFAUT_CONF = {'version': '1.1', 'repo_location': 'pkg', 'current_series': 'z30-b',
                 'supported_series': ('z30-b', 't440p'),
                 'context_settings': dict(auto_envvar_prefix='yekki')}
-
-pass_context = click.make_pass_decorator(Context, ensure=True)
-
-if sys.version_info < (3, 4):
-    raise 'Must be using Python 3.4 or above'
 
 if os.path.isfile(Path.CONFIG_FILE):
     CONFIG = save_conf(data=json.load(open(Path.CONFIG_FILE, 'r')))
@@ -274,3 +275,8 @@ else:
 
 if CONFIG.get('version', -1) != _DEFAUT_CONF['version']:
     CONFIG = save_conf()
+
+pass_context = click.make_pass_decorator(Context, ensure=True)
+
+if sys.version_info < (3, 4):
+    raise 'Must be using Python 3.4 or above'
