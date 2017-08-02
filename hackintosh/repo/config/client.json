@@ -1,0 +1,8 @@
+{
+    "context_settings": {
+        "auto_envvar_prefix": "yekki"
+    },
+    "current_series": "z30-b",
+    "repo_location": "pkg",
+    "version": "1.1"
+}

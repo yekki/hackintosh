@@ -1,4 +1,8 @@
-from hackintosh import *
+from hackintosh import STAGE_DIR
+from hackintosh.lib import download, unzip
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import json, click, logging
 
 
 def _download_alc():
@@ -6,7 +10,7 @@ def _download_alc():
     resp = json.loads(urlopen(url).read())
     for asset in resp['assets']:
         if 'RELEASE' in asset['name']:
-            download(asset['browser_download_url'], Path.STAGE_DIR, asset['name'])
+            download(asset['browser_download_url'], STAGE_DIR, asset['name'])
 
 
 def _download_voodoohda():
@@ -19,10 +23,10 @@ def _download_voodoohda():
             filename = row.attrs['title']
             if 'pkg.zip' in filename:
                 url = f'http://sourceforge.net/projects/voodoohda/files/{filename}/download'
-                download(url, Path.STAGE_DIR, filename)
+                download(url, STAGE_DIR, filename)
                 break
     except AttributeError as e:
-        error(f'can not found tag:{e}')
+        logging.error(f'can not found tag:{e}')
 
 
 @click.command(short_help='All hda related commands')

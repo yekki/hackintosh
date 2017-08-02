@@ -1,4 +1,7 @@
-from hackintosh import *
+from hackintosh.lib import execute_module, cleanup
+
+import click, importlib, re
+
 
 @click.command()
 @click.option('-a', '--all', is_flag=True, help='Update all tools & patches.')

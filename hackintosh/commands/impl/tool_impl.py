@@ -1,24 +1,26 @@
-from hackintosh import *
+from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT
+from hackintosh.lib import unzip_file, download, download_rehabman, run, delete_files
+import os, stat, shutil, logging, glob
 
 
 def _update_tool(zip_file, cmd_name):
-    file = os.path.join(Path.STAGE_DIR, zip_file)
+    file = os.path.join(STAGE_DIR, zip_file)
 
     if os.path.isfile(file):
-        unzip_file(file, Path.STAGE_DIR)
-        file = os.path.join(Path.STAGE_DIR, cmd_name)
+        unzip_file(file, STAGE_DIR)
+        file = os.path.join(STAGE_DIR, cmd_name)
 
         st = os.stat(file)
         os.chmod(file, st.st_mode | stat.S_IEXEC)
 
-        file = os.path.join(Path.PKG_ROOT, 'bin', cmd_name)
+        file = os.path.join(PKG_ROOT, 'bin', cmd_name)
 
         if os.path.isfile(file):
             os.unlink(file)
 
-        shutil.copy2(os.path.join(Path.STAGE_DIR, cmd_name), os.path.join(Path.PKG_ROOT, 'bin'))
+        shutil.copy2(os.path.join(STAGE_DIR, cmd_name), os.path.join(PKG_ROOT, 'bin'))
     else:
-        error(f'lost zip file at {file}')
+        logging.error(f'lost zip file at {file}')
 
 
 def _1_ssdtPRgen():
@@ -28,37 +30,37 @@ def _1_ssdtPRgen():
     if os.path.isdir(ssdtPRGen_root):
         shutil.rmtree(ssdtPRGen_root)
 
-    unzip_file(os.path.join(Path.STAGE_DIR, 'ssdtPRGen.sh-Beta.zip'), Path.STAGE_DIR)
+    unzip_file(os.path.join(STAGE_DIR, 'ssdtPRGen.sh-Beta.zip'), STAGE_DIR)
 
-    path = os.path.join(Path.STAGE_DIR, 'ssdtPRGen.sh-Beta')
+    path = os.path.join(STAGE_DIR, 'ssdtPRGen.sh-Beta')
 
     if os.path.isdir(path):
         shutil.copytree(path, ssdtPRGen_root)
 
-    info('updated ssdtPRGen')
+    logging.info('updated ssdtPRGen')
 
 
 def _2_patches():
-    cmd = [f'git clone https://github.com/RehabMan/Laptop-DSDT-Patch.git {Path.STAGE_DIR}/patches']
+    cmd = [f'git clone https://github.com/RehabMan/Laptop-DSDT-Patch.git {STAGE_DIR}/patches']
     run(cmd, show_out=False)
 
-    patches_root = os.path.join(Path.PKG_REPO, 'patches')
+    patches_root = os.path.join(REPO_ROOT, 'patches')
 
     delete_files(patches_root)
 
-    for file in glob.glob(f"{os.path.join(Path.STAGE_DIR, 'patches')}/**/*.txt"):
+    for file in glob.glob(f"{os.path.join(STAGE_DIR, 'patches')}/**/*.txt"):
         shutil.copy2(file, patches_root)
 
-    info('updated acpi patches')
+    logging.info('updated acpi patches')
 
 
 def _3_iasl():
     filename = download_rehabman('acpica')
     _update_tool(filename, 'iasl')
-    info('updated iasl')
+    logging.info('updated iasl')
 
 
 def _4_patchmatic():
     filename = download_rehabman('os-x-maciasl-patchmatic', filter='patchmatic')
     _update_tool(filename, 'patchmatic')
-    info('updated patchmatic')
+    logging.info('updated patchmatic')

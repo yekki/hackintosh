@@ -1,4 +1,6 @@
-from hackintosh import *
+from hackintosh import ALL_META, LAPTOP_META
+from hackintosh.lib import download_rehabman, cleanup, unzip
+import click, logging
 
 
 @click.group(help='All kext related commands')
@@ -7,30 +9,28 @@ def cli():
 
 
 @cli.resultcallback()
-def post(ctx):
+def post():
     unzip()
 
 
 @cli.command(short_help='Download kexts.')
 @click.option('-e', '--essential', is_flag=True, help='Download essential kexts to support laptop startup.')
 @click.argument('kexts', nargs=-1, type=click.STRING)
-@pass_context
-def download(ctx, kexts, essential):
+def download(kexts, essential):
     if essential:
-        for k in ctx.config['kext']['essential']:
+        for k in ALL_META['kext']['essential']:
             download_rehabman(k)
 
     for k in kexts:
-        if k in ctx.config['kext']['supported']:
+        if k in ALL_META['kext']['supported']:
             download_rehabman(k)
 
 
 @cli.command(short_help='Download kexts for some laptop.')
-@pass_context
-def laptop(ctx):
-    for k in ctx.laptop['kexts']:
+def laptop():
+    for k in LAPTOP_META['kexts']:
         download_rehabman(k)
-        info(f'{k} downloaded')
+        logging.info(f'{k} downloaded')
 
 
 @cli.command(short_help='Download kext for external device')
@@ -43,9 +43,8 @@ def device(device):
 
 
 @cli.command(short_help='Show all supported kexts.')
-@pass_context
-def supported(ctx):
+def supported():
     print('Supported kexts:')
 
-    for k in ctx.config['kext']['supported']:
+    for k in ALL_META['kext']['supported']:
         print(k)

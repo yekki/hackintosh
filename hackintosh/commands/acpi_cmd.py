@@ -1,5 +1,6 @@
-from hackintosh import *
-
+from hackintosh import LAPTOP_META
+from hackintosh.lib import cleanup, execute_module
+import click, pprint
 
 @click.group()
 def cli():
@@ -7,14 +8,12 @@ def cli():
 
 
 @cli.command(short_help='Build & patch ACPI files.')
-@pass_context
-def build(ctx):
+def build():
     cleanup()
-    execute_module('acpi', ctx)
+    execute_module('acpi')
 
 
 @cli.command(short_help='Show ACPI patches in json format.')
-@pass_context
-def info(ctx):
+def info():
     pp = pprint.PrettyPrinter(indent=2)
-    pp.pprint(ctx.laptop)
+    pp.pprint(LAPTOP_META)
