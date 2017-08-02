@@ -3,12 +3,12 @@ from hackintosh import CLIENT_SETTINGS, ALL_META, save_conf
 import click, logging
 
 
-@click.group()
+@click.group(short_help='Commands for setting client settings')
 def cli():
     pass
 
 
-@cli.command(short_help='Switch Repo location: pkg or local.')
+@cli.command(short_help='Switch Repo location: pkg or local')
 def switch_repo():
     loc = CLIENT_SETTINGS['repo_location']
     if loc == 'pkg':

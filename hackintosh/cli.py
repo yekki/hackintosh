@@ -6,8 +6,7 @@ import click, os, logging, glob
 class MainCLI(click.MultiCommand):
     def list_commands(self, ctx):
         rv = []
-        path = os.path.join(PKG_ROOT, 'commands')
-        files = glob.glob(f'{path}/*.py')
+        files = glob.glob(f"{os.path.join(PKG_ROOT, 'commands')}/*_cmd.py")
 
         for fn in files:
             rv.append(Path(fn).stem.replace('_cmd', ''))

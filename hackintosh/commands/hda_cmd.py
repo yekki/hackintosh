@@ -1,5 +1,5 @@
 from hackintosh import STAGE_DIR
-from hackintosh.lib import download, unzip
+from hackintosh.lib import download, unzip, cleanup
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import json, click, logging
@@ -29,11 +29,13 @@ def _download_voodoohda():
         logging.error(f'can not found tag:{e}')
 
 
-@click.command(short_help='All hda related commands')
+@click.command(short_help='Download AppleHDA kexts or tools')
 @click.option('-a', '--alc', is_flag=True, help='Download AppleALC kext')
 @click.option('-v', '--voodoohda', is_flag=True, help='Download VoodooHDA pkg')
 @click.option('-p', '--patcher', is_flag=True, help='Download AppleHDA Patcher app & patches')
 def cli(alc, voodoohda, patcher):
+    cleanup()
+
     if alc: _download_alc()
     if voodoohda: _download_voodoohda()
     if patcher: download('https://codeload.github.com/Mirone/AppleHDAPatcher/zip/master',

@@ -57,8 +57,8 @@ def _3_decompile():
              [f'{item}.dsl' for item in LAPTOP_META['ACPI_LIST']])
 
 
-def _4_apply_dsdt_patches(ctx):
-    _apply_patch(ctx, './stage/DSDT_PATCHES.txt', ctx.laptop['acpi']['patches']['dsdt'])
+def _4_apply_dsdt_patches():
+    _apply_patch('./stage/DSDT_PATCHES.txt', LAPTOP_META['acpi']['patches']['dsdt'])
     cmd = [f'{_PATCHMATIC} ./stage/DSDT.dsl ./stage/DSDT_PATCHES.txt ./stage/DSDT.dsl']
     run(cmd, ignore_error=True)
 
