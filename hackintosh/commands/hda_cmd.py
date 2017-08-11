@@ -29,10 +29,10 @@ def _download_voodoohda():
         logging.error(f'can not found tag:{e}')
 
 
-@click.command(short_help='Download AppleHDA kexts or tools')
-@click.option('-a', '--alc', is_flag=True, help='Download AppleALC kext')
-@click.option('-v', '--voodoohda', is_flag=True, help='Download VoodooHDA pkg')
-@click.option('-p', '--patcher', is_flag=True, help='Download AppleHDA Patcher app & patches')
+@click.command(short_help='Download AppleHDA kexts or tools.')
+@click.option('-a', '--alc', is_flag=True, help='Download AppleALC kext.')
+@click.option('-v', '--voodoohda', is_flag=True, help='Download VoodooHDA pkg.')
+@click.option('-p', '--patcher', is_flag=True, help='Download AppleHDA Patcher app & patches.')
 def cli(alc, voodoohda, patcher):
     cleanup()
 

@@ -1,12 +1,11 @@
 from hackintosh.lib import execute_module, cleanup
-
 import click, importlib, re
 
 
-@click.command(short_help='Update tools & patches')
-@click.option('-a', '--all', is_flag=True, help='Update all tools & patches')
+@click.command(short_help='Update tools & patches.')
+@click.option('-a', '--all', is_flag=True, help='Update all tools & patches.')
 @click.option('-t', '--tool', type=click.Choice(['iasl', 'pathmatic', 'patches', 'ssdtPRgen']),
-              help='choose the tool which will be updated')
+              help='choose the tool which will be updated.')
 def cli(all, tool):
     cleanup()
 

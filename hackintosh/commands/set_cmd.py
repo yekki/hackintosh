@@ -3,12 +3,12 @@ from hackintosh import CLIENT_SETTINGS, ALL_META, save_conf
 import click, logging
 
 
-@click.group(short_help='Commands for setting client settings')
+@click.group(short_help='Commands for setting client settings.')
 def cli():
     pass
 
 
-@cli.command(short_help='Switch Repo location: pkg or local')
+@cli.command(short_help='Switch Repo location: pkg or local.')
 def switch_repo():
     loc = CLIENT_SETTINGS['repo_location']
     if loc == 'pkg':
@@ -22,11 +22,10 @@ def switch_repo():
 
 
 @cli.command(short_help='Set default laptop series.')
-def laptop():
-    while True:
-        value = click.prompt('Please enter a valid laptop series', type=str)
-        if value in ALL_META['supported']:
-            CLIENT_SETTINGS['current_series'] = value
-            save_conf(CLIENT_SETTINGS)
-            logging.info(f'Your current laptop series is {value}')
-            break
+@click.option('-s', '--series', required=True, type=click.Choice(ALL_META['supported']), help='Choose the laptop series')
+def laptop(series):
+    if series in ALL_META['supported']:
+        CLIENT_SETTINGS['current_series'] = series
+        save_conf(CLIENT_SETTINGS)
+        logging.info(f'Your current laptop series is {series}')
+

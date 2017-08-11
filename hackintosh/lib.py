@@ -1,12 +1,17 @@
-from hackintosh import STAGE_DIR, OUTPUT_DIR, PKG_ROOT
+from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 from inspect import signature
 from distutils.dir_util import copy_tree
-import requests, errno, subprocess, cgi, zipfile, os, click, shutil, glob, logging
+from subprocess import call
+import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib
 
 
-def download_rehabman(project_name, filter=None):
+def rebuild_kextcache():
+    call(['sudo', '/usr/sbin/kextcache', '-i', '/'])
+
+
+def download_rehabman(project_name, folder=STAGE_DIR, filter=None):
     url = f'https://bitbucket.org/RehabMan/{project_name}/downloads/'
     soup = BeautifulSoup(urlopen(url), 'html.parser')
     try:
@@ -14,12 +19,23 @@ def download_rehabman(project_name, filter=None):
         if filter:
             list = [i for i in list if filter in i]
 
-        return download(f'{url}{list[0]}', STAGE_DIR, list[0])
+        return download(f'{url}{list[0]}', folder, list[0])
     except AttributeError as e:
         logging.error(f'can not found tag:{e}')
 
 
-def download(url, folder=STAGE_DIR, filename=None):
+def cleanup():
+    global STAGE_DIR, OUTPUT_DIR
+
+    if os.path.join(os.getcwd(), 'hackintosh') == PKG_ROOT:
+        cleanup_dirs(STAGE_DIR, OUTPUT_DIR, rmdir=True)
+    else:
+        cleanup_dirs(STAGE_DIR, OUTPUT_DIR)
+
+    delete(os.path.join(os.getcwd(), 'refs.txt'))
+
+
+def download(url, folder, filename=None):
     r = requests.get(url, stream=True)
 
     if not filename:
@@ -43,11 +59,10 @@ def download(url, folder=STAGE_DIR, filename=None):
     return filename
 
 
-def unzip_dir(from_dir, to_dir, extension='.zip'):
+def unzip_dir(from_dir, to_dir, ext='.zip'):
     for item in os.listdir(from_dir):
-        if item.endswith(extension):
-            file = os.path.join(from_dir, item)
-            unzip_file(file, to_dir)
+        if item.endswith(ext):
+            unzip_file(os.path.join(from_dir, item), to_dir)
 
 
 def unzip_file(file, dest_dir):
@@ -58,22 +73,14 @@ def unzip_file(file, dest_dir):
 
 def cleanup_dirs(*dirs, rmdir=False):
     for dir in dirs:
-        if os.path.exists(dir):
-            shutil.rmtree(dir)
+        if os.path.exists(dir): shutil.rmtree(dir)
         if not rmdir: os.makedirs(dir)
-
-
-def del_dir(src, ext='*'):
-    files = glob.glob(f'{src}/*.{ext}')
-    for f in files:
-        os.remove(f)
 
 
 def copy_dir(src, dst, filter=None):
     item_list = os.listdir(src)
 
-    if filter:
-        item_list = [i for i in item_list if i in filter]
+    if filter: item_list = [i for i in item_list if i in filter]
 
     for item in item_list:
         s = os.path.join(src, item)
@@ -99,48 +106,44 @@ def run(cmds, msg=None, show_out=True, ignore_error=False):
     if msg: logging.info(msg)
 
 
-# only delete files
-def delete_files(path):
-    if os.path.isdir(path):
-        for dirpath, dirnames, filenames in os.walk(path):
-            for filename in filenames:
-                os.unlink(os.path.join(dirpath, filename))
-    elif os.path.isfile(path):
-        try:
-            os.remove(path)
-        except OSError as e:
-            if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
-                raise
+def unzip(todel=None):
+    global STAGE_DIR, OUTPUT_DIR
 
-
-def cleanup():
-    if os.path.join(os.getcwd(), 'hackintosh') == PKG_ROOT:
-        cleanup_dirs(STAGE_DIR, OUTPUT_DIR, rmdir=True)
-    else:
-        cleanup_dirs(STAGE_DIR, OUTPUT_DIR)
-
-    delete_files(os.path.join(os.getcwd(), 'refs.txt'))
-
-
-def unzip():
     unzip_dir(STAGE_DIR, OUTPUT_DIR)
     path = os.path.join(OUTPUT_DIR, 'Release')
     if os.path.isdir(path):
         copy_tree(path, OUTPUT_DIR)
         shutil.rmtree(path)
 
-    for f in ('AppleALC.kext.dSYM', '__MACOSX', 'Debug', 'HWMonitor.app',
-              'FakeSMC_ACPISensors.kext', 'FakeSMC_CPUSensors.kext',
-              'FakeSMC_GPUSensors.kext', 'FakeSMC_LPCSensors.kext'):
-        path = os.path.join(OUTPUT_DIR, f)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
-        elif os.path.isfile(path):
-            os.remove(path)
+    for f in ('AppleALC.kext.dSYM', '__MACOSX', 'Debug', '.DS_Store'):
+        delete(os.path.join(OUTPUT_DIR, f))
+
+    if todel is not None:
+        for f in os.listdir(OUTPUT_DIR):
+            if f not in todel:
+                delete(os.path.join(OUTPUT_DIR, f))
+
+
+def delete(path, ext=None, only_files=False):
+    def _del(f):
+        if os.path.isfile(f):
+            os.remove(f)
+        elif os.path.isdir(f):
+            shutil.rmtree(f)
+
+    if only_files:
+        for dirpath, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                os.remove(os.path.join(dirpath, filename))
+    else:
+        if ext is None:
+            _del(path)
+        else:
+            for f in glob.glob(f'{path}/*.{ext}'):
+                _del(path)
 
 
 def execute_module(module_name, context=None):
-    import re, importlib
     module = importlib.import_module(f'hackintosh.commands.impl.{module_name}_impl')
     functions = sorted(filter((lambda x: re.search(r'^_\d+', x)), dir(module)))
     for f in functions:

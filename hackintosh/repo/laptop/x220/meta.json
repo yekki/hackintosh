@@ -1,0 +1,58 @@
+{
+  "series": "x220",
+  "description": "Lenovo Thinkpad x220",
+  "author": "Gary Niu",
+  "device": {
+    "cpu": {
+      "number": "i5-2520M",
+      "code_name": "Sandy Bridge"
+    },
+    "graphics_card": "HD3000",
+    "sound_card": "CX20590",
+    "ethernet_card": "Intel"
+  },
+  "kexts":[
+    "IntelBacklight"
+  ],
+  "acpi": {
+    "bios": "1.43",
+    "patches": {
+      "dsdt": [
+        "graphics_Rename-PCI0_VID",
+        "audio_HDEF-layout3",
+        "graphics_HD3K_low",
+        "battery_Lenovo-x220",
+        "usb_6-series",
+        "graphics_PNLF_ivy_sandy",
+        "system_ADP1",
+        "system_Mutex",
+        "system_IRQ",
+        "system_SMBUS",
+        "system_HPET",
+        "system_MCHC",
+        "system_IMEI",
+        "system_OSYS_win8"
+      ],
+      "ssdt": {
+        "ssdt-0": [
+          "graphics_Rename-PCI0_VID"
+        ],
+        "ssdt-3": [
+          "SSDT-3"
+        ],
+        "ssdt-8": [
+          "SSDT-8",
+          "graphics_Rename-GFX0",
+          "graphics_Rename-B0D3"
+        ],
+        "ssdt_names": [
+          "SSDT-0",
+          "SSDT-1",
+          "SSDT-2",
+          "SSDT-3",
+          "SSDT-4"
+        ]
+      }
+    }
+  }
+}

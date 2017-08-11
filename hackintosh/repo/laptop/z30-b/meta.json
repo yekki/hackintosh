@@ -2,6 +2,7 @@
   "series": "z30-b",
   "description": "Toshiba Portege z30-b",
   "author": "Gary Niu",
+  "osx_ver": "10.12.6",
   "device": {
     "cpu": {
       "number": "i5-5300U",
@@ -9,11 +10,18 @@
     },
     "graphics_card": "HD5500",
     "sound_card": "ALC255",
-    "ethernet_card": "Intel"
+    "ethernet_card": "Intel",
+    "external": [
+      {
+      "type":"combo",
+      "name":"bcm94352z"
+      }
+    ]
   },
-  "kexts":[
-    "os-x-usb-inject-all"
-  ],
+  "kext":{
+    "projects":["os-x-usb-inject-all"],
+    "widgets":["USBInjectAll.kext"]
+  },
   "acpi": {
     "bios": "3.20",
     "patches": {
@@ -43,17 +51,17 @@
           "SSDT-8",
           "graphics_Rename-GFX0",
           "graphics_Rename-B0D3"
-        ],
-        "ssdt_names": [
-          "SSDT-0",
-          "SSDT-1",
-          "SSDT-2",
-          "SSDT-3",
-          "SSDT-8",
-          "SSDT-USB",
-          "SSDT-PNLF"
         ]
-      }
+      },
+      "ssdt_list":[
+        "SSDT-0",
+        "SSDT-1",
+        "SSDT-2",
+        "SSDT-3",
+        "SSDT-8",
+        "SSDT-USB",
+        "SSDT-PNLF"
+      ]
     }
   }
 }
