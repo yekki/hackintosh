@@ -1,0 +1,74 @@
+{
+  "series": "t440p",
+  "description": "Lenovo ThinkPad T440p",
+  "author": "Gary Niu",
+  "osx_ver": "10.12.6",
+  "device": {
+    "cpu": {
+      "number": "i5-4200M",
+      "code_name": "Haswell"
+    },
+    "graphics_card": "HD4600",
+    "sound_card": "ALC292",
+    "ethernet_card": "Intel",
+    "external": [
+      {
+      "type":"bluetooth",
+      "name":"bta-408"
+      }
+    ]
+  },
+  "kext":{
+    "projects":["os-x-fake-pci-id"],
+    "widgets":["FakePCIID.kext","FakePCIID_Intel_HD_Graphics"]
+  },
+  "acpi": {
+    "bios": "2.39",
+    "patches": {
+      "dsdt": [
+        "usb_prw_0x0d_xhc",
+        "graphics_Rename-PCI0_VID",
+        "misc_Haswell-LPC",
+        "system_Mutex",
+        "system_IRQ",
+        "system_SMBUS",
+        "system_HPET",
+        "system_MCHC",
+        "system_IMEI",
+        "system_OSYS_win8",
+        "misc_Lid_PRW",
+        "system_RTC",
+        "system_WAK2",
+        "system_ADP1",
+        "fix_PLD",
+        "usb_7-series",
+        "battery_Lenovo-T440p"
+      ],
+      "ssdt": {
+        "ssdt-1": [
+          "graphics_Rename-PCI0_VID"
+        ],
+        "ssdt-3": [
+          "fix_PSS"
+        ],
+        "ssdt-9": [
+          "graphics_Rename-PCI0_VID"
+        ],
+        "ssdt-10": [
+          "SSDT-10"
+        ]
+      },
+      "ssdt_list":[
+        "SSDT-0",
+        "SSDT-1",
+        "SSDT-2",
+        "SSDT-3",
+        "SSDT-4",
+        "SSDT-9",
+        "SSDT-10",
+        "SSDT-11",
+        "SSDT-PNLF"
+      ]
+    }
+  }
+}
