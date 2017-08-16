@@ -1,9 +1,11 @@
-from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR
+from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 from inspect import signature
 from distutils.dir_util import copy_tree
 from subprocess import call
+from string import Template
+
 import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib
 
 
@@ -84,8 +86,7 @@ def copy_dir(src, dst, filter=None):
 
     for item in item_list:
         s = os.path.join(src, item)
-        if os.path.exists(s):
-            shutil.copy2(s, os.path.join(dst, item))
+        if os.path.exists(s): shutil.copy2(s, os.path.join(dst, item))
 
 
 def run(cmds, msg=None, show_out=True, ignore_error=False):
@@ -134,7 +135,11 @@ def delete(path, ext=None, only_files=False):
     if only_files:
         for dirpath, dirnames, filenames in os.walk(path):
             for filename in filenames:
-                os.remove(os.path.join(dirpath, filename))
+                if ext is None:
+                    os.remove(os.path.join(dirpath, filename))
+                else:
+                    if filename.endswith(f'.{ext}'):
+                        os.remove(os.path.join(dirpath, filename))
     else:
         if ext is None:
             _del(path)
@@ -154,3 +159,25 @@ def execute_module(module_name, context=None):
             func(context)
         else:
             func()
+
+
+def cust_acpi_patches(ext, acpi_list, dest):
+    for f in [f'{item}{ext}' for item in acpi_list]:
+        file = os.path.join(REPO_ROOT, 'common', 'patches', f)
+        if os.path.exists(file):
+            shutil.copy2(file, dest)
+
+        # laptop spec file will overwrite common
+        file = os.path.join(LAPTOP_ROOT, 'patches', f)
+        if os.path.exists(file):
+            shutil.copy2(file, dest)
+
+
+def clover_kext_patches(patches, output, template=None):
+    if template is None:
+        template = Template(open(os.path.join(REPO_ROOT, 'templates', 'clover_kexts_to_patch.templ')).read())
+
+    with open(output, 'a') as f:
+        for p in patches:
+            content = template.substitute(p)
+            f.write(content)

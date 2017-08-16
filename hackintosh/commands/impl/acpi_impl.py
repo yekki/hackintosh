@@ -1,9 +1,11 @@
 from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR
-from hackintosh.lib import copy_dir, run, delete
+from hackintosh.lib import copy_dir, delete, cust_acpi_patches
+from subprocess import call
 
 import os, glob, logging, shutil
 
-_IASL = os.path.join(PKG_ROOT, 'bin', 'iasl')
+## iasl61 come from MaciASL
+_IASL = os.path.join(PKG_ROOT, 'bin', 'iasl61')
 _PATCHMATIC = os.path.join(PKG_ROOT, 'bin', 'patchmatic')
 
 
@@ -36,6 +38,7 @@ def _1_initialize():
 def _2_prepare_acpi_files():
     native_acpi_dir = os.path.join(LAPTOP_ROOT, 'origin', LAPTOP_META['acpi']['bios'])
     copy_dir(native_acpi_dir, STAGE_DIR, [f'{item}.aml' for item in LAPTOP_META['ACPI_LIST']])
+    cust_acpi_patches('.dsl', LAPTOP_META['ACPI_LIST'], STAGE_DIR)
 
 
 def _3_decompile():
@@ -43,17 +46,14 @@ def _3_decompile():
     if os.path.isfile(refs_file):
         shutil.copyfile(refs_file, os.path.join(os.getcwd(), 'refs.txt'))
 
-    cmd = [f'{_IASL} -da -dl {STAGE_DIR}/DSDT.aml {STAGE_DIR}/SSDT*.aml']
-    run(cmd, msg='decompiled %d .aml files' % len(LAPTOP_META['ACPI_LIST']), ignore_error=True)
-    delete(STAGE_DIR, ext='aml')
-    copy_dir(f'{LAPTOP_ROOT}/patches', STAGE_DIR,
-             [f'{item}.dsl' for item in LAPTOP_META['ACPI_LIST']])
+    call([f'{_IASL} -da -dl {STAGE_DIR}/DSDT.aml {STAGE_DIR}/SSDT*.aml'], shell=True)
+    delete(STAGE_DIR, ext='aml', only_files=True)
+    copy_dir(f'{LAPTOP_ROOT}/patches', STAGE_DIR, [f'{item}.dsl' for item in LAPTOP_META['ACPI_LIST']])
 
 
 def _4_apply_dsdt_patches():
     _apply_patch(f'{STAGE_DIR}/DSDT_PATCHES.txt', LAPTOP_META['acpi']['patches']['dsdt'])
-    cmd = [f'{_PATCHMATIC} {STAGE_DIR}/DSDT.dsl {STAGE_DIR}/DSDT_PATCHES.txt {STAGE_DIR}/DSDT.dsl']
-    run(cmd, ignore_error=True)
+    call([f'{_PATCHMATIC}', f'{STAGE_DIR}/DSDT.dsl', f'{STAGE_DIR}/DSDT_PATCHES.txt', f'{STAGE_DIR}/DSDT.dsl'])
 
 
 def _5_apply_ssdt_patches():
@@ -66,17 +66,24 @@ def _5_apply_ssdt_patches():
         dsl_file = f'{STAGE_DIR}/{ssdt}.dsl'
         patch_file = f'{STAGE_DIR}/{ssdt}_PATCH.txt'
         _apply_patch(patch_file, LAPTOP_META['acpi']['patches']['ssdt'][ssdt.lower()])
-
-        cmd = [f'{_PATCHMATIC} {dsl_file} {patch_file} {dsl_file}']
-        run(cmd, ignore_error=True)
+        call([f'{_PATCHMATIC}', dsl_file, patch_file, dsl_file])
 
 
 def _6_compile_acpi():
     for f in glob.glob(f'{STAGE_DIR}/*.dsl'):
         filename = os.path.basename(f).split('.')[0]
-        cmd = [f'{_IASL} -vr -w1 -p {OUTPUT_DIR}/{filename}.aml {STAGE_DIR}/{filename}.dsl']
-        run(cmd, ignore_error=True)
+        call([f'{_IASL}', '-vr', '-w1', '-p', f'{OUTPUT_DIR}/{filename}.aml', f'{STAGE_DIR}/{filename}.dsl'])
+
+    cust_acpi_patches('.aml', LAPTOP_META['ACPI_LIST'], OUTPUT_DIR)
 
 
-def _7_customize():
-    copy_dir(f'{LAPTOP_ROOT}/patches', OUTPUT_DIR, [f'{item}.aml' for item in LAPTOP_META['ACPI_LIST']])
+def _7_check():
+    s1 = [f.replace('.aml', '') for f in os.listdir(OUTPUT_DIR)]
+    s2 = set(LAPTOP_META['ACPI_LIST'])
+    s3 = s2.difference(s1)
+
+    if len(s3):
+        for i in s3:
+            logging.error(f'failed to build {i}.')
+    else:
+        logging.info(f'build finished.')

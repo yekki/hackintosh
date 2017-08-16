@@ -1,7 +1,8 @@
 from hackintosh import ALL_META, OUTPUT_DIR, REPO_ROOT
-from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs
+from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs, clover_kext_patches
 from string import Template
 import click, shutil, os
+
 
 @click.group(short_help="Commands for external devices.")
 def cli():
@@ -28,9 +29,4 @@ def build(id):
 
     click.echo(click.style('creating clover patches...', fg='blue'))
 
-    templ = Template(open(os.path.join(REPO_ROOT, 'config', 'clover_kexts_to_patch.templ')).read())
-
-    with open(os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'), 'a') as f:
-        for p in ALL_META['external_device'][id]['clover']['kexts_to_patch']:
-            content = templ.substitute(p)
-            f.write(content)
+    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'], os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))

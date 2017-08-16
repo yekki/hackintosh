@@ -36,30 +36,29 @@
       ]
     }
   },
-  "general":{
-    "clover":{
-      "kexts_to_patch":[
-      {
-        "name":"IOGraphicsFamily",
-        "find":"01000075 25",
-        "replace":"010000eb 25",
-        "comment":"Boot graphics glitch, 10.12.dp1"
-      },
-      {
-        "name":"com.apple.driver.AppleBacklight",
-        "find":"25303478",
-        "replace":"78787878",
-        "comment":"change %04x to xxxx for AppleBacklightInjector.kext"
-      },
-      {
-        "name":"IOAHCIBlockStorage",
-        "find":"004150504c452053534400",
-        "replace":"0000000000000000000000",
-        "comment":"Enable TRIM for SSD"
-      }
-    ]
-    }
-  },
+
+  "clover":{
+    "kexts_to_patch":[
+        {
+          "name":"IOGraphicsFamily",
+          "find":"01000075 25",
+          "replace":"010000eb 25",
+          "comment":"Boot graphics glitch, 10.12.dp1"
+        },
+        {
+          "name":"IOAHCIBlockStorage",
+          "find":"AEFQUExFIFNTRAA=",
+          "replace":"AAAAAAAAAAAAAAA=",
+          "comment":"Enable TRIM for SSD"
+        },
+        {
+          "name":"AppleIntelBDWGraphicsFramebuffer",
+          "find":"iUXIOcd2Tw==",
+          "replace":"iUXIOcfrTw==",
+          "comment":"Broadwell minStolenSize patch (credit RehabMan based on original by Austere.J)"
+        }
+      ]
+    },
   "external_device":{
     "bcm94352z":{
       "type":"combo",
@@ -86,6 +85,24 @@
             "Find":"SIX/dEdIiwc=",
             "Replace":"Qb4PAAAA60Q=",
             "Comment":"10.11.dp1+ BT4LE-Handoff-Hotspot, credit RehabMan based on Dokterdok original"
+          }
+        ]
+      }
+    }
+  },
+  "patches":{
+    "brightness_control":{
+      "kext":{
+        "projects":[],
+        "widgets":[]
+      },
+      "clover":{
+       "kexts_to_patch":[
+          {
+            "Name":"com.apple.driver.AppleBacklight",
+            "Find":"RiV1VCUwNHgA",
+            "Replace":"RiV1VHh4eHgA",
+            "Comment":"change F%uT%04x to F%uTxxxx in AppleBacklightInjector.kext (credit RehabMan)"
           }
         ]
       }
