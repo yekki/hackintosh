@@ -1,5 +1,6 @@
 from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT
-from hackintosh.lib import unzip_file, download, download_rehabman, run, delete_files
+from hackintosh.lib import unzip_file, download, download_rehabman, delete
+from subprocess import call
 import os, stat, shutil, logging, glob
 
 
@@ -24,7 +25,8 @@ def _update_tool(zip_file, cmd_name):
 
 
 def _1_ssdtPRgen():
-    download('https://codeload.github.com/Piker-Alpha/ssdtPRGen.sh/zip/Beta', filename='ssdtPRGen.sh-Beta.zip')
+    download('https://codeload.github.com/Piker-Alpha/ssdtPRGen.sh/zip/Beta', folder=STAGE_DIR,
+             filename='ssdtPRGen.sh-Beta.zip')
     ssdtPRGen_root = os.path.join(os.path.expanduser('~'), 'Library', 'ssdtPRGen')
 
     if os.path.isdir(ssdtPRGen_root):
@@ -41,12 +43,11 @@ def _1_ssdtPRgen():
 
 
 def _2_patches():
-    cmd = [f'git clone https://github.com/RehabMan/Laptop-DSDT-Patch.git {STAGE_DIR}/patches']
-    run(cmd, show_out=False)
+    call([f'git clone https://github.com/RehabMan/Laptop-DSDT-Patch.git {STAGE_DIR}/patches'], shell=True)
 
     patches_root = os.path.join(REPO_ROOT, 'patches')
 
-    delete_files(patches_root)
+    delete(patches_root, only_files=True)
 
     for file in glob.glob(f"{os.path.join(STAGE_DIR, 'patches')}/**/*.txt"):
         shutil.copy2(file, patches_root)

@@ -15,18 +15,17 @@ def _apply_patch(patch_file, patch_list):
             patch = f'{REPO_ROOT}/patches/{p}.txt'
 
             # check whether patch in system repo, if not, check laptop's patch
-            if not os.path.isfile(patch):
-                patch = f'{LAPTOP_ROOT}/patches/{p}.txt'
+            if not os.path.isfile(patch): patch = f'{LAPTOP_ROOT}/patches/{p}.txt'
 
             if os.path.isfile(patch):
                 with open(patch) as infile:
                     outfile.write(infile.read())
             else:
-                logging.info(f'lost patch at {patch}')
+                logging.error(f'lost patch at {patch}')
 
 
 def _1_initialize():
-    if os.path.isfile(os.path.join(PKG_ROOT, 'bin', 'iasl')):
+    if os.path.isfile(_IASL):
         acpi_list = LAPTOP_META['acpi']['patches']['ssdt_list']
         acpi_list.append('DSDT')
         LAPTOP_META['ACPI_LIST'] = acpi_list

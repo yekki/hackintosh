@@ -21,7 +21,7 @@ def switch_repo():
     save_conf(CLIENT_SETTINGS)
 
 
-@cli.command(short_help='Switch Repo location: pkg or local.')
+@cli.command(short_help='Show current client settings.')
 def info():
     pprint.pprint(CLIENT_SETTINGS)
 

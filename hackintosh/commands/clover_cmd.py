@@ -1,13 +1,15 @@
 from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR
-from hackintosh.lib import clover_kext_patches, cleanup
+from hackintosh.lib import clover_kext_patches, cleanup, download, download_sourceforge
 from subprocess import call
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
 
-import click, os, shutil, logging
+import click, os, shutil, logging, sys
 
 
 @click.group(short_help="Commands for external devices.")
 def cli():
-    pass
+    cleanup()
 
 
 def brightness_control():
@@ -40,10 +42,13 @@ def brightness_control():
                         os.path.join(OUTPUT_DIR, 'patch.plist'))
 
 
-@cli.command(short_help='Prepare all stuff for device.')
+
+@cli.command(short_help='Prepare all stuff for the patch.')
 @click.option('-p', '--patch', required=True, type=click.Choice(ALL_META['patches'].keys()),
-             help='Choose the laptop series')
+             help='Choose clover a patche')
 def kexts_to_patch(patch):
-    cleanup()
-    clover_kext_patches(ALL_META['clover']['kexts_to_patch'],
-                        os.path.join(OUTPUT_DIR, 'patch.plist'))
+    getattr(sys.modules[__name__], patch)()
+
+@cli.command(short_help='Download the latest clover bootloader.')
+def download():
+    download_sourceforge('cloverefiboot', 'Installer')

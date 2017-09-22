@@ -13,6 +13,22 @@ def rebuild_kextcache():
     call(['sudo', '/usr/sbin/kextcache', '-i', '/'])
 
 
+def download_sourceforge(project_name, nav='', search='.zip'):
+    url = f'https://sourceforge.net/projects/{project_name}/files/{nav}'
+    soup = BeautifulSoup(urlopen(url), 'html.parser')
+
+    try:
+        rows = soup.find('table', id='files_list').find('tbody').findAll('tr')
+        for row in rows:
+            filename = row.attrs['title']
+
+            if search in filename:
+                url = f'http://sourceforge.net/projects/{project_name}/files/{nav}/{filename}/download'
+                download(url, STAGE_DIR, filename)
+                break
+    except AttributeError as e:
+        logging.error(f'can not found tag:{e}')
+
 def download_rehabman(project_name, folder=STAGE_DIR, filter=None):
     url = f'https://bitbucket.org/RehabMan/{project_name}/downloads/'
     soup = BeautifulSoup(urlopen(url), 'html.parser')
@@ -87,24 +103,6 @@ def copy_dir(src, dst, filter=None):
     for item in item_list:
         s = os.path.join(src, item)
         if os.path.exists(s): shutil.copy2(s, os.path.join(dst, item))
-
-
-def run(cmds, msg=None, show_out=True, ignore_error=False):
-    ret = subprocess.run(cmds, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-
-    output = ret.stderr.decode()
-
-    if output and output != 'None' and show_out:
-        if ignore_error:
-            logging.info(output)
-        else:
-            logging.error(output)
-
-    output = ret.stdout.decode()
-
-    if output and output != 'None' and show_out: logging.info(output)
-
-    if msg: logging.info(msg)
 
 
 def unzip(todel=None):

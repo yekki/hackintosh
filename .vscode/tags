@@ -1,0 +1,250 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ALL_META	../hackintosh/__init__.py	/^    ALL_META = json.load(open(_META_PATH))$/;"	kind:variable	line:40
+ALL_META	../hackintosh/commands/clover_cmd.py	/^from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+ALL_META	../hackintosh/commands/device_cmd.py	/^from hackintosh import ALL_META, OUTPUT_DIR, REPO_ROOT$/;"	kind:namespace	line:1
+ALL_META	../hackintosh/commands/kext_cmd.py	/^from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT$/;"	kind:namespace	line:1
+ALL_META	../hackintosh/commands/patch_cmd.py	/^from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+ALL_META	../hackintosh/commands/sys_cmd.py	/^from hackintosh import CLIENT_SETTINGS, ALL_META, save_conf$/;"	kind:namespace	line:1
+BeautifulSoup	../hackintosh/commands/hda_cmd.py	/^from bs4 import BeautifulSoup$/;"	kind:namespace	line:4
+BeautifulSoup	../hackintosh/lib.py	/^from bs4 import BeautifulSoup$/;"	kind:namespace	line:2
+CLIENT_SETTINGS	../hackintosh/__init__.py	/^    CLIENT_SETTINGS = save_conf()$/;"	kind:variable	line:30
+CLIENT_SETTINGS	../hackintosh/__init__.py	/^    CLIENT_SETTINGS = save_conf(data=json.load(open(CLIENT_SETTINGS_FILE, 'r')))$/;"	kind:variable	line:28
+CLIENT_SETTINGS	../hackintosh/commands/sys_cmd.py	/^from hackintosh import CLIENT_SETTINGS, ALL_META, save_conf$/;"	kind:namespace	line:1
+CLIENT_SETTINGS	../hackintosh/main.py	/^from hackintosh import CLIENT_SETTINGS$/;"	kind:namespace	line:1
+CLIENT_SETTINGS_FILE	../hackintosh/__init__.py	/^CLIENT_SETTINGS_FILE = os.path.join(os.path.expanduser('~'), '.yekki.json')$/;"	kind:variable	line:8
+LAPTOP_META	../hackintosh/__init__.py	/^        LAPTOP_META = json.load(open((_META_PATH)))$/;"	kind:variable	line:45
+LAPTOP_META	../hackintosh/commands/acpi_cmd.py	/^from hackintosh import LAPTOP_META$/;"	kind:namespace	line:1
+LAPTOP_META	../hackintosh/commands/impl/acpi_impl.py	/^from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+LAPTOP_META	../hackintosh/commands/kext_cmd.py	/^from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT$/;"	kind:namespace	line:1
+LAPTOP_META	../hackintosh/lib.py	/^from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META$/;"	kind:namespace	line:1
+LAPTOP_ROOT	../hackintosh/__init__.py	/^LAPTOP_ROOT = os.path.join(REPO_ROOT, 'laptop', CLIENT_SETTINGS['current_series'])$/;"	kind:variable	line:35
+LAPTOP_ROOT	../hackintosh/commands/impl/acpi_impl.py	/^from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+LAPTOP_ROOT	../hackintosh/lib.py	/^from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META$/;"	kind:namespace	line:1
+MainCLI	../hackintosh/cli.py	/^class MainCLI(click.MultiCommand):$/;"	kind:class	line:6
+MainCLI	../hackintosh/main.py	/^from hackintosh.cli import MainCLI$/;"	kind:namespace	line:2
+OUTPUT_DIR	../hackintosh/__init__.py	/^OUTPUT_DIR = os.path.join(os.getcwd(), 'output')$/;"	kind:variable	line:10
+OUTPUT_DIR	../hackintosh/commands/clover_cmd.py	/^from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+OUTPUT_DIR	../hackintosh/commands/device_cmd.py	/^from hackintosh import ALL_META, OUTPUT_DIR, REPO_ROOT$/;"	kind:namespace	line:1
+OUTPUT_DIR	../hackintosh/commands/impl/acpi_impl.py	/^from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+OUTPUT_DIR	../hackintosh/commands/kext_cmd.py	/^from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT$/;"	kind:namespace	line:1
+OUTPUT_DIR	../hackintosh/commands/patch_cmd.py	/^from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+OUTPUT_DIR	../hackintosh/lib.py	/^from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META$/;"	kind:namespace	line:1
+PKG_ROOT	../hackintosh/__init__.py	/^PKG_ROOT = os.path.dirname(os.path.abspath(__file__))$/;"	kind:variable	line:11
+PKG_ROOT	../hackintosh/cli.py	/^from hackintosh import PKG_ROOT$/;"	kind:namespace	line:1
+PKG_ROOT	../hackintosh/commands/impl/acpi_impl.py	/^from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+PKG_ROOT	../hackintosh/commands/impl/tool_impl.py	/^from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT$/;"	kind:namespace	line:1
+PKG_ROOT	../hackintosh/lib.py	/^from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META$/;"	kind:namespace	line:1
+Path	../hackintosh/cli.py	/^from pathlib import Path$/;"	kind:namespace	line:2
+REPO_ROOT	../hackintosh/__init__.py	/^    REPO_ROOT = os.path.join(os.getcwd(), 'repo')$/;"	kind:variable	line:33
+REPO_ROOT	../hackintosh/__init__.py	/^REPO_ROOT = os.path.join(PKG_ROOT, 'repo')$/;"	kind:variable	line:12
+REPO_ROOT	../hackintosh/commands/device_cmd.py	/^from hackintosh import ALL_META, OUTPUT_DIR, REPO_ROOT$/;"	kind:namespace	line:1
+REPO_ROOT	../hackintosh/commands/impl/acpi_impl.py	/^from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+REPO_ROOT	../hackintosh/commands/impl/tool_impl.py	/^from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT$/;"	kind:namespace	line:1
+REPO_ROOT	../hackintosh/commands/kext_cmd.py	/^from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT$/;"	kind:namespace	line:1
+REPO_ROOT	../hackintosh/lib.py	/^from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META$/;"	kind:namespace	line:1
+STAGE_DIR	../hackintosh/__init__.py	/^STAGE_DIR = os.path.join(os.getcwd(), 'stage')$/;"	kind:variable	line:9
+STAGE_DIR	../hackintosh/commands/clover_cmd.py	/^from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+STAGE_DIR	../hackintosh/commands/hda_cmd.py	/^from hackintosh import STAGE_DIR$/;"	kind:namespace	line:1
+STAGE_DIR	../hackintosh/commands/impl/acpi_impl.py	/^from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+STAGE_DIR	../hackintosh/commands/impl/tool_impl.py	/^from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT$/;"	kind:namespace	line:1
+STAGE_DIR	../hackintosh/commands/patch_cmd.py	/^from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR$/;"	kind:namespace	line:1
+STAGE_DIR	../hackintosh/lib.py	/^from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META$/;"	kind:namespace	line:1
+Template	../hackintosh/commands/device_cmd.py	/^from string import Template$/;"	kind:namespace	line:3
+Template	../hackintosh/commands/kext_cmd.py	/^from string import Template$/;"	kind:namespace	line:3
+Template	../hackintosh/lib.py	/^from string import Template$/;"	kind:namespace	line:7
+_1_initialize	../hackintosh/commands/impl/acpi_impl.py	/^def _1_initialize():$/;"	kind:function	line:27
+_1_ssdtPRgen	../hackintosh/commands/impl/tool_impl.py	/^def _1_ssdtPRgen():$/;"	kind:function	line:26
+_2_patches	../hackintosh/commands/impl/tool_impl.py	/^def _2_patches():$/;"	kind:function	line:43
+_2_prepare_acpi_files	../hackintosh/commands/impl/acpi_impl.py	/^def _2_prepare_acpi_files():$/;"	kind:function	line:37
+_3_decompile	../hackintosh/commands/impl/acpi_impl.py	/^def _3_decompile():$/;"	kind:function	line:43
+_3_iasl	../hackintosh/commands/impl/tool_impl.py	/^def _3_iasl():$/;"	kind:function	line:57
+_4_apply_dsdt_patches	../hackintosh/commands/impl/acpi_impl.py	/^def _4_apply_dsdt_patches():$/;"	kind:function	line:53
+_4_patchmatic	../hackintosh/commands/impl/tool_impl.py	/^def _4_patchmatic():$/;"	kind:function	line:63
+_5_apply_ssdt_patches	../hackintosh/commands/impl/acpi_impl.py	/^def _5_apply_ssdt_patches():$/;"	kind:function	line:58
+_6_compile_acpi	../hackintosh/commands/impl/acpi_impl.py	/^def _6_compile_acpi():$/;"	kind:function	line:71
+_7_check	../hackintosh/commands/impl/acpi_impl.py	/^def _7_check():$/;"	kind:function	line:79
+_IASL	../hackintosh/commands/impl/acpi_impl.py	/^_IASL = os.path.join(PKG_ROOT, 'bin', 'iasl61')$/;"	kind:variable	line:8
+_META_PATH	../hackintosh/__init__.py	/^    _META_PATH = os.path.join(LAPTOP_ROOT, 'meta.json')$/;"	kind:variable	line:42
+_META_PATH	../hackintosh/__init__.py	/^_META_PATH = os.path.join(REPO_ROOT, 'config', 'default.json')$/;"	kind:variable	line:37
+_PATCHMATIC	../hackintosh/commands/impl/acpi_impl.py	/^_PATCHMATIC = os.path.join(PKG_ROOT, 'bin', 'patchmatic')$/;"	kind:variable	line:9
+__init__.py	../hackintosh/__init__.py	1;"	kind:file	line:1
+__init__.py	../hackintosh/commands/gui/__init__.py	1;"	kind:file	line:1
+_apply_patch	../hackintosh/commands/impl/acpi_impl.py	/^def _apply_patch(patch_file, patch_list):$/;"	kind:function	line:12
+_del	../hackintosh/lib.py	/^    def _del(f):$/;"	kind:function	line:129
+_download_alc	../hackintosh/commands/hda_cmd.py	/^def _download_alc():$/;"	kind:function	line:8
+_download_voodoohda	../hackintosh/commands/hda_cmd.py	/^def _download_voodoohda():$/;"	kind:function	line:16
+_update_tool	../hackintosh/commands/impl/tool_impl.py	/^def _update_tool(zip_file, cmd_name):$/;"	kind:function	line:6
+acpi_cmd.py	../hackintosh/commands/acpi_cmd.py	1;"	kind:file	line:1
+acpi_impl.py	../hackintosh/commands/impl/acpi_impl.py	1;"	kind:file	line:1
+brightness_control	../hackintosh/commands/clover_cmd.py	/^def brightness_control():$/;"	kind:function	line:13
+brightness_control	../hackintosh/commands/patch_cmd.py	/^def brightness_control():$/;"	kind:function	line:13
+build	../hackintosh/commands/acpi_cmd.py	/^def build():$/;"	kind:function	line:12
+build	../hackintosh/commands/device_cmd.py	/^def build(id):$/;"	kind:function	line:15
+build	../hackintosh/commands/patch_cmd.py	/^def build(patch):$/;"	kind:function	line:46
+call	../hackintosh/commands/clover_cmd.py	/^from subprocess import call$/;"	kind:namespace	line:3
+call	../hackintosh/commands/impl/acpi_impl.py	/^from subprocess import call$/;"	kind:namespace	line:3
+call	../hackintosh/commands/kext_cmd.py	/^from subprocess import call$/;"	kind:namespace	line:4
+call	../hackintosh/commands/patch_cmd.py	/^from subprocess import call$/;"	kind:namespace	line:3
+call	../hackintosh/lib.py	/^from subprocess import call$/;"	kind:namespace	line:6
+cgi	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+cleanup	../hackintosh/commands/acpi_cmd.py	/^from hackintosh.lib import cleanup, execute_module$/;"	kind:namespace	line:2
+cleanup	../hackintosh/commands/cleanup_cmd.py	/^from hackintosh.lib import cleanup$/;"	kind:namespace	line:1
+cleanup	../hackintosh/commands/clover_cmd.py	/^from hackintosh.lib import clover_kext_patches, cleanup$/;"	kind:namespace	line:2
+cleanup	../hackintosh/commands/device_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs, clover_kext_patches$/;"	kind:namespace	line:2
+cleanup	../hackintosh/commands/hda_cmd.py	/^from hackintosh.lib import download, unzip, cleanup$/;"	kind:namespace	line:2
+cleanup	../hackintosh/commands/kext_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache$/;"	kind:namespace	line:2
+cleanup	../hackintosh/commands/patch_cmd.py	/^from hackintosh.lib import clover_kext_patches, cleanup$/;"	kind:namespace	line:2
+cleanup	../hackintosh/commands/tool_cmd.py	/^from hackintosh.lib import execute_module, cleanup$/;"	kind:namespace	line:1
+cleanup	../hackintosh/lib.py	/^def cleanup():$/;"	kind:function	line:29
+cleanup_cmd.py	../hackintosh/commands/cleanup_cmd.py	1;"	kind:file	line:1
+cleanup_dirs	../hackintosh/commands/device_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs, clover_kext_patches$/;"	kind:namespace	line:2
+cleanup_dirs	../hackintosh/commands/kext_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache$/;"	kind:namespace	line:2
+cleanup_dirs	../hackintosh/lib.py	/^def cleanup_dirs(*dirs, rmdir=False):$/;"	kind:function	line:76
+cli	../hackintosh/commands/acpi_cmd.py	/^def cli():$/;"	kind:function	line:7
+cli	../hackintosh/commands/cleanup_cmd.py	/^def cli():$/;"	kind:function	line:6
+cli	../hackintosh/commands/clover_cmd.py	/^def cli():$/;"	kind:function	line:9
+cli	../hackintosh/commands/device_cmd.py	/^def cli():$/;"	kind:function	line:8
+cli	../hackintosh/commands/hda_cmd.py	/^def cli(alc, voodoohda, patcher):$/;"	kind:function	line:36
+cli	../hackintosh/commands/kext_cmd.py	/^def cli():$/;"	kind:function	line:9
+cli	../hackintosh/commands/open_cmd.py	/^def cli(rehabman, yekki, tonymacx86):$/;"	kind:function	line:8
+cli	../hackintosh/commands/patch_cmd.py	/^def cli():$/;"	kind:function	line:9
+cli	../hackintosh/commands/sys_cmd.py	/^def cli():$/;"	kind:function	line:7
+cli	../hackintosh/commands/tool_cmd.py	/^def cli(all, tool):$/;"	kind:function	line:9
+cli	../hackintosh/main.py	/^def cli():$/;"	kind:function	line:9
+cli.py	../hackintosh/cli.py	1;"	kind:file	line:1
+click	../hackintosh/cli.py	/^import click, os, logging, glob$/;"	kind:namespace	line:3
+click	../hackintosh/commands/acpi_cmd.py	/^import click$/;"	kind:namespace	line:3
+click	../hackintosh/commands/cleanup_cmd.py	/^import click$/;"	kind:namespace	line:2
+click	../hackintosh/commands/clover_cmd.py	/^import click, os, shutil, logging$/;"	kind:namespace	line:5
+click	../hackintosh/commands/device_cmd.py	/^import click, shutil, os$/;"	kind:namespace	line:4
+click	../hackintosh/commands/hda_cmd.py	/^import json, click, logging$/;"	kind:namespace	line:5
+click	../hackintosh/commands/kext_cmd.py	/^import click, os, shutil, glob$/;"	kind:namespace	line:5
+click	../hackintosh/commands/open_cmd.py	/^import click$/;"	kind:namespace	line:1
+click	../hackintosh/commands/patch_cmd.py	/^import click, os, shutil, logging$/;"	kind:namespace	line:5
+click	../hackintosh/commands/sys_cmd.py	/^import click, logging, pprint$/;"	kind:namespace	line:3
+click	../hackintosh/commands/tool_cmd.py	/^import click, importlib, re$/;"	kind:namespace	line:2
+click	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+click	../hackintosh/main.py	/^import click$/;"	kind:namespace	line:3
+clover_cmd.py	../hackintosh/commands/clover_cmd.py	1;"	kind:file	line:1
+clover_kext_patches	../hackintosh/commands/clover_cmd.py	/^from hackintosh.lib import clover_kext_patches, cleanup$/;"	kind:namespace	line:2
+clover_kext_patches	../hackintosh/commands/device_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs, clover_kext_patches$/;"	kind:namespace	line:2
+clover_kext_patches	../hackintosh/commands/patch_cmd.py	/^from hackintosh.lib import clover_kext_patches, cleanup$/;"	kind:namespace	line:2
+clover_kext_patches	../hackintosh/lib.py	/^def clover_kext_patches(patches, output, template=None):$/;"	kind:function	line:176
+copy_dir	../hackintosh/commands/impl/acpi_impl.py	/^from hackintosh.lib import copy_dir, delete, cust_acpi_patches$/;"	kind:namespace	line:2
+copy_dir	../hackintosh/lib.py	/^def copy_dir(src, dst, filter=None):$/;"	kind:function	line:82
+copy_tree	../hackintosh/lib.py	/^from distutils.dir_util import copy_tree$/;"	kind:namespace	line:5
+cust_acpi_patches	../hackintosh/commands/impl/acpi_impl.py	/^from hackintosh.lib import copy_dir, delete, cust_acpi_patches$/;"	kind:namespace	line:2
+cust_acpi_patches	../hackintosh/lib.py	/^def cust_acpi_patches(ext, acpi_list, dest):$/;"	kind:function	line:164
+delete	../hackintosh/commands/impl/acpi_impl.py	/^from hackintosh.lib import copy_dir, delete, cust_acpi_patches$/;"	kind:namespace	line:2
+delete	../hackintosh/commands/kext_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache$/;"	kind:namespace	line:2
+delete	../hackintosh/lib.py	/^def delete(path, ext=None, only_files=False):$/;"	kind:function	line:128
+delete_files	../hackintosh/commands/impl/tool_impl.py	/^from hackintosh.lib import unzip_file, download, download_rehabman, run, delete_files$/;"	kind:namespace	line:2
+device	../hackintosh/commands/kext_cmd.py	/^def device(id):$/;"	kind:function	line:62
+device_cmd.py	../hackintosh/commands/device_cmd.py	1;"	kind:file	line:1
+download	../hackintosh/commands/hda_cmd.py	/^from hackintosh.lib import download, unzip, cleanup$/;"	kind:namespace	line:2
+download	../hackintosh/commands/impl/tool_impl.py	/^from hackintosh.lib import unzip_file, download, download_rehabman, run, delete_files$/;"	kind:namespace	line:2
+download	../hackintosh/commands/kext_cmd.py	/^def download(kexts):$/;"	kind:function	line:15
+download	../hackintosh/lib.py	/^def download(url, folder, filename=None):$/;"	kind:function	line:40
+download_rehabman	../hackintosh/commands/device_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs, clover_kext_patches$/;"	kind:namespace	line:2
+download_rehabman	../hackintosh/commands/impl/tool_impl.py	/^from hackintosh.lib import unzip_file, download, download_rehabman, run, delete_files$/;"	kind:namespace	line:2
+download_rehabman	../hackintosh/commands/kext_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache$/;"	kind:namespace	line:2
+download_rehabman	../hackintosh/lib.py	/^def download_rehabman(project_name, folder=STAGE_DIR, filter=None):$/;"	kind:function	line:16
+execute_module	../hackintosh/commands/acpi_cmd.py	/^from hackintosh.lib import cleanup, execute_module$/;"	kind:namespace	line:2
+execute_module	../hackintosh/commands/tool_cmd.py	/^from hackintosh.lib import execute_module, cleanup$/;"	kind:namespace	line:1
+execute_module	../hackintosh/lib.py	/^def execute_module(module_name, context=None):$/;"	kind:function	line:151
+find_packages	../setup.py	/^from setuptools import setup, find_packages$/;"	kind:namespace	line:1
+get_command	../hackintosh/cli.py	/^    def get_command(self, ctx, name):$/;"	kind:member	line:17
+glob	../hackintosh/cli.py	/^import click, os, logging, glob$/;"	kind:namespace	line:3
+glob	../hackintosh/commands/impl/acpi_impl.py	/^import os, glob, logging, shutil$/;"	kind:namespace	line:5
+glob	../hackintosh/commands/impl/tool_impl.py	/^import os, stat, shutil, logging, glob$/;"	kind:namespace	line:3
+glob	../hackintosh/commands/kext_cmd.py	/^import click, os, shutil, glob$/;"	kind:namespace	line:5
+glob	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+hda_cmd.py	../hackintosh/commands/hda_cmd.py	1;"	kind:file	line:1
+help	../hackintosh/commands/clover_cmd.py	/^             help='Choose the laptop series')$/;"	kind:variable	line:45
+help	../hackintosh/commands/kext_cmd.py	/^              help='Choose the laptop series')$/;"	kind:variable	line:61
+help	../hackintosh/commands/patch_cmd.py	/^             help='Choose the laptop series')$/;"	kind:variable	line:45
+help	../hackintosh/commands/tool_cmd.py	/^              help='choose the tool which will be updated.')$/;"	kind:variable	line:8
+importlib	../hackintosh/commands/tool_cmd.py	/^import click, importlib, re$/;"	kind:namespace	line:2
+importlib	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+include_package_data	../setup.py	/^    include_package_data=True,$/;"	kind:variable	line:7
+info	../hackintosh/commands/acpi_cmd.py	/^def info():$/;"	kind:function	line:18
+info	../hackintosh/commands/kext_cmd.py	/^def info(supported, laptop, essential):$/;"	kind:function	line:91
+info	../hackintosh/commands/sys_cmd.py	/^def info():$/;"	kind:function	line:25
+install	../hackintosh/commands/kext_cmd.py	/^def install():$/;"	kind:function	line:46
+install_requires	../setup.py	/^    install_requires=[$/;"	kind:variable	line:8
+json	../hackintosh/__init__.py	/^import os, json, sys, logging$/;"	kind:namespace	line:1
+json	../hackintosh/commands/hda_cmd.py	/^import json, click, logging$/;"	kind:namespace	line:5
+kext_cmd.py	../hackintosh/commands/kext_cmd.py	1;"	kind:file	line:1
+kexts_to_patch	../hackintosh/commands/clover_cmd.py	/^def kexts_to_patch(patch):$/;"	kind:function	line:46
+laptop	../hackintosh/commands/kext_cmd.py	/^def laptop():$/;"	kind:function	line:26
+laptop	../hackintosh/commands/sys_cmd.py	/^def laptop(series):$/;"	kind:function	line:32
+lib.py	../hackintosh/lib.py	1;"	kind:file	line:1
+list_commands	../hackintosh/cli.py	/^    def list_commands(self, ctx):$/;"	kind:member	line:7
+logging	../hackintosh/__init__.py	/^import os, json, sys, logging$/;"	kind:namespace	line:1
+logging	../hackintosh/cli.py	/^import click, os, logging, glob$/;"	kind:namespace	line:3
+logging	../hackintosh/commands/clover_cmd.py	/^import click, os, shutil, logging$/;"	kind:namespace	line:5
+logging	../hackintosh/commands/hda_cmd.py	/^import json, click, logging$/;"	kind:namespace	line:5
+logging	../hackintosh/commands/impl/acpi_impl.py	/^import os, glob, logging, shutil$/;"	kind:namespace	line:5
+logging	../hackintosh/commands/impl/tool_impl.py	/^import os, stat, shutil, logging, glob$/;"	kind:namespace	line:3
+logging	../hackintosh/commands/patch_cmd.py	/^import click, os, shutil, logging$/;"	kind:namespace	line:5
+logging	../hackintosh/commands/sys_cmd.py	/^import click, logging, pprint$/;"	kind:namespace	line:3
+logging	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+main.py	../hackintosh/main.py	1;"	kind:file	line:1
+menu.py	../hackintosh/commands/gui/menu.py	1;"	kind:file	line:1
+name	../setup.py	/^    name='hackintosh',$/;"	kind:variable	line:4
+open_cmd.py	../hackintosh/commands/open_cmd.py	1;"	kind:file	line:1
+os	../hackintosh/__init__.py	/^import os, json, sys, logging$/;"	kind:namespace	line:1
+os	../hackintosh/cli.py	/^import click, os, logging, glob$/;"	kind:namespace	line:3
+os	../hackintosh/commands/clover_cmd.py	/^import click, os, shutil, logging$/;"	kind:namespace	line:5
+os	../hackintosh/commands/device_cmd.py	/^import click, shutil, os$/;"	kind:namespace	line:4
+os	../hackintosh/commands/impl/acpi_impl.py	/^import os, glob, logging, shutil$/;"	kind:namespace	line:5
+os	../hackintosh/commands/impl/tool_impl.py	/^import os, stat, shutil, logging, glob$/;"	kind:namespace	line:3
+os	../hackintosh/commands/kext_cmd.py	/^import click, os, shutil, glob$/;"	kind:namespace	line:5
+os	../hackintosh/commands/patch_cmd.py	/^import click, os, shutil, logging$/;"	kind:namespace	line:5
+os	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+packages	../setup.py	/^    packages=find_packages(),$/;"	kind:variable	line:6
+patch_cmd.py	../hackintosh/commands/patch_cmd.py	1;"	kind:file	line:1
+pprint	../hackintosh/commands/sys_cmd.py	/^import click, logging, pprint$/;"	kind:namespace	line:3
+re	../hackintosh/commands/tool_cmd.py	/^import click, importlib, re$/;"	kind:namespace	line:2
+re	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+rebuild_kextcache	../hackintosh/commands/kext_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache$/;"	kind:namespace	line:2
+rebuild_kextcache	../hackintosh/lib.py	/^def rebuild_kextcache():$/;"	kind:function	line:12
+requests	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+run	../hackintosh/commands/gui/menu.py	/^def run():$/;"	kind:function	line:4
+run	../hackintosh/commands/impl/tool_impl.py	/^from hackintosh.lib import unzip_file, download, download_rehabman, run, delete_files$/;"	kind:namespace	line:2
+run	../hackintosh/lib.py	/^def run(cmds, msg=None, show_out=True, ignore_error=False):$/;"	kind:function	line:92
+save_conf	../hackintosh/__init__.py	/^def save_conf(data=None):$/;"	kind:function	line:15
+save_conf	../hackintosh/commands/sys_cmd.py	/^from hackintosh import CLIENT_SETTINGS, ALL_META, save_conf$/;"	kind:namespace	line:1
+setup	../setup.py	/^from setuptools import setup, find_packages$/;"	kind:namespace	line:1
+setup.py	../setup.py	1;"	kind:file	line:1
+shutil	../hackintosh/commands/clover_cmd.py	/^import click, os, shutil, logging$/;"	kind:namespace	line:5
+shutil	../hackintosh/commands/device_cmd.py	/^import click, shutil, os$/;"	kind:namespace	line:4
+shutil	../hackintosh/commands/impl/acpi_impl.py	/^import os, glob, logging, shutil$/;"	kind:namespace	line:5
+shutil	../hackintosh/commands/impl/tool_impl.py	/^import os, stat, shutil, logging, glob$/;"	kind:namespace	line:3
+shutil	../hackintosh/commands/kext_cmd.py	/^import click, os, shutil, glob$/;"	kind:namespace	line:5
+shutil	../hackintosh/commands/patch_cmd.py	/^import click, os, shutil, logging$/;"	kind:namespace	line:5
+shutil	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+signature	../hackintosh/lib.py	/^from inspect import signature$/;"	kind:namespace	line:4
+stat	../hackintosh/commands/impl/tool_impl.py	/^import os, stat, shutil, logging, glob$/;"	kind:namespace	line:3
+subprocess	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
+switch_repo	../hackintosh/commands/sys_cmd.py	/^def switch_repo():$/;"	kind:function	line:12
+sys	../hackintosh/__init__.py	/^import os, json, sys, logging$/;"	kind:namespace	line:1
+sys_cmd.py	../hackintosh/commands/sys_cmd.py	1;"	kind:file	line:1
+tool_cmd.py	../hackintosh/commands/tool_cmd.py	1;"	kind:file	line:1
+tool_impl.py	../hackintosh/commands/impl/tool_impl.py	1;"	kind:file	line:1
+unzip	../hackintosh/commands/device_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs, clover_kext_patches$/;"	kind:namespace	line:2
+unzip	../hackintosh/commands/hda_cmd.py	/^from hackintosh.lib import download, unzip, cleanup$/;"	kind:namespace	line:2
+unzip	../hackintosh/commands/kext_cmd.py	/^from hackintosh.lib import download_rehabman, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache$/;"	kind:namespace	line:2
+unzip	../hackintosh/lib.py	/^def unzip(todel=None):$/;"	kind:function	line:110
+unzip_dir	../hackintosh/lib.py	/^def unzip_dir(from_dir, to_dir, ext='.zip'):$/;"	kind:function	line:64
+unzip_file	../hackintosh/commands/impl/tool_impl.py	/^from hackintosh.lib import unzip_file, download, download_rehabman, run, delete_files$/;"	kind:namespace	line:2
+unzip_file	../hackintosh/lib.py	/^def unzip_file(file, dest_dir):$/;"	kind:function	line:70
+urlopen	../hackintosh/commands/hda_cmd.py	/^from urllib.request import urlopen$/;"	kind:namespace	line:3
+urlopen	../hackintosh/lib.py	/^from urllib.request import urlopen$/;"	kind:namespace	line:3
+version	../setup.py	/^    version='0.1',$/;"	kind:variable	line:5
+zipfile	../hackintosh/lib.py	/^import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib$/;"	kind:namespace	line:9
