@@ -6,11 +6,44 @@ from distutils.dir_util import copy_tree
 from subprocess import call
 from string import Template
 
-import requests, subprocess, cgi, zipfile, os, click, shutil, glob, logging, re, importlib
+import requests, cgi, zipfile, os, click, shutil, glob, logging, re, importlib, json
 
 
 def rebuild_kextcache():
     call(['sudo', '/usr/sbin/kextcache', '-i', '/'])
+
+
+def download(url, folder=STAGE_DIR, filename=None):
+    r = requests.get(url, stream=True)
+
+    if not filename:
+        if "Content-Disposition" in r.headers:
+            _, params = cgi.parse_header(r.headers["Content-Disposition"])
+            filename = params["filename"]
+        else:
+            filename = url.split("/")[-1]
+
+    total_length = int(r.headers.get('content-length'))
+    download_file_path = os.path.join(folder, filename)
+    with open(download_file_path, "wb") as f:
+        expected_size = (total_length / 1024) + 1
+        with click.progressbar(r.iter_content(1024), length=expected_size, bar_template='%(label)s  %(bar)s | %(info)s',
+                               label=filename, fill_char=click.style(u'█', fg='cyan'),
+                               empty_char=' ') as chunks:
+            for chunk in chunks:
+                f.write(chunk)
+                f.flush()
+
+    return filename
+
+
+def download_github(account, project):
+    url = f'https://api.github.com/repos/{account}/{project}/releases/latest'
+    print(url);exit(-1)
+    resp = json.loads(urlopen(url).read())
+    for asset in resp['assets']:
+        if 'RELEASE' in asset['name']:
+            download(asset['browser_download_url'], STAGE_DIR, asset['name'])
 
 
 def download_sourceforge(project_name, nav='', search='.zip'):
@@ -28,6 +61,7 @@ def download_sourceforge(project_name, nav='', search='.zip'):
                 break
     except AttributeError as e:
         logging.error(f'can not found tag:{e}')
+
 
 def download_rehabman(project_name, folder=STAGE_DIR, filter=None):
     url = f'https://bitbucket.org/RehabMan/{project_name}/downloads/'
@@ -51,30 +85,6 @@ def cleanup():
         cleanup_dirs(STAGE_DIR, OUTPUT_DIR)
 
     delete(os.path.join(os.getcwd(), 'refs.txt'))
-
-
-def download(url, folder, filename=None):
-    r = requests.get(url, stream=True)
-
-    if not filename:
-        if "Content-Disposition" in r.headers:
-            _, params = cgi.parse_header(r.headers["Content-Disposition"])
-            filename = params["filename"]
-        else:
-            filename = url.split("/")[-1]
-
-    total_length = int(r.headers.get('content-length'))
-    download_file_path = os.path.join(folder, filename)
-    with open(download_file_path, "wb") as f:
-        expected_size = (total_length / 1024) + 1
-        with click.progressbar(r.iter_content(1024), length=expected_size, bar_template='%(label)s  %(bar)s | %(info)s',
-                               label=filename, fill_char=click.style(u'█', fg='cyan'),
-                               empty_char=' ') as chunks:
-            for chunk in chunks:
-                f.write(chunk)
-                f.flush()
-
-    return filename
 
 
 def unzip_dir(from_dir, to_dir, ext='.zip'):
