@@ -39,7 +39,8 @@ def download(url, folder=STAGE_DIR, filename=None):
 
 def download_github(account, project):
     url = f'https://api.github.com/repos/{account}/{project}/releases/latest'
-    print(url);exit(-1)
+    print(url);
+    exit(-1)
     resp = json.loads(urlopen(url).read())
     for asset in resp['assets']:
         if 'RELEASE' in asset['name']:

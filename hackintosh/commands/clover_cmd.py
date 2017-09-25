@@ -2,7 +2,6 @@ from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR
 from hackintosh.lib import clover_kext_patches, cleanup, unzip, download_sourceforge
 from subprocess import call
 
-
 import click, os, shutil, logging, sys
 
 
@@ -41,12 +40,12 @@ def brightness_control():
                         os.path.join(OUTPUT_DIR, 'patch.plist'))
 
 
-
 @cli.command(short_help='Prepare all stuff for the patch.')
 @click.option('-p', '--patch', required=True, type=click.Choice(ALL_META['patches'].keys()),
-             help='Choose clover a patche')
+              help='Choose clover a patche')
 def kexts_to_patch(patch):
     getattr(sys.modules[__name__], patch)()
+
 
 @cli.command(short_help='Download the latest clover bootloader.')
 def download():

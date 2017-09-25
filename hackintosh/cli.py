@@ -1,4 +1,4 @@
-from hackintosh import PKG_ROOT
+from hackintosh import PKG_ROOT, error
 from pathlib import Path
 import click, os, logging, glob
 
@@ -20,7 +20,6 @@ class MainCLI(click.MultiCommand):
                 return
             mod = __import__(f'hackintosh.commands.{name}_cmd', None, None, ['cli'])
         except ImportError as e:
-            logging.critical(e)
-            exit(-1)
+            error(f"Can't find the command:{name}")
         else:
             return mod.cli
