@@ -1,5 +1,4 @@
 from hackintosh import CLIENT_SETTINGS, ALL_META, PKG_ROOT, save_conf, message
-from hackintosh.lib import copy_dir
 
 import click, os, shutil
 
@@ -27,8 +26,8 @@ def switch_repo():
     save_conf(CLIENT_SETTINGS)
 
 
-@cli.command(short_help='Create local Repository.')
-def create_repo():
+@cli.command(short_help='Clone local Repository.')
+def clone_repo():
     shutil.copytree(os.path.join(PKG_ROOT, 'repo'), os.path.join(os.getcwd(), 'repo'))
     message('Created local repository stub directory.')
 

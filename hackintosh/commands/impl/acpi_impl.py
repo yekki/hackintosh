@@ -1,8 +1,8 @@
 from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR
-from hackintosh.lib import copy_dir, delete, cust_acpi_patches
+from hackintosh.lib import copy_dir, delete, cust_acpi_patches, error, message
 from subprocess import call
 
-import os, glob, logging, shutil
+import os, glob, shutil
 
 ## iasl61 come from MaciASL
 _IASL = os.path.join(PKG_ROOT, 'bin', 'iasl61')
@@ -21,7 +21,7 @@ def _apply_patch(patch_file, patch_list):
                 with open(patch) as infile:
                     outfile.write(infile.read())
             else:
-                logging.error(f'lost patch at {patch}')
+                error(f'Lost patch: {patch}.')
 
 
 def _1_initialize():
@@ -30,8 +30,8 @@ def _1_initialize():
         acpi_list.append('DSDT')
         LAPTOP_META['ACPI_LIST'] = acpi_list
     else:
-        logging.critical('please install iasl commandline tools firstly.')
-        exit(-1)
+        error('Please install iasl commandline tools firstly.')
+
 
 
 def _2_prepare_acpi_files():
@@ -83,6 +83,6 @@ def _7_check():
 
     if len(s3):
         for i in s3:
-            logging.error(f'failed to build {i}.')
+            error(f'Failed to build {i}.')
     else:
-        logging.info(f'build finished.')
+        message(f'ACPI files are built finished.')

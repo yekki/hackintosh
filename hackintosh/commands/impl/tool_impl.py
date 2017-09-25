@@ -1,7 +1,7 @@
 from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT
-from hackintosh.lib import unzip_file, download, download_rehabman, delete
+from hackintosh.lib import unzip_file, download, download_rehabman, delete, error, message
 from subprocess import call
-import os, stat, shutil, logging, glob
+import os, stat, shutil, glob
 
 
 def _update_tool(zip_file, cmd_name):
@@ -21,7 +21,7 @@ def _update_tool(zip_file, cmd_name):
 
         shutil.copy2(os.path.join(STAGE_DIR, cmd_name), os.path.join(PKG_ROOT, 'bin'))
     else:
-        logging.error(f'lost zip file at {file}')
+        error(f'Lost zip file at {file}.')
 
 
 def _1_ssdtPRgen():
@@ -39,7 +39,7 @@ def _1_ssdtPRgen():
     if os.path.isdir(path):
         shutil.copytree(path, ssdtPRGen_root)
 
-    logging.info('updated ssdtPRGen')
+    message('ssdtPRGen is updated.')
 
 
 def _2_patches():
@@ -52,16 +52,16 @@ def _2_patches():
     for file in glob.glob(f"{os.path.join(STAGE_DIR, 'patches')}/**/*.txt"):
         shutil.copy2(file, patches_root)
 
-    logging.info('updated acpi patches')
+    message('acpi patches are updated.')
 
 
 def _3_iasl():
     filename = download_rehabman('acpica')
     _update_tool(filename, 'iasl')
-    logging.info('updated iasl')
+    message('iasl is updated.')
 
 
 def _4_patchmatic():
     filename = download_rehabman('os-x-maciasl-patchmatic', filter='patchmatic')
     _update_tool(filename, 'patchmatic')
-    logging.info('updated patchmatic')
+    message('patchmatic is updated.')

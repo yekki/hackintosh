@@ -1,23 +1,7 @@
-import os, json, sys, logging, click
+import os, json, sys, logging
 
 if sys.version_info < (3, 4):
     raise 'Must be using Python 3.4 or above'
-
-
-def error(msg):
-    click.echo(click.style(msg, fg='red'))
-    exit(-1)
-
-
-def message(msg):
-    if isinstance(msg, dict):
-        str = ''
-        for k, v in msg.items():
-            str += click.style(k, fg=v)
-        click.echo(str)
-    else:
-        click.echo(click.style(msg, fg='blue'))
-
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
 
@@ -26,6 +10,8 @@ STAGE_DIR = os.path.join(os.getcwd(), 'stage')
 OUTPUT_DIR = os.path.join(os.getcwd(), 'output')
 PKG_ROOT = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.join(PKG_ROOT, 'repo')
+ENV = os.environ.copy()
+ENV['PATH'] = f"{os.path.join(PKG_ROOT, 'bin')}:{ENV['PATH']}"
 
 ALL_META = dict()
 LAPTOP_META = dict()

@@ -9,6 +9,22 @@ from string import Template
 import requests, cgi, zipfile, os, click, shutil, glob, logging, re, importlib, json
 
 
+def error(msg, fg='red'):
+    click.echo(click.style(msg, fg=fg))
+    exit(-1)
+
+
+def message(msg, fg='blue', nl=False):
+    if isinstance(msg, dict):
+        str = ''
+        for k, v in msg.items():
+            str += click.style(k, fg=v)
+        click.echo(str)
+    else:
+        click.echo(click.style(msg, fg=fg))
+
+    if nl: print('')
+
 def rebuild_kextcache():
     call(['sudo', '/usr/sbin/kextcache', '-i', '/'])
 

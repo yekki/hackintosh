@@ -1,5 +1,5 @@
 from hackintosh import LAPTOP_META
-from hackintosh.lib import cleanup, execute_module
+from hackintosh.lib import cleanup, execute_module, message
 import click
 
 
@@ -16,12 +16,12 @@ def build():
 
 @cli.command(short_help='Show ACPI patches in json format.')
 def info():
-    click.echo(click.style('SSDT List:', fg='blue'))
-    click.echo(click.style(', '.join(LAPTOP_META['acpi']['patches']['ssdt_list']), fg='green'))
+    message('SSDT List:')
+    message(', '.join(LAPTOP_META['acpi']['patches']['ssdt_list']), fg='green', nl=True)
 
     for k in LAPTOP_META['acpi']['patches']['ssdt'].keys():
-        click.echo(click.style(f"{k.upper()} Patches:", fg='blue'))
-        click.echo(click.style(', '.join(LAPTOP_META['acpi']['patches']['ssdt'][k]), fg='green'))
+        message(f"{k.upper()} Patches:")
+        message(', '.join(LAPTOP_META['acpi']['patches']['ssdt'][k]), fg='green', nl=True)
 
-    click.echo(click.style('DSDT Patches:', fg='blue'))
-    click.echo(click.style(', '.join(LAPTOP_META['acpi']['patches']['dsdt']), fg='green'))
+    message('DSDT Patches:')
+    message(', '.join(LAPTOP_META['acpi']['patches']['dsdt']), fg='green')

@@ -1,6 +1,5 @@
-from hackintosh import ALL_META, OUTPUT_DIR, REPO_ROOT
-from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs, clover_kext_patches
-from string import Template
+from hackintosh import ALL_META, OUTPUT_DIR
+from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs, clover_kext_patches, message
 import click, shutil, os
 
 
@@ -14,7 +13,6 @@ def cli():
               help='Choose the laptop series')
 def build(id):
     cleanup()
-    click.echo(click.style('downloading kexts...', fg='blue'))
 
     for p in ALL_META['external_device'][id]['kext']['projects']:
         download_rehabman(p)
@@ -27,6 +25,7 @@ def build(id):
         if k.endswith('.kext'):
             shutil.move(os.path.join(OUTPUT_DIR, k), os.path.join(OUTPUT_DIR, 'kexts'))
 
-    click.echo(click.style('creating clover patches...', fg='blue'))
+    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
+                        os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
 
-    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'], os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
+    message(f'Finished.')

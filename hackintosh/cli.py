@@ -1,6 +1,7 @@
-from hackintosh import PKG_ROOT, error
+from hackintosh import PKG_ROOT
+from hackintosh.lib import error
 from pathlib import Path
-import click, os, logging, glob
+import click, os, glob
 
 
 class MainCLI(click.MultiCommand):
