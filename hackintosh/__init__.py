@@ -59,6 +59,7 @@ _META_PATH = os.path.join(REPO_ROOT, 'config', 'default.json')
 # check meta file in repository
 if not os.path.exists(_META_PATH):
     CLIENT_SETTINGS['repo_location'] = 'pkg'
+    CLIENT_SETTINGS['repo_fixed'] = True
     save_conf(CLIENT_SETTINGS)
     REPO_ROOT = os.path.join(PKG_ROOT, 'repo')
     logging.info("Can't find local repository, auto switch to pkg repository.")

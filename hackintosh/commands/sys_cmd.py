@@ -1,6 +1,7 @@
-from hackintosh import CLIENT_SETTINGS, ALL_META, save_conf, error, message
+from hackintosh import CLIENT_SETTINGS, ALL_META, PKG_ROOT, save_conf, message
+from hackintosh.lib import copy_dir
 
-import click, logging
+import click, os, shutil
 
 
 @click.group(short_help='Commands for setting client settings.')
@@ -8,17 +9,28 @@ def cli():
     pass
 
 
-@cli.command(short_help='Switch Repository location: pkg or local.')
-def switch():
-    loc = CLIENT_SETTINGS['repo_location']
-    if loc == 'pkg':
-        CLIENT_SETTINGS['repo_location'] = 'local'
-        logging.info('switch to local repo')
-    elif loc == 'local':
-        CLIENT_SETTINGS['repo_location'] = 'pkg'
-        logging.info('switch to pkg repo')
+@cli.command(short_help='Switch repository location: pkg or local.')
+def switch_repo():
+    if CLIENT_SETTINGS['repo_fixed']:
+        CLIENT_SETTINGS['repo_fixed'] = False
+    else:
+        loc = CLIENT_SETTINGS['repo_location']
+        if loc == 'pkg':
+            CLIENT_SETTINGS['repo_location'] = 'local'
+            message('Switched to local repository.')
+        elif loc == 'local':
+            CLIENT_SETTINGS['repo_location'] = 'pkg'
+            message('Switched to pkg repository.')
+        else:
+            raise ValueError(f'Unsupported repository type: {loc}')
 
     save_conf(CLIENT_SETTINGS)
+
+
+@cli.command(short_help='Create local Repository.')
+def create_repo():
+    shutil.copytree(os.path.join(PKG_ROOT, 'repo'), os.path.join(os.getcwd(), 'repo'))
+    message('Created local repository stub directory.')
 
 
 @cli.command(short_help='Show current client settings.')
