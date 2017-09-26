@@ -8,16 +8,15 @@ def cli():
     pass
 
 
-@cli.command(short_help='Prepare all stuff for device.')
+@cli.command(short_help='Prepare widgets for device.')
 @click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
-              help='Choose the laptop series')
+              help='Choose the device id')
 def build(id):
     cleanup()
 
-    for p in ALL_META['external_device'][id]['kext']['projects']:
-        download_rehabman(p)
-
-    unzip(ALL_META['external_device'][id]['kext']['widgets'])
+    for k, v in ALL_META['external_device'][id]['kext'].items():
+        download_rehabman(k)
+        unzip(v)
 
     cleanup_dirs(os.path.join(OUTPUT_DIR, 'kexts'), os.path.join(OUTPUT_DIR, 'clover'))
 
@@ -28,4 +27,4 @@ def build(id):
     clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
                         os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
 
-    message(f'Finished.')
+    message(f'Prepare widgets for {id} is Finished.')

@@ -25,6 +25,7 @@ def message(msg, fg='blue', nl=False):
 
     if nl: print('')
 
+
 def rebuild_kextcache():
     call(['sudo', '/usr/sbin/kextcache', '-i', '/'])
 

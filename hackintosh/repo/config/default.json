@@ -23,17 +23,10 @@
       "acpica"
     ],
     "essential":{
-      "projects":[
-        "os-x-acpi-battery-driver",
-        "os-x-fakesmc-kozlek",
-        "os-x-voodoo-ps2-controller",
-        "os-x-intel-network"],
-      "widgets":[
-        "ACPIBatteryManager.kext",
-        "FakeSMC.kext",
-        "VoodooPS2Controller.kext",
-        "IntelMausiEthernet.kext"
-      ]
+      "os-x-acpi-battery-driver":["ACPIBatteryManager.kext"],
+      "os-x-voodoo-ps2-controller":["VoodooPS2Controller.kext"],
+      "os-x-fakesmc-kozlek":["FakeSMC.kext"],
+      "os-x-intel-network":["IntelMausiEthernet.kext"]
     }
   },
 
@@ -63,8 +56,8 @@
     "bcm94352z":{
       "type":"combo",
       "kext":{
-        "projects":["os-x-brcmpatchram", "os-x-fake-pci-id"],
-        "widgets":["FakePCIID.kext", "FakePCIID_Broadcom_WiFi.kext", "BrcmFirmwareRepo.kext", "BrcmPatchRAM2.kext"]
+        "os-x-brcmpatchram":["BrcmFirmwareRepo.kext", "BrcmPatchRAM2.kext"],
+        "os-x-fake-pci-id":["FakePCIID.kext", "FakePCIID_Broadcom_WiFi.kext"]
       },
       "clover":{
        "kexts_to_patch":[

@@ -1,5 +1,5 @@
-from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT
-from hackintosh.lib import download_rehabman, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache
+from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT, CLIENT_SETTINGS
+from hackintosh.lib import download_rehabman, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache, message
 from string import Template
 from subprocess import call
 import click, os, shutil, glob
@@ -18,85 +18,68 @@ def download(kexts):
     for k in kexts:
         if k in ALL_META['kext']['supported']:
             download_rehabman(k)
-
-    unzip()
+            unzip()
+            break
+    else:
+        message(f'{k} is not supported.')
 
 
 @cli.command(short_help='Download kexts for laptop')
 def laptop():
-    #cleanup()
+    cleanup()
 
-    projects = ALL_META['kext']['essential']['projects'] + LAPTOP_META['kext']['projects']
-    kexts = ALL_META['kext']['essential']['widgets'] + LAPTOP_META['kext']['widgets']
-    #for p in projects:
-    #    download_rehabman(p)
+    message('Downloading essential kexts...')
 
-    unzip()
+    projects = [*ALL_META['kext']['essential']]
+    projects.extend([*LAPTOP_META['kext']])
 
-    for k in os.listdir(OUTPUT_DIR):
-        if k in kexts:
-            continue
-        else:
-            path = os.path.join(OUTPUT_DIR, k)
+    kexts = 
 
-            delete(path)
+    #projects = list(ALL_META['kext']['essential'].keys()).extend(list(LAPTOP_META['kext'].keys()))
+    #print(projects)
+    #for k, v in ALL_META['kext']['essential'].items():
+    #    download_rehabman(k)
+        #print(v)
+        #
+    #    unzip(v)
+
+    #message("Downloading kexts for laptop:{CLIENT_SETTINGS['current_series']}...")
+    #for k, v in LAPTOP_META['kext'].items():
+    #    download_rehabman(k)
+    #    unzip(v)
 
 
-@cli.command(short_help='Install kexts to L/E')
+@cli.command(short_help='Install kexts at output directory to L/E.')
 def install():
     path = os.path.join(OUTPUT_DIR, 'kexts')
     if not os.path.exists(path):
         path = OUTPUT_DIR
 
     for k in os.listdir(path):
-        call(['sudo', 'cp', '-r', os.path.join(path, k), '/Library/Extensions/'])
+        if k.endswith('.kext'):
+            call(['sudo', 'cp', '-rf', os.path.join(path, k), '/Library/Extensions/'])
     else:
-        pass
         rebuild_kextcache()
 
 
-
-@cli.command(short_help='Prepare all stuff for device.')
-@click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
-              help='Choose the laptop series')
-def device(id):
-    cleanup()
-    click.echo(click.style('downloading kexts...', fg='blue'))
-
-    for p in ALL_META['external_device'][id]['kext']['projects']:
-        download_rehabman(p)
-
-    unzip(ALL_META['external_device'][id]['kext']['widgets'])
-
-    cleanup_dirs(os.path.join(OUTPUT_DIR, 'kexts'), os.path.join(OUTPUT_DIR, 'clover'))
-
-    for k in os.listdir(OUTPUT_DIR):
-        if k.endswith('.kext'):
-            shutil.move(os.path.join(OUTPUT_DIR, k), os.path.join(OUTPUT_DIR, 'kexts'))
-
-    click.echo(click.style('creating clover patches...', fg='blue'))
-
-    templ = Template(open(os.path.join(REPO_ROOT, 'config', 'clover_kexts_to_patch.templ')).read())
-
-    with open(os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'), 'a') as f:
-        for p in ALL_META['external_device'][id]['clover']['kexts_to_patch']:
-            content = templ.substitute(p)
-            f.write(content)
-
-
 @cli.command(short_help='Show all supported kexts.')
-@click.option('-s', '--supported', is_flag=True, help='Show all supported kexts.')
-@click.option('-l', '--laptop', is_flag=True, help='Show kexts for laptop.')
+@click.option('-s', '--supported', is_flag=True, help='Show all supported kext projects.')
+@click.option('-l', '--laptop', is_flag=True, help='Show kexts for current laptop.')
 @click.option('-e', '--essential', is_flag=True, help='Show essential kexts for hackintosh installation.')
 def info(supported, laptop, essential):
     if supported:
+        message('Supported kext projects:')
         for k in ALL_META['kext']['supported']:
-            print(k)
+            message(k, fg='green')
 
     if laptop:
-        for k in LAPTOP_META['kexts']:
-            print(k)
+        message(f"kexts for laptop {CLIENT_SETTINGS['current_series']}:")
+        for k, v in LAPTOP_META['kext'].items():
+            kexts = ','.join(v)
+            message(f"{k}: {kexts}", fg='green')
 
     if essential:
-        for k in ALL_META['kext']['essential']:
-            print(k)
+        message('kexts for all laptops:')
+        for k, v in ALL_META['kext']['essential'].items():
+            kexts = ','.join(v)
+            message(f"{k}: {kexts}", fg='green')
