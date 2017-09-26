@@ -30,25 +30,19 @@ def laptop():
 
     message('Downloading essential kexts...')
 
-    projects = [*ALL_META['kext']['essential']]
-    projects.extend([*LAPTOP_META['kext']])
+    kexts = list()
 
-    kexts = 
+    for k, v in ALL_META['kext']['essential'].items():
+        download_rehabman(k)
+        kexts.extend(v)
+    else:
+        for kk, vv in LAPTOP_META['kext'].items():
+            download_rehabman(kk)
+            kexts.extend(vv)
+        else:
+            unzip(kexts)
 
-    #projects = list(ALL_META['kext']['essential'].keys()).extend(list(LAPTOP_META['kext'].keys()))
-    #print(projects)
-    #for k, v in ALL_META['kext']['essential'].items():
-    #    download_rehabman(k)
-        #print(v)
-        #
-    #    unzip(v)
-
-    #message("Downloading kexts for laptop:{CLIENT_SETTINGS['current_series']}...")
-    #for k, v in LAPTOP_META['kext'].items():
-    #    download_rehabman(k)
-    #    unzip(v)
-
-
+# TODO: add voodoo demon installation
 @cli.command(short_help='Install kexts at output directory to L/E.')
 def install():
     path = os.path.join(OUTPUT_DIR, 'kexts')
