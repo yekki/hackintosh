@@ -6,27 +6,31 @@
   ],
 
   "kext":{
-    "supported":[
-      "os-x-voodoo-ps2-controller",
-      "os-x-acpi-debug",
-      "os-x-usb-inject-all",
-      "os-x-generic-usb3",
-      "os-x-brcmpatchram",
-      "os-x-acpi-keyboard",
-      "os-x-acpi-debug",
-      "os-x-acpi-battery-driver",
-      "os-x-intel-backlight",
-      "os-x-fakesmc-kozlek",
-      "os-x-eapd-codec-commander",
-      "os-x-fake-pci-id",
-      "os-x-intel-network",
-      "acpica"
-    ],
+    "supported":{
+      "os-x-voodoo-ps2-controller":{"source":"bitbucket", "project":"os-x-voodoo-ps2-controller", "author":"Rehabman", "options":{}},
+      "os-x-acpi-debug":{"source":"bitbucket", "project":"os-x-acpi-debug", "author":"Rehabman", "options":{}},
+      "os-x-usb-inject-all":{"source":"bitbucket", "project":"os-x-usb-inject-all", "author":"Rehabman", "options":{}},
+      "os-x-generic-usb3":{"source":"bitbucket", "project":"os-x-generic-usb3", "author":"Rehabman", "options":{}},
+      "os-x-brcmpatchram":{"source":"bitbucket", "project":"os-x-brcmpatchram", "author":"Rehabman", "options":{}},
+      "os-x-acpi-keyboard":{"source":"bitbucket", "project":"os-x-acpi-keyboard", "author":"Rehabman", "options":{}},
+      "os-x-acpi-battery-driver":{"source":"bitbucket", "project":"os-x-acpi-battery-driver", "author":"Rehabman", "options":{}},
+      "os-x-intel-backlight":{"source":"bitbucket", "project":"os-x-intel-backlight", "author":"Rehabman", "options":{}},
+      "os-x-fakesmc-kozlek":{"source":"bitbucket", "project":"os-x-fakesmc-kozlek", "author":"Rehabman", "options":{}},
+      "os-x-eapd-codec-commander":{"source":"bitbucket", "project":"os-x-eapd-codec-commander", "author":"Rehabman", "options":{}},
+      "os-x-fake-pci-id":{"source":"bitbucket", "project":"os-x-fake-pci-id", "author":"Rehabman", "options":{}},
+      "os-x-intel-network":{"source":"bitbucket", "project":"os-x-intel-network", "author":"Rehabman", "options":{}},
+      "acpica":{"source":"bitbucket", "project":"acpica", "author":"rehabman", "options":{}},
+      "IntelGraphicsDVMTFixup":{"source":"github", "project":"IntelGraphicsDVMTFixup", "author":"BarbaraPalvin", "options":{}},
+      "IntelGraphicsFixup":{"source":"sourceforge", "project":"IntelGraphicsFixup", "author":"lvs1974", "options":{"nav":"/Release"}},
+      "Lilu":{"source":"github", "project":"Lilu", "author":"vit9696", "options":{}}
+    },
     "essential":{
+      "Lilu":["Lilu.kext"],
       "os-x-acpi-battery-driver":["ACPIBatteryManager.kext"],
       "os-x-voodoo-ps2-controller":["VoodooPS2Controller.kext"],
       "os-x-fakesmc-kozlek":["FakeSMC.kext"],
-      "os-x-intel-network":["IntelMausiEthernet.kext"]
+      "os-x-intel-network":["IntelMausiEthernet.kext"],
+      "IntelGraphicsFixup":["IntelGraphicsFixup.kext"]
     }
   },
 

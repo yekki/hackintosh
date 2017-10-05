@@ -1,4 +1,5 @@
-from hackintosh import CLIENT_SETTINGS, ALL_META, PKG_ROOT, save_conf, message
+from hackintosh import CLIENT_SETTINGS, ALL_META, PKG_ROOT, save_conf
+from hackintosh.lib import message
 
 import click, os, shutil
 

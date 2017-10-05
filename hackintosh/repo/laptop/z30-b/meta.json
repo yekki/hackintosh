@@ -19,6 +19,7 @@
     ]
   },
   "kext":{
+    "IntelGraphicsDVMTFixup":["IntelGraphicsDVMTFixup.kext"],
     "os-x-usb-inject-all":["USBInjectAll.kext"]
   },
   "acpi": {

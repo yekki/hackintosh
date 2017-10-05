@@ -30,6 +30,14 @@ def rebuild_kextcache():
     call(['sudo', '/usr/sbin/kextcache', '-i', '/'])
 
 
+def download_kext(meta):
+    if meta['source'] == 'bitbucket':
+        download_bitbucket(meta['author'], meta['project'])
+    elif meta['source'] == 'github':
+        download_github(meta['author'], meta['project'])
+    elif meta['source'] == 'sourceforge':
+        download_sourceforge(meta['project'], meta['options']['nav'])
+
 def download(url, folder=STAGE_DIR, filename=None):
     r = requests.get(url, stream=True)
 
@@ -56,9 +64,8 @@ def download(url, folder=STAGE_DIR, filename=None):
 
 def download_github(account, project):
     url = f'https://api.github.com/repos/{account}/{project}/releases/latest'
-    print(url);
-    exit(-1)
     resp = json.loads(urlopen(url).read())
+
     for asset in resp['assets']:
         if 'RELEASE' in asset['name']:
             download(asset['browser_download_url'], STAGE_DIR, asset['name'])
@@ -81,8 +88,8 @@ def download_sourceforge(project_name, nav='', search='.zip'):
         logging.error(f'can not found tag:{e}')
 
 
-def download_rehabman(project_name, folder=STAGE_DIR, filter=None):
-    url = f'https://bitbucket.org/RehabMan/{project_name}/downloads/'
+def download_bitbucket(author, project_name, folder=STAGE_DIR, filter=None):
+    url = f'https://bitbucket.org/{author}/{project_name}/downloads/'
     soup = BeautifulSoup(urlopen(url), 'html.parser')
     try:
         list = [i.text for i in soup.findAll('a', {"class": "execute"})]
@@ -91,7 +98,7 @@ def download_rehabman(project_name, folder=STAGE_DIR, filter=None):
 
         return download(f'{url}{list[0]}', folder, list[0])
     except AttributeError as e:
-        logging.error(f'can not found tag:{e}')
+        logging.error(f"Can's found tag:{e}")
 
 
 def cleanup():

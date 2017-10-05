@@ -1,5 +1,5 @@
 from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT, CLIENT_SETTINGS
-from hackintosh.lib import download_rehabman, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache, message
+from hackintosh.lib import download_kext, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache, message
 from string import Template
 from subprocess import call
 import click, os, shutil, glob
@@ -17,43 +17,31 @@ def download(kexts):
 
     for k in kexts:
         if k in ALL_META['kext']['supported']:
-            download_rehabman(k)
-            unzip()
-            break
-    else:
-        message(f'{k} is not supported.')
+            download(k)
+        else:
+            message(f'{k} is not supported.')
+
+    unzip()
 
 
 @cli.command(short_help='Download kexts for laptop')
 def laptop():
     cleanup()
 
-    message('Downloading essential kexts...')
+    message(f"Downloading kexts for laptop {CLIENT_SETTINGS['current_series']}:")
 
-    kexts = list()
+    kexts = []
+    projects = {}
 
-    for k, v in ALL_META['kext']['essential'].items():
-        download_rehabman(k)
+    projects.update(ALL_META['kext']['essential'])
+    projects.update(LAPTOP_META['kext'])
+
+    for k, v in projects.items():
+        kext = ALL_META['kext']['supported'][k]
+        download_kext(kext)
         kexts.extend(v)
     else:
-        for kk, vv in LAPTOP_META['kext'].items():
-            download_rehabman(kk)
-            kexts.extend(vv)
-        else:
-            unzip(kexts)
-
-# TODO: add voodoo demon installation
-@cli.command(short_help='Install kexts at output directory to L/E.')
-def install():
-    path = os.path.join(OUTPUT_DIR, 'kexts')
-    if not os.path.exists(path):
-        path = OUTPUT_DIR
-
-    for k in os.listdir(path):
-        if k.endswith('.kext'):
-            call(['sudo', 'cp', '-rf', os.path.join(path, k), '/Library/Extensions/'])
-    else:
-        rebuild_kextcache()
+        unzip(kexts)
 
 
 @cli.command(short_help='Show all supported kexts.')
@@ -69,6 +57,9 @@ def info(supported, laptop, essential):
     if laptop:
         message(f"kexts for laptop {CLIENT_SETTINGS['current_series']}:")
         for k, v in LAPTOP_META['kext'].items():
+            kexts = ','.join(v)
+            message(f"{k}: {kexts}", fg='green')
+        for k, v in ALL_META['kext']['essential'].items():
             kexts = ','.join(v)
             message(f"{k}: {kexts}", fg='green')
 

@@ -21,6 +21,6 @@ class MainCLI(click.MultiCommand):
                 return
             mod = __import__(f'hackintosh.commands.{name}_cmd', None, None, ['cli'])
         except ImportError as e:
-            error(f"Can't find the command:{name}")
+            error(f"Failed to load command:{name}, error:{e}")
         else:
             return mod.cli
