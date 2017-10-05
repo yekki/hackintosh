@@ -20,17 +20,19 @@
       "os-x-fake-pci-id":{"source":"bitbucket", "project":"os-x-fake-pci-id", "author":"Rehabman", "options":{}},
       "os-x-intel-network":{"source":"bitbucket", "project":"os-x-intel-network", "author":"Rehabman", "options":{}},
       "acpica":{"source":"bitbucket", "project":"acpica", "author":"rehabman", "options":{}},
-      "IntelGraphicsDVMTFixup":{"source":"github", "project":"IntelGraphicsDVMTFixup", "author":"BarbaraPalvin", "options":{}},
+      "IntelGraphicsDVMTFixup":{"source":"github", "project":"IntelGraphicsDVMTFixup", "author":"BarbaraPalvin", "options":{"filter":""}},
       "IntelGraphicsFixup":{"source":"sourceforge", "project":"IntelGraphicsFixup", "author":"lvs1974", "options":{"nav":"/Release"}},
-      "Lilu":{"source":"github", "project":"Lilu", "author":"vit9696", "options":{}}
+      "Lilu":{"source":"github", "project":"Lilu", "author":"vit9696", "options":{}},
+      "AppleBacklightInjector":{"source":"local", "project":"AppleBacklightInjector", "author":"Rehabman", "options":{}}
     },
     "essential":{
+      "IntelGraphicsFixup":["IntelGraphicsFixup.kext"],
       "Lilu":["Lilu.kext"],
       "os-x-acpi-battery-driver":["ACPIBatteryManager.kext"],
       "os-x-voodoo-ps2-controller":["VoodooPS2Controller.kext"],
       "os-x-fakesmc-kozlek":["FakeSMC.kext"],
       "os-x-intel-network":["IntelMausiEthernet.kext"],
-      "IntelGraphicsFixup":["IntelGraphicsFixup.kext"]
+      "AppleBacklightInjector":["AppleBacklightInjector.kext"]
     }
   },
 

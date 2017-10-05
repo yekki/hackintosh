@@ -1,5 +1,5 @@
 from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT, CLIENT_SETTINGS
-from hackintosh.lib import download_kext, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache, message
+from hackintosh.lib import download_kext, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache, message, print_kext
 from string import Template
 from subprocess import call
 import click, os, shutil, glob
@@ -16,19 +16,18 @@ def download(kexts):
     cleanup()
 
     for k in kexts:
-        if k in ALL_META['kext']['supported']:
-            download(k)
+        if k in ALL_META['kext']['supported'].keys():
+            download_kext(ALL_META['kext']['supported'][k])
         else:
             message(f'{k} is not supported.')
-
     unzip()
 
 
-@cli.command(short_help='Download kexts for laptop')
+@cli.command(short_help=f"Download kexts for laptop:{CLIENT_SETTINGS['current_series']}")
 def laptop():
     cleanup()
 
-    message(f"Downloading kexts for laptop {CLIENT_SETTINGS['current_series']}:")
+    message(f"Downloading kexts for laptop:{CLIENT_SETTINGS['current_series']}:")
 
     kexts = []
     projects = {}
@@ -38,8 +37,8 @@ def laptop():
 
     for k, v in projects.items():
         kext = ALL_META['kext']['supported'][k]
-        download_kext(kext)
         kexts.extend(v)
+        download_kext(kext)
     else:
         unzip(kexts)
 
@@ -51,20 +50,24 @@ def laptop():
 def info(supported, laptop, essential):
     if supported:
         message('Supported kext projects:')
-        for k in ALL_META['kext']['supported']:
-            message(k, fg='green')
+        for k, v in ALL_META['kext']['supported'].items():
+            pmeta = ALL_META['kext']['supported'][k]
+            print_kext(pmeta)
 
     if laptop:
         message(f"kexts for laptop {CLIENT_SETTINGS['current_series']}:")
-        for k, v in LAPTOP_META['kext'].items():
+        projects = {}
+        projects.update(LAPTOP_META['kext'])
+        projects.update(ALL_META['kext']['essential'])
+        for k, v in projects.items():
+            pmeta = ALL_META['kext']['supported'][k]
             kexts = ','.join(v)
-            message(f"{k}: {kexts}", fg='green')
-        for k, v in ALL_META['kext']['essential'].items():
-            kexts = ','.join(v)
-            message(f"{k}: {kexts}", fg='green')
+            print_kext(pmeta, kexts)
+
 
     if essential:
         message('kexts for all laptops:')
         for k, v in ALL_META['kext']['essential'].items():
+            pmeta = ALL_META['kext']['supported'][k]
             kexts = ','.join(v)
-            message(f"{k}: {kexts}", fg='green')
+            print_kext(pmeta, kexts)

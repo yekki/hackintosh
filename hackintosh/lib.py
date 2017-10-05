@@ -14,6 +14,12 @@ def error(msg, fg='red'):
     exit(-1)
 
 
+def print_kext(meta, kexts=None):
+    message(f"Project Name: {meta['project']} Author: {meta['author']}")
+    if kexts: message(kexts, fg='green')
+    print()
+
+
 def message(msg, fg='blue', nl=False):
     if isinstance(msg, dict):
         str = ''
@@ -34,9 +40,19 @@ def download_kext(meta):
     if meta['source'] == 'bitbucket':
         download_bitbucket(meta['author'], meta['project'])
     elif meta['source'] == 'github':
-        download_github(meta['author'], meta['project'])
+        if 'filter' in meta['options'].keys():
+            download_github(meta['author'], meta['project'], meta['options']['filter'])
+        else:
+            download_github(meta['author'], meta['project'])
     elif meta['source'] == 'sourceforge':
         download_sourceforge(meta['project'], meta['options']['nav'])
+    elif meta['source'] == 'local':
+        kext = meta['project'] + '.kext'
+        shutil.copytree(os.path.join(REPO_ROOT, 'common', 'kexts', kext),
+                        os.path.join(OUTPUT_DIR, kext))
+    else:
+        raise ValueError(f"Unsupported source type:{meta['source']}")
+
 
 def download(url, folder=STAGE_DIR, filename=None):
     r = requests.get(url, stream=True)
@@ -62,12 +78,14 @@ def download(url, folder=STAGE_DIR, filename=None):
     return filename
 
 
-def download_github(account, project):
+def download_github(account, project, filter=None):
     url = f'https://api.github.com/repos/{account}/{project}/releases/latest'
     resp = json.loads(urlopen(url).read())
 
+    if filter is None: filter = 'RELEASE'
+
     for asset in resp['assets']:
-        if 'RELEASE' in asset['name']:
+        if filter in asset['name']:
             download(asset['browser_download_url'], STAGE_DIR, asset['name'])
 
 
@@ -140,7 +158,7 @@ def copy_dir(src, dst, filter=None):
         if os.path.exists(s): shutil.copy2(s, os.path.join(dst, item))
 
 
-def unzip(todel=None):
+def unzip(keep=None):
     global STAGE_DIR, OUTPUT_DIR
 
     unzip_dir(STAGE_DIR, OUTPUT_DIR)
@@ -149,13 +167,13 @@ def unzip(todel=None):
         copy_tree(path, OUTPUT_DIR)
         shutil.rmtree(path)
 
-    for f in ('AppleALC.kext.dSYM', '__MACOSX', 'Debug', '.DS_Store'):
+    for f in ('AppleALC.kext.dSYM', '__MACOSX', 'Debug', '.DS_Store', 'Lilu.kext.dSYM'):
         delete(os.path.join(OUTPUT_DIR, f))
 
-    if todel is not None:
-        for f in os.listdir(OUTPUT_DIR):
-            if f not in todel:
-                delete(os.path.join(OUTPUT_DIR, f))
+    if keep is not None:
+        for k in keep:
+            if k not in os.listdir(OUTPUT_DIR):
+                delete(os.path.join(OUTPUT_DIR, k))
 
 
 def delete(path, ext=None, only_files=False):
