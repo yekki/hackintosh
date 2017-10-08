@@ -5,6 +5,11 @@
     "z30-b"
   ],
 
+  "tools": {
+    "iasl":"iasl61",
+    "patchmatic":"patchmatic"
+  },
+
   "kext":{
     "supported":{
       "os-x-voodoo-ps2-controller":{"source":"bitbucket", "project":"os-x-voodoo-ps2-controller", "author":"Rehabman", "options":{}},

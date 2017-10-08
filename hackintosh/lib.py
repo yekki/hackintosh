@@ -213,18 +213,6 @@ def execute_module(module_name, context=None):
             func()
 
 
-def cust_acpi_patches(ext, acpi_list, dest):
-    for f in [f'{item}{ext}' for item in acpi_list]:
-        file = os.path.join(REPO_ROOT, 'common', 'patches', f)
-        if os.path.exists(file):
-            shutil.copy2(file, dest)
-
-        # laptop spec file will overwrite common
-        file = os.path.join(LAPTOP_ROOT, 'patches', f)
-        if os.path.exists(file):
-            shutil.copy2(file, dest)
-
-
 def clover_kext_patches(patches, output, template=None):
     if template is None:
         template = Template(open(os.path.join(REPO_ROOT, 'templates', 'clover_kexts_to_patch.templ')).read())
