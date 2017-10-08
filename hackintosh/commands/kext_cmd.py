@@ -1,9 +1,7 @@
-from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT, CLIENT_SETTINGS
-from hackintosh.lib import download_kext, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache, message, print_kext, \
-    error
-from string import Template
-from subprocess import call, check_call, CalledProcessError
-import click, os, shutil, glob
+from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, CLIENT_SETTINGS
+from hackintosh.lib import download_kext, cleanup, unzip, message, print_kext, error
+from subprocess import check_call, CalledProcessError
+import click, os
 
 
 @click.group(help='Commands for download hackintosh kexts.')

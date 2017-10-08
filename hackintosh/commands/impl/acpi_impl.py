@@ -12,16 +12,18 @@ _PATCHMATIC = os.path.join(PKG_ROOT, 'bin', 'patchmatic')
 def _apply_patch(patch_file, patch_list):
     with open(patch_file, 'w') as outfile:
         for p in patch_list:
-            patch = f'{REPO_ROOT}/patches/{p}.txt'
+            # check laptop specific patch first, if not found, check common patch repo, if not found, check system patch repo.
+            path = os.path.join(f'{LAPTOP_ROOT}', 'patches', f'{p}.txt')
+            if not os.path.exists(path):
+                path = os.path.join(f'{REPO_ROOT}', 'common', 'patches', f'{p}.txt')
+                if not os.path.exists(path):
+                    path = os.path.join(f'{REPO_ROOT}', 'patches', f'{p}.txt')
 
-            # check whether patch in system repo, if not, check laptop's patch
-            if not os.path.isfile(patch): patch = f'{LAPTOP_ROOT}/patches/{p}.txt'
-
-            if os.path.isfile(patch):
-                with open(patch) as infile:
+            if os.path.isfile(path):
+                with open(path) as infile:
                     outfile.write(infile.read())
             else:
-                error(f'Lost patch: {patch}.')
+                error(f'Lost patch: {path}.')
 
 
 def _1_initialize():
@@ -31,7 +33,6 @@ def _1_initialize():
         LAPTOP_META['ACPI_LIST'] = acpi_list
     else:
         error('Please install iasl commandline tools firstly.')
-
 
 
 def _2_prepare_acpi_files():
@@ -85,4 +86,4 @@ def _7_check():
         for i in s3:
             error(f'Failed to build {i}.')
     else:
-        message(f'ACPI files are built finished.')
+        message('Finished.')

@@ -1,5 +1,5 @@
 from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR, ENV
-from hackintosh.lib import clover_kext_patches, cleanup, error
+from hackintosh.lib import clover_kext_patches, cleanup, error, message
 from subprocess import call
 
 import click, os, shutil
@@ -40,6 +40,7 @@ def brightness_control():
     clover_kext_patches(ALL_META['patches']['brightness_control']['clover']['kexts_to_patch'],
                         os.path.join(OUTPUT_DIR, 'patch.plist'))
 
+    message(f'Finished.')
 
 @cli.command(short_help='Prepare all stuff for device.')
 @click.option('-p', '--patch', required=True, type=click.Choice(ALL_META['patches'].keys()),

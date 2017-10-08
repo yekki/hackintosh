@@ -2,14 +2,18 @@
   "series": "z30-b",
   "description": "Toshiba Portege z30-b",
   "author": "Gary Niu",
-  "osx_ver": "10.12.6",
+  "osx_ver": "10.13",
+  "osx_build": "17A405",
   "device": {
     "cpu": {
       "number": "i5-5300U",
       "code_name": "Broadwell"
     },
     "graphics_card": "HD5500",
-    "sound_card": "ALC255",
+    "sound_card": {
+      "codec": "ALC255",
+      "layout-id": "3"
+    },
     "ethernet_card": "Intel",
     "external": [
       {
@@ -19,7 +23,8 @@
     ]
   },
   "kext":{
-    "IntelGraphicsDVMTFixup":["IntelGraphicsDVMTFixup.kext"]
+    "IntelGraphicsDVMTFixup":["IntelGraphicsDVMTFixup.kext"],
+    "AppleALC":["AppleALC.kext"]
   },
   "acpi": {
     "bios": "3.20",

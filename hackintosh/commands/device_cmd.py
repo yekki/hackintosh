@@ -1,22 +1,19 @@
 from hackintosh import ALL_META, OUTPUT_DIR
-from hackintosh.lib import download_rehabman, cleanup, unzip, cleanup_dirs, clover_kext_patches, message
+from hackintosh.lib import cleanup, unzip, cleanup_dirs, clover_kext_patches, message, download_kext
 import click, shutil, os
 
 
-@click.group(short_help="Commands for external devices.")
-def cli():
-    pass
-
-
-@cli.command(short_help='Prepare widgets for device.')
+@click.command(short_help="Commands for external devices.")
 @click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
               help='Choose the device id')
-def build(id):
+def cli(id):
     cleanup()
-
+    kexts = []
     for k, v in ALL_META['external_device'][id]['kext'].items():
-        download_rehabman(k)
-        unzip(v)
+        download_kext(ALL_META['kext']['supported'][k])
+        kexts.extend(v)
+
+    unzip(kexts)
 
     cleanup_dirs(os.path.join(OUTPUT_DIR, 'kexts'), os.path.join(OUTPUT_DIR, 'clover'))
 
@@ -27,4 +24,4 @@ def build(id):
     clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
                         os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
 
-    message(f'Prepare widgets for {id} is Finished.')
+    message(f'Finished.')

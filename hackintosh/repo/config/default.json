@@ -24,6 +24,7 @@
       "IntelGraphicsFixup":{"source":"sourceforge", "project":"IntelGraphicsFixup", "author":"lvs1974", "options":{"nav":"/Release"}},
       "Lilu":{"source":"github", "project":"Lilu", "author":"vit9696", "options":{}},
       "Shiki":{"source":"github", "project":"Shiki", "author":"vit9696", "options":{}},
+      "AppleALC":{"source":"github", "project":"AppleALC", "author":"vit9696", "options":{}},
       "AppleBacklightInjector":{"source":"local", "project":"AppleBacklightInjector", "author":"Rehabman", "options":{}}
     },
     "essential":{
@@ -34,60 +35,18 @@
       "os-x-acpi-battery-driver":["ACPIBatteryManager.kext"],
       "os-x-voodoo-ps2-controller":["VoodooPS2Controller.kext", "VoodooPS2Daemon", "org.rehabman.voodoo.driver.Daemon.plist"],
       "os-x-usb-inject-all":["USBInjectAll.kext"],
-      "os-x-intel-network":["IntelMausiEthernet.kext"],
-      "AppleBacklightInjector":["AppleBacklightInjector.kext"]
+      "os-x-intel-network":["IntelMausiEthernet.kext"]
     }
   },
-
-  "clover":{
-    "kexts_to_patch":[
-        {
-          "name":"IOGraphicsFamily",
-          "find":"01000075 25",
-          "replace":"010000eb 25",
-          "comment":"Boot graphics glitch, 10.12.dp1"
-        },
-        {
-          "name":"IOAHCIBlockStorage",
-          "find":"AEFQUExFIFNTRAA=",
-          "replace":"AAAAAAAAAAAAAAA=",
-          "comment":"Enable TRIM for SSD"
-        },
-        {
-          "name":"AppleIntelBDWGraphicsFramebuffer",
-          "find":"iUXIOcd2Tw==",
-          "replace":"iUXIOcfrTw==",
-          "comment":"Broadwell minStolenSize patch (credit RehabMan based on original by Austere.J)"
-        }
-      ]
-    },
   "external_device":{
     "bcm94352z":{
       "type":"combo",
       "kext":{
         "os-x-brcmpatchram":["BrcmFirmwareRepo.kext", "BrcmPatchRAM2.kext"],
-        "os-x-fake-pci-id":["FakePCIID.kext", "FakePCIID_Broadcom_WiFi.kext"]
+        "os-x-fake-pci-id":["FakePCIID.kext", "FakePCIID_Broadcom_WiFi.kext", "FakePCIID_Intel_HDMI_Audio.kext"]
       },
       "clover":{
        "kexts_to_patch":[
-          {
-            "Name":"AirPortBrcm4360",
-            "Find":"MdtMO33YdRI=",
-            "Replace":"Mdv/w5CQkJA=",
-            "Comment":"AirPortBrcm4360 whitelist patch (board-id), 10.12.dp1, credit RehabMan"
-          },
-          {
-            "Name":"AirPortBrcm4360",
-            "Find":"gflSqgAAdSk= ",
-            "Replace":"gflSqgAAZpA=",
-            "Comment":"AirPortBrcm4360 - fcvo, 10.12.x (credit the-darkvoid)"
-          },
-          {
-            "Name":"com.apple.iokit.IOBluetoothFamily",
-            "Find":"SIX/dEdIiwc=",
-            "Replace":"Qb4PAAAA60Q=",
-            "Comment":"10.11.dp1+ BT4LE-Handoff-Hotspot, credit RehabMan based on Dokterdok original"
-          }
         ]
       }
     }
@@ -95,8 +54,7 @@
   "patches":{
     "brightness_control":{
       "kext":{
-        "projects":[],
-        "widgets":[]
+        "AppleBacklightInjector":["AppleBacklightInjector.kext"]
       },
       "clover":{
        "kexts_to_patch":[
