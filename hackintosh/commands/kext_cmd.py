@@ -1,7 +1,8 @@
 from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, REPO_ROOT, CLIENT_SETTINGS
-from hackintosh.lib import download_kext, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache, message, print_kext
+from hackintosh.lib import download_kext, cleanup, unzip, delete, cleanup_dirs, rebuild_kextcache, message, print_kext, \
+    error
 from string import Template
-from subprocess import call
+from subprocess import call, check_call, CalledProcessError
 import click, os, shutil, glob
 
 
@@ -21,6 +22,33 @@ def download(kexts):
         else:
             message(f'{k} is not supported.')
     unzip()
+
+
+@cli.command(short_help='Install widgets.')
+@click.option('-v', '--voodoops2', is_flag=True,
+              help='Install VoodooPS2Daemon & org.rehabman.voodoo.driver.Daemon.plist')
+def install(voodoops2):
+    if voodoops2:
+        if not os.path.exists(os.path.join(OUTPUT_DIR, 'VoodooPS2Daemon')) or os.path.exists(
+                os.path.join(OUTPUT_DIR, 'org.rehabman.voodoo.driver.Daemon.plist')):
+            message("VoodooPS2 isn't exists, downloading it now...")
+            download_kext(ALL_META['kext']['supported']['os-x-voodoo-ps2-controller'])
+            unzip(ALL_META['kext']['essential']['os-x-voodoo-ps2-controller'])
+
+        message("VoodooPS2 downloaded, installing now...")
+
+        try:
+            check_call(f'sudo cp {OUTPUT_DIR}/VoodooPS2Daemon /usr/bin', shell=True)
+            message('VoodooPS2Daemon is installed.')
+        except CalledProcessError:
+            error('Failed to install VoodooPS2 widgets: VoodooPS2Daemon')
+
+        try:
+            check_call(f'sudo cp {OUTPUT_DIR}/org.rehabman.voodoo.driver.Daemon.plist /Library/LaunchDaemons',
+                       shell=True)
+            message('org.rehabman.voodoo.driver.Daemon.plist is installed.')
+        except CalledProcessError:
+            error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')
 
 
 @cli.command(short_help=f"Download kexts for laptop:{CLIENT_SETTINGS['current_series']}")
@@ -63,7 +91,6 @@ def info(supported, laptop, essential):
             pmeta = ALL_META['kext']['supported'][k]
             kexts = ','.join(v)
             print_kext(pmeta, kexts)
-
 
     if essential:
         message('kexts for all laptops:')

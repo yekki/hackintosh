@@ -19,8 +19,7 @@
     ]
   },
   "kext":{
-    "IntelGraphicsDVMTFixup":["IntelGraphicsDVMTFixup.kext"],
-    "os-x-usb-inject-all":["USBInjectAll.kext"]
+    "IntelGraphicsDVMTFixup":["IntelGraphicsDVMTFixup.kext"]
   },
   "acpi": {
     "bios": "3.20",
@@ -41,7 +40,8 @@
         "system_WAK2",
         "system_ADP1",
         "fix_PLD",
-        "system_Shutdown2"
+        "system_Shutdown2",
+        "DSDT-HDMI"
       ],
       "ssdt": {
         "ssdt-2": [
@@ -60,7 +60,8 @@
         "SSDT-3",
         "SSDT-8",
         "SSDT-USB",
-        "SSDT-PNLF"
+        "SSDT-PNLF",
+        "SSDT-PluginType1"
       ]
     }
   }

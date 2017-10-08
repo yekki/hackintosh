@@ -158,6 +158,7 @@ def copy_dir(src, dst, filter=None):
         if os.path.exists(s): shutil.copy2(s, os.path.join(dst, item))
 
 
+# keep is a list which should be kept, others will be removed.
 def unzip(keep=None):
     global STAGE_DIR, OUTPUT_DIR
 
@@ -167,13 +168,13 @@ def unzip(keep=None):
         copy_tree(path, OUTPUT_DIR)
         shutil.rmtree(path)
 
-    for f in ('AppleALC.kext.dSYM', '__MACOSX', 'Debug', '.DS_Store', 'Lilu.kext.dSYM'):
+    for f in ('AppleALC.kext.dSYM', '__MACOSX', 'Debug', '.DS_Store', 'Lilu.kext.dSYM', 'Shiki.kext.dSYM'):
         delete(os.path.join(OUTPUT_DIR, f))
 
     if keep is not None:
-        for k in keep:
-            if k not in os.listdir(OUTPUT_DIR):
-                delete(os.path.join(OUTPUT_DIR, k))
+        for f in os.listdir(OUTPUT_DIR):
+            if f not in keep:
+                delete(os.path.join(OUTPUT_DIR, f))
 
 
 def delete(path, ext=None, only_files=False):

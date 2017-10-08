@@ -23,14 +23,17 @@
       "IntelGraphicsDVMTFixup":{"source":"github", "project":"IntelGraphicsDVMTFixup", "author":"BarbaraPalvin", "options":{"filter":""}},
       "IntelGraphicsFixup":{"source":"sourceforge", "project":"IntelGraphicsFixup", "author":"lvs1974", "options":{"nav":"/Release"}},
       "Lilu":{"source":"github", "project":"Lilu", "author":"vit9696", "options":{}},
+      "Shiki":{"source":"github", "project":"Shiki", "author":"vit9696", "options":{}},
       "AppleBacklightInjector":{"source":"local", "project":"AppleBacklightInjector", "author":"Rehabman", "options":{}}
     },
     "essential":{
+      "os-x-fakesmc-kozlek":["FakeSMC.kext"],
       "IntelGraphicsFixup":["IntelGraphicsFixup.kext"],
       "Lilu":["Lilu.kext"],
+      "Shiki":["Shiki.kext"],
       "os-x-acpi-battery-driver":["ACPIBatteryManager.kext"],
-      "os-x-voodoo-ps2-controller":["VoodooPS2Controller.kext"],
-      "os-x-fakesmc-kozlek":["FakeSMC.kext"],
+      "os-x-voodoo-ps2-controller":["VoodooPS2Controller.kext", "VoodooPS2Daemon", "org.rehabman.voodoo.driver.Daemon.plist"],
+      "os-x-usb-inject-all":["USBInjectAll.kext"],
       "os-x-intel-network":["IntelMausiEthernet.kext"],
       "AppleBacklightInjector":["AppleBacklightInjector.kext"]
     }

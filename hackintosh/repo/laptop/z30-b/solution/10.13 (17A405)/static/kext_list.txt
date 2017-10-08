@@ -1,0 +1,16 @@
+ACPIBatteryManager.kext
+IntelGraphicsFixup.kext
+FakePCIID_Broadcom_WiFi.kext
+FakeSMC.kext
+IntelMausiEthernet.kext
+USBInjectAll.kext
+VoodooPS2Controller.kext
+AppleBacklightInjector.kext
+Shiki.kext
+AppleALC.kext
+Lilu.kext
+FakePCIID.kext
+IntelGraphicsDVMTFixup.kext
+FakePCIID_Intel_HDMI_Audio.kext
+BrcmFirmwareRepo.kext
+BrcmPatchRAM2.kext

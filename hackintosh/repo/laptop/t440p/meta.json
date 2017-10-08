@@ -19,8 +19,7 @@
     ]
   },
   "kext":{
-    "projects":["os-x-fake-pci-id"],
-    "widgets":["FakePCIID.kext","FakePCIID_Intel_HD_Graphics"]
+    "os-x-fake-pci-id":["FakePCIID.kext","FakePCIID_Intel_HD_Graphics"]
   },
   "acpi": {
     "bios": "2.39",
