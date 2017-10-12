@@ -1,5 +1,6 @@
 from hackintosh import CLIENT_SETTINGS, ALL_META, PKG_ROOT, save_conf
 from hackintosh.lib import message
+from subprocess import call, Popen, PIPE
 
 import click, os, shutil
 
@@ -7,6 +8,43 @@ import click, os, shutil
 @click.group(short_help='Commands for setting client settings.')
 def cli():
     pass
+
+
+@cli.command(short_help='Archive problem reporting files.')
+def problem_reports():
+    k = Popen(['kextstat'], stdout=PIPE)
+    k2 = Popen(['grep', '-y', 'acpiplat'], stdin=k.stdout, stdout=PIPE)
+    out1 = k2.communicate()
+    print(out1)
+
+    k3 = Popen(['grep', '-y', 'appleintelcpu'], stdin=k.stdout, stdout=PIPE)
+    out2 = k3.communicate()
+    print(out2)
+
+    k4 = Popen(['grep', '-y', 'applelpc'], stdin=k.stdout, stdout=PIPE)
+    out3 = k4.communicate()
+    print(out3)
+
+    k5 = Popen(['grep', '-y', 'applehda'], stdin=k.stdout, stdout=PIPE)
+    out4 = k5.communicate()
+    print(out4)
+
+    out5 = call('ls -l /System/Library/Extensions/AppleHDA.kext/Contents/Resources/*.zml*', shell=True)
+    print(out5)
+
+    out6 = call('pmset -g assertions', shell=True)
+    print(out6)
+
+    k = Popen(['system_profiler', 'SPSerialATADataType'], stdout=PIPE)
+    k6 = Popen(['grep', 'TRIM'], stdin=k.stdout, stdout=PIPE)
+    out7 = k6.communicate()
+    print(out7)
+
+    out8 = call('sudo touch /System/Library/Extensions', shell=True)
+    print(out8)
+
+    out9 = call('sudo kextcache -u', shell=True)
+    print(out9)
 
 
 @cli.command(short_help='Switch repository location: pkg or local.')
