@@ -11,7 +11,7 @@ def cli():
 
 
 @cli.command(short_help='Archive problem reporting files.')
-def problem_reports():
+def reports():
     k = Popen(['kextstat'], stdout=PIPE)
     k2 = Popen(['grep', '-y', 'acpiplat'], stdin=k.stdout, stdout=PIPE)
     out1 = k2.communicate()
