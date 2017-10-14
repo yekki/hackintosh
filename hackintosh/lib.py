@@ -6,7 +6,27 @@ from distutils.dir_util import copy_tree
 from subprocess import call
 from string import Template
 
+
 import requests, cgi, zipfile, os, click, shutil, glob, logging, re, importlib, json
+
+
+def execute(cmd, filename=None):
+    if filename is None:
+        call(cmd, shell=True)
+    else:
+        with open(os.path.join(STAGE_DIR, filename), 'wb') as f:
+            call(cmd, stdout=f, stderr=f, shell=True)
+
+
+def zip_dir(path, filename, suffix=None):
+    zipf = zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED)
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if suffix is None:
+                zipf.write(os.path.join(root, file))
+            else:
+                if file.endswith(suffix):
+                    zipf.write(os.path.join(root, file))
 
 
 def error(msg, fg='red'):

@@ -1,6 +1,6 @@
-from hackintosh import CLIENT_SETTINGS, ALL_META, PKG_ROOT, save_conf
-from hackintosh.lib import message
-from subprocess import call, Popen, PIPE
+from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, PKG_ROOT, save_conf
+from hackintosh.lib import message, cleanup, execute, zip_dir
+from subprocess import Popen, PIPE
 
 import click, os, shutil
 
@@ -12,39 +12,20 @@ def cli():
 
 @cli.command(short_help='Archive problem reporting files.')
 def reports():
-    k = Popen(['kextstat'], stdout=PIPE)
-    k2 = Popen(['grep', '-y', 'acpiplat'], stdin=k.stdout, stdout=PIPE)
-    out1 = k2.communicate()
-    print(out1)
+    cleanup()
 
-    k3 = Popen(['grep', '-y', 'appleintelcpu'], stdin=k.stdout, stdout=PIPE)
-    out2 = k3.communicate()
-    print(out2)
+    execute('kextstat | grep -y acpiplat', 'acpiplat.out')
+    execute('kextstat | grep -y applelpc', 'applelpc.out')
+    execute('kextstat | grep -y appleintelcpu', 'appleintelcpu.out')
+    execute('kextstat | grep -y applehda', 'applehda.out')
+    execute('ls -l /System/Library/Extensions/AppleHDA.kext/Contents/Resources/*.zml*', 'applehda_res.out')
+    execute('pmset -g assertions', 'assertions.out')
+    execute('system_profiler SPSerialATADataType | grep TRIM', 'assertions.out')
+    message('This is a time-consuming operation...')
+    execute('sudo touch /System/Library/Extensions && sudo kextcache -u /', 'kextcache.out')
 
-    k4 = Popen(['grep', '-y', 'applelpc'], stdin=k.stdout, stdout=PIPE)
-    out3 = k4.communicate()
-    print(out3)
+    # zip_dir(STAGE_DIR, os.path.join(OUTPUT_DIR, 'out.zip'), '.out')
 
-    k5 = Popen(['grep', '-y', 'applehda'], stdin=k.stdout, stdout=PIPE)
-    out4 = k5.communicate()
-    print(out4)
-
-    out5 = call('ls -l /System/Library/Extensions/AppleHDA.kext/Contents/Resources/*.zml*', shell=True)
-    print(out5)
-
-    out6 = call('pmset -g assertions', shell=True)
-    print(out6)
-
-    k = Popen(['system_profiler', 'SPSerialATADataType'], stdout=PIPE)
-    k6 = Popen(['grep', 'TRIM'], stdin=k.stdout, stdout=PIPE)
-    out7 = k6.communicate()
-    print(out7)
-
-    out8 = call('sudo touch /System/Library/Extensions', shell=True)
-    print(out8)
-
-    out9 = call('sudo kextcache -u', shell=True)
-    print(out9)
 
 
 @cli.command(short_help='Switch repository location: pkg or local.')
