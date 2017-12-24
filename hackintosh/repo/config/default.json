@@ -4,12 +4,10 @@
     "t440p",
     "z30-b"
   ],
-
   "tools": {
     "iasl": "iasl61",
     "patchmatic": "patchmatic"
   },
-
   "kext": {
     "supported": {
       "os-x-voodoo-ps2-controller": {
@@ -132,22 +130,58 @@
       }
     },
     "essential": {
-      "os-x-fakesmc-kozlek": ["FakeSMC.kext"],
-      "IntelGraphicsFixup": ["IntelGraphicsFixup.kext"],
-      "Lilu": ["Lilu.kext"],
-      "Shiki": ["Shiki.kext"],
-      "os-x-acpi-battery-driver": ["ACPIBatteryManager.kext"],
-      "os-x-voodoo-ps2-controller": ["VoodooPS2Controller.kext", "VoodooPS2Daemon", "org.rehabman.voodoo.driver.Daemon.plist"],
-      "os-x-usb-inject-all": ["USBInjectAll.kext"],
-      "os-x-intel-network": ["IntelMausiEthernet.kext"]
+      "os-x-fakesmc-kozlek": [
+        "FakeSMC.kext"
+      ],
+      "IntelGraphicsFixup": [
+        "IntelGraphicsFixup.kext"
+      ],
+      "Lilu": [
+        "Lilu.kext"
+      ],
+      "Shiki": [
+        "Shiki.kext"
+      ],
+      "os-x-acpi-battery-driver": [
+        "ACPIBatteryManager.kext"
+      ],
+      "os-x-voodoo-ps2-controller": [
+        "VoodooPS2Controller.kext",
+        "VoodooPS2Daemon",
+        "org.rehabman.voodoo.driver.Daemon.plist"
+      ],
+      "os-x-usb-inject-all": [
+        "USBInjectAll.kext"
+      ],
+      "os-x-intel-network": [
+        "IntelMausiEthernet.kext"
+      ]
     }
   },
   "external_device": {
     "bcm94352z": {
       "type": "combo",
       "kext": {
-        "os-x-brcmpatchram": ["BrcmFirmwareRepo.kext", "BrcmPatchRAM2.kext"],
-        "os-x-fake-pci-id": ["FakePCIID.kext", "FakePCIID_Broadcom_WiFi.kext"]
+        "os-x-brcmpatchram": [
+          "BrcmFirmwareRepo.kext",
+          "BrcmPatchRAM2.kext"
+        ],
+        "os-x-fake-pci-id": [
+          "FakePCIID.kext",
+          "FakePCIID_Broadcom_WiFi.kext"
+        ]
+      },
+      "clover": {
+        "kexts_to_patch": []
+      }
+    },
+    "bta-408": {
+      "type": "bt",
+      "kext": {
+        "os-x-brcmpatchram": [
+          "BrcmFirmwareRepo.kext",
+          "BrcmPatchRAM2.kext"
+        ]
       },
       "clover": {
         "kexts_to_patch": []
@@ -157,15 +191,19 @@
   "patches": {
     "brightness_control": {
       "kext": {
-        "AppleBacklightInjector": ["AppleBacklightInjector.kext"]
+        "AppleBacklightInjector": [
+          "AppleBacklightInjector.kext"
+        ]
       },
       "clover": {
-        "kexts_to_patch": [{
-          "Name": "com.apple.driver.AppleBacklight",
-          "Find": "RiV1VCUwNHgA",
-          "Replace": "RiV1VHh4eHgA",
-          "Comment": "change F%uT%04x to F%uTxxxx in AppleBacklightInjector.kext (credit RehabMan)"
-        }]
+        "kexts_to_patch": [
+          {
+            "Name": "com.apple.driver.AppleBacklight",
+            "Find": "RiV1VCUwNHgA",
+            "Replace": "RiV1VHh4eHgA",
+            "Comment": "change F%uT%04x to F%uTxxxx in AppleBacklightInjector.kext (credit RehabMan)"
+          }
+        ]
       }
     }
   }
