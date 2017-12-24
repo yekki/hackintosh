@@ -1,75 +1,171 @@
 {
-  "supported":[
+  "supported": [
     "x220",
     "t440p",
     "z30-b"
   ],
 
   "tools": {
-    "iasl":"iasl61",
-    "patchmatic":"patchmatic"
+    "iasl": "iasl61",
+    "patchmatic": "patchmatic"
   },
 
-  "kext":{
-    "supported":{
-      "os-x-voodoo-ps2-controller":{"source":"bitbucket", "project":"os-x-voodoo-ps2-controller", "author":"Rehabman", "options":{}},
-      "os-x-acpi-debug":{"source":"bitbucket", "project":"os-x-acpi-debug", "author":"Rehabman", "options":{}},
-      "os-x-usb-inject-all":{"source":"bitbucket", "project":"os-x-usb-inject-all", "author":"Rehabman", "options":{}},
-      "os-x-generic-usb3":{"source":"bitbucket", "project":"os-x-generic-usb3", "author":"Rehabman", "options":{}},
-      "os-x-brcmpatchram":{"source":"bitbucket", "project":"os-x-brcmpatchram", "author":"Rehabman", "options":{}},
-      "os-x-acpi-keyboard":{"source":"bitbucket", "project":"os-x-acpi-keyboard", "author":"Rehabman", "options":{}},
-      "os-x-acpi-battery-driver":{"source":"bitbucket", "project":"os-x-acpi-battery-driver", "author":"Rehabman", "options":{}},
-      "os-x-intel-backlight":{"source":"bitbucket", "project":"os-x-intel-backlight", "author":"Rehabman", "options":{}},
-      "os-x-fakesmc-kozlek":{"source":"bitbucket", "project":"os-x-fakesmc-kozlek", "author":"Rehabman", "options":{}},
-      "os-x-eapd-codec-commander":{"source":"bitbucket", "project":"os-x-eapd-codec-commander", "author":"Rehabman", "options":{}},
-      "os-x-fake-pci-id":{"source":"bitbucket", "project":"os-x-fake-pci-id", "author":"Rehabman", "options":{}},
-      "os-x-intel-network":{"source":"bitbucket", "project":"os-x-intel-network", "author":"Rehabman", "options":{}},
-      "acpica":{"source":"bitbucket", "project":"acpica", "author":"rehabman", "options":{}},
-      "IntelGraphicsDVMTFixup":{"source":"github", "project":"IntelGraphicsDVMTFixup", "author":"BarbaraPalvin", "options":{"filter":""}},
-      "IntelGraphicsFixup":{"source":"sourceforge", "project":"IntelGraphicsFixup", "author":"lvs1974", "options":{"nav":"/Release"}},
-      "Lilu":{"source":"github", "project":"Lilu", "author":"vit9696", "options":{}},
-      "Shiki":{"source":"github", "project":"Shiki", "author":"vit9696", "options":{}},
-      "AppleALC":{"source":"github", "project":"AppleALC", "author":"vit9696", "options":{}},
-      "AppleBacklightInjector":{"source":"local", "project":"AppleBacklightInjector", "author":"Rehabman", "options":{}}
+  "kext": {
+    "supported": {
+      "os-x-voodoo-ps2-controller": {
+        "source": "bitbucket",
+        "project": "os-x-voodoo-ps2-controller",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-acpi-debug": {
+        "source": "bitbucket",
+        "project": "os-x-acpi-debug",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-usb-inject-all": {
+        "source": "bitbucket",
+        "project": "os-x-usb-inject-all",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-generic-usb3": {
+        "source": "bitbucket",
+        "project": "os-x-generic-usb3",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-brcmpatchram": {
+        "source": "bitbucket",
+        "project": "os-x-brcmpatchram",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-acpi-keyboard": {
+        "source": "bitbucket",
+        "project": "os-x-acpi-keyboard",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-acpi-battery-driver": {
+        "source": "bitbucket",
+        "project": "os-x-acpi-battery-driver",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-intel-backlight": {
+        "source": "bitbucket",
+        "project": "os-x-intel-backlight",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-fakesmc-kozlek": {
+        "source": "bitbucket",
+        "project": "os-x-fakesmc-kozlek",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-eapd-codec-commander": {
+        "source": "bitbucket",
+        "project": "os-x-eapd-codec-commander",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-fake-pci-id": {
+        "source": "bitbucket",
+        "project": "os-x-fake-pci-id",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "os-x-intel-network": {
+        "source": "bitbucket",
+        "project": "os-x-intel-network",
+        "author": "Rehabman",
+        "options": {}
+      },
+      "acpica": {
+        "source": "bitbucket",
+        "project": "acpica",
+        "author": "rehabman",
+        "options": {}
+      },
+      "IntelGraphicsDVMTFixup": {
+        "source": "github",
+        "project": "IntelGraphicsDVMTFixup",
+        "author": "BarbaraPalvin",
+        "options": {
+          "filter": ""
+        }
+      },
+      "IntelGraphicsFixup": {
+        "source": "sourceforge",
+        "project": "IntelGraphicsFixup",
+        "author": "lvs1974",
+        "options": {
+          "nav": "/Release"
+        }
+      },
+      "Lilu": {
+        "source": "github",
+        "project": "Lilu",
+        "author": "vit9696",
+        "options": {}
+      },
+      "Shiki": {
+        "source": "github",
+        "project": "Shiki",
+        "author": "vit9696",
+        "options": {}
+      },
+      "AppleALC": {
+        "source": "github",
+        "project": "AppleALC",
+        "author": "vit9696",
+        "options": {}
+      },
+      "AppleBacklightInjector": {
+        "source": "local",
+        "project": "AppleBacklightInjector",
+        "author": "Rehabman",
+        "options": {}
+      }
     },
-    "essential":{
-      "os-x-fakesmc-kozlek":["FakeSMC.kext"],
-      "IntelGraphicsFixup":["IntelGraphicsFixup.kext"],
-      "Lilu":["Lilu.kext"],
-      "Shiki":["Shiki.kext"],
-      "os-x-acpi-battery-driver":["ACPIBatteryManager.kext"],
-      "os-x-voodoo-ps2-controller":["VoodooPS2Controller.kext", "VoodooPS2Daemon", "org.rehabman.voodoo.driver.Daemon.plist"],
-      "os-x-usb-inject-all":["USBInjectAll.kext"],
-      "os-x-intel-network":["IntelMausiEthernet.kext"]
+    "essential": {
+      "os-x-fakesmc-kozlek": ["FakeSMC.kext"],
+      "IntelGraphicsFixup": ["IntelGraphicsFixup.kext"],
+      "Lilu": ["Lilu.kext"],
+      "Shiki": ["Shiki.kext"],
+      "os-x-acpi-battery-driver": ["ACPIBatteryManager.kext"],
+      "os-x-voodoo-ps2-controller": ["VoodooPS2Controller.kext", "VoodooPS2Daemon", "org.rehabman.voodoo.driver.Daemon.plist"],
+      "os-x-usb-inject-all": ["USBInjectAll.kext"],
+      "os-x-intel-network": ["IntelMausiEthernet.kext"]
     }
   },
-  "external_device":{
-    "bcm94352z":{
-      "type":"combo",
-      "kext":{
-        "os-x-brcmpatchram":["BrcmFirmwareRepo.kext", "BrcmPatchRAM2.kext"],
-        "os-x-fake-pci-id":["FakePCIID.kext", "FakePCIID_Broadcom_WiFi.kext", "FakePCIID_Intel_HDMI_Audio.kext"]
+  "external_device": {
+    "bcm94352z": {
+      "type": "combo",
+      "kext": {
+        "os-x-brcmpatchram": ["BrcmFirmwareRepo.kext", "BrcmPatchRAM2.kext"],
+        "os-x-fake-pci-id": ["FakePCIID.kext", "FakePCIID_Broadcom_WiFi.kext"]
       },
-      "clover":{
-       "kexts_to_patch":[
-        ]
+      "clover": {
+        "kexts_to_patch": []
       }
     }
   },
-  "patches":{
-    "brightness_control":{
-      "kext":{
-        "AppleBacklightInjector":["AppleBacklightInjector.kext"]
+  "patches": {
+    "brightness_control": {
+      "kext": {
+        "AppleBacklightInjector": ["AppleBacklightInjector.kext"]
       },
-      "clover":{
-       "kexts_to_patch":[
-          {
-            "Name":"com.apple.driver.AppleBacklight",
-            "Find":"RiV1VCUwNHgA",
-            "Replace":"RiV1VHh4eHgA",
-            "Comment":"change F%uT%04x to F%uTxxxx in AppleBacklightInjector.kext (credit RehabMan)"
-          }
-        ]
+      "clover": {
+        "kexts_to_patch": [{
+          "Name": "com.apple.driver.AppleBacklight",
+          "Find": "RiV1VCUwNHgA",
+          "Replace": "RiV1VHh4eHgA",
+          "Comment": "change F%uT%04x to F%uTxxxx in AppleBacklightInjector.kext (credit RehabMan)"
+        }]
       }
     }
   }

@@ -1,6 +1,7 @@
 ACPIBatteryManager.kext
-IntelGraphicsFixup.kext
 FakePCIID_Broadcom_WiFi.kext
+FakePCIID_Intel_HDMI_Audio.kext
+FakePCIID.kext
 FakeSMC.kext
 IntelMausiEthernet.kext
 USBInjectAll.kext
@@ -11,6 +12,7 @@ AppleALC.kext
 Lilu.kext
 FakePCIID.kext
 IntelGraphicsDVMTFixup.kext
-FakePCIID_Intel_HDMI_Audio.kext
+IntelGraphicsFixup.kext
 BrcmFirmwareRepo.kext
 BrcmPatchRAM2.kext
+CodecCommander.kext

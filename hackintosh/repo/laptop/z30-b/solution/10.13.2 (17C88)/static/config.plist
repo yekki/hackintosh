@@ -12,9 +12,9 @@
 			<false/>
 			<key>Fixes</key>
 			<dict>
-				<key>DeleteUnused_400000</key>
+				<key>DeleteUnused</key>
 				<true/>
-				<key>FixRegions_10000000</key>
+				<key>FixRegions</key>
 				<true/>
 			</dict>
 			<key>ReuseFFFF</key>
@@ -51,10 +51,13 @@
 			<string>SSDT-8.aml</string>
 			<string>SSDT-PNLF.aml</string>
 			<string>SSDT-USB.aml</string>
+			<string>SSDT-EC.aml</string>
 		</array>
 	</dict>
 	<key>Boot</key>
 	<dict>
+		<key>Arguments</key>
+		<string>dart=0 nv_disable=1 kext-dev-mode=1</string>
 		<key>CustomLogo</key>
 		<false/>
 		<key>Debug</key>
@@ -92,8 +95,8 @@
 	</dict>
 	<key>DisableDrivers</key>
 	<array>
-		<string>CsmVideoDxe</string>
 		<string>VBoxHfs</string>
+		<string>CsmVideoDxe</string>
 	</array>
 	<key>GUI</key>
 	<dict>
@@ -182,12 +185,12 @@
 		<false/>
 		<key>KernelCpu</key>
 		<false/>
-		<key>KernelHaswellE</key>
-		<false/>
 		<key>KernelLapic</key>
 		<true/>
 		<key>KernelPm</key>
 		<true/>
+		<key>KernelXCPM</key>
+		<false/>
 		<key>KextsToPatch</key>
 		<array>
 			<dict>
@@ -220,6 +223,38 @@
 				<key>Replace</key>
 				<data>
 				eHh4eA==
+				</data>
+			</dict>
+			<dict>
+				<key>Comment</key>
+				<string>Country Code Patch (CN) - Credit PMheart</string>
+				<key>Disabled</key>
+				<true/>
+				<key>Find</key>
+				<data>
+				QYP8/3Q1SI1V0A==
+				</data>
+				<key>Name</key>
+				<string>com.apple.driver.AirPort.BrcmNIC</string>
+				<key>Replace</key>
+				<data>
+				ZscGQ07rNI1V0A==
+				</data>
+			</dict>
+			<dict>
+				<key>Comment</key>
+				<string>0x16260006, 32MB BIOS, 19MB framebuffer, 9MB cursor bytes (credit RehabMan)</string>
+				<key>Disabled</key>
+				<true/>
+				<key>Find</key>
+				<data>
+				AAAgAgAAUAE=
+				</data>
+				<key>Name</key>
+				<string>com.apple.driver.AppleIntelBDWGraphicsFramebuffer</string>
+				<key>Replace</key>
+				<data>
+				AAAwAQAAkAA=
 				</data>
 			</dict>
 		</array>

@@ -14,17 +14,12 @@
       "codec": "ALC255",
       "layout-id": "3"
     },
-    "ethernet_card": "Intel",
-    "external": [
-      {
-      "type":"combo",
-      "name":"bcm94352z"
-      }
-    ]
+    "ethernet_card": "Intel"
   },
-  "kext":{
-    "IntelGraphicsDVMTFixup":["IntelGraphicsDVMTFixup.kext"],
-    "AppleALC":["AppleALC.kext"]
+  "kext": {
+    "IntelGraphicsDVMTFixup": ["IntelGraphicsDVMTFixup.kext"],
+    "AppleALC": ["AppleALC.kext"],
+    "os-x-fake-pci-id": ["FakePCIID_Intel_HDMI_Audio.kext", "FakePCIID.kext"]
   },
   "acpi": {
     "bios": "3.20",
@@ -57,7 +52,7 @@
           "graphics_Rename-B0D3"
         ]
       },
-      "ssdt_list":[
+      "ssdt_list": [
         "SSDT-0",
         "SSDT-1",
         "SSDT-2",

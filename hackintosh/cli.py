@@ -1,7 +1,9 @@
 from hackintosh import PKG_ROOT
 from hackintosh.lib import error
 from pathlib import Path
-import click, os, glob
+import click
+import os
+import glob
 
 
 class MainCLI(click.MultiCommand):
@@ -19,8 +21,10 @@ class MainCLI(click.MultiCommand):
         try:
             if name.endswith('.py'):
                 return
-            mod = __import__(f'hackintosh.commands.{name}_cmd', None, None, ['cli'])
+            mod = __import__(
+                f'hackintosh.commands.{name}_cmd', None, None, ['cli'])
         except ImportError as e:
-            error(f"Failed to load command:{name}, error:{e}")
+            #error(f"Failed to load command:{name}, error:{e}")
+            error(f'no command named: {name}.')
         else:
             return mod.cli

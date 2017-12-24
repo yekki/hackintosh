@@ -7,7 +7,17 @@ from subprocess import call
 from string import Template
 
 
-import requests, cgi, zipfile, os, click, shutil, glob, logging, re, importlib, json
+import requests
+import cgi
+import zipfile
+import os
+import click
+import shutil
+import glob
+import logging
+import re
+import importlib
+import json
 
 
 def execute(cmd, filename=None):
@@ -36,7 +46,8 @@ def error(msg, fg='red'):
 
 def print_kext(meta, kexts=None):
     message(f"Project Name: {meta['project']} Author: {meta['author']}")
-    if kexts: message(kexts, fg='green')
+    if kexts:
+        message(kexts, fg='green')
     print()
 
 
@@ -49,7 +60,15 @@ def message(msg, fg='blue', nl=False):
     else:
         click.echo(click.style(msg, fg=fg))
 
-    if nl: print('')
+    if nl:
+        print('')
+
+
+def delete(path):
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    elif os.path.isfile(path):
+        os.remove(path)
 
 
 def rebuild_kextcache():
@@ -61,7 +80,8 @@ def download_kext(meta):
         download_bitbucket(meta['author'], meta['project'])
     elif meta['source'] == 'github':
         if 'filter' in meta['options'].keys():
-            download_github(meta['author'], meta['project'], meta['options']['filter'])
+            download_github(meta['author'], meta['project'],
+                            meta['options']['filter'])
         else:
             download_github(meta['author'], meta['project'])
     elif meta['source'] == 'sourceforge':
@@ -89,7 +109,8 @@ def download(url, folder=STAGE_DIR, filename=None):
     with open(download_file_path, "wb") as f:
         expected_size = (total_length / 1024) + 1
         with click.progressbar(r.iter_content(1024), length=expected_size, bar_template='%(label)s  %(bar)s | %(info)s',
-                               label=filename, fill_char=click.style(u'█', fg='cyan'),
+                               label=filename, fill_char=click.style(
+                                   u'█', fg='cyan'),
                                empty_char=' ') as chunks:
             for chunk in chunks:
                 f.write(chunk)
@@ -102,7 +123,8 @@ def download_github(account, project, filter=None):
     url = f'https://api.github.com/repos/{account}/{project}/releases/latest'
     resp = json.loads(urlopen(url).read())
 
-    if filter is None: filter = 'RELEASE'
+    if filter is None:
+        filter = 'RELEASE'
 
     for asset in resp['assets']:
         if filter in asset['name']:
@@ -164,18 +186,22 @@ def unzip_file(file, dest_dir):
 
 def cleanup_dirs(*dirs, rmdir=False):
     for dir in dirs:
-        if os.path.exists(dir): shutil.rmtree(dir)
-        if not rmdir: os.makedirs(dir)
+        if os.path.exists(dir):
+            shutil.rmtree(dir)
+        if not rmdir:
+            os.makedirs(dir)
 
 
 def copy_dir(src, dst, filter=None):
     item_list = os.listdir(src)
 
-    if filter: item_list = [i for i in item_list if i in filter]
+    if filter:
+        item_list = [i for i in item_list if i in filter]
 
     for item in item_list:
         s = os.path.join(src, item)
-        if os.path.exists(s): shutil.copy2(s, os.path.join(dst, item))
+        if os.path.exists(s):
+            shutil.copy2(s, os.path.join(dst, item))
 
 
 # keep is a list which should be kept, others will be removed.
@@ -188,8 +214,11 @@ def unzip(keep=None):
         copy_tree(path, OUTPUT_DIR)
         shutil.rmtree(path)
 
-    for f in ('AppleALC.kext.dSYM', '__MACOSX', 'Debug', '.DS_Store', 'Lilu.kext.dSYM', 'Shiki.kext.dSYM'):
-        delete(os.path.join(OUTPUT_DIR, f))
+    # for f in ('__MACOSX', 'Debug', '.DS_Store'):
+    #    delete(os.path.join(OUTPUT_DIR, f))
+
+    # delete(OUTPUT_DIR, ext='md5', only_files=True)
+    del_by_exts(OUTPUT_DIR)
 
     if keep is not None:
         for f in os.listdir(OUTPUT_DIR):
@@ -197,31 +226,32 @@ def unzip(keep=None):
                 delete(os.path.join(OUTPUT_DIR, f))
 
 
-def delete(path, ext=None, only_files=False):
-    def _del(f):
-        if os.path.isfile(f):
-            os.remove(f)
-        elif os.path.isdir(f):
-            shutil.rmtree(f)
+def del_by_exts(path, exts=None):
 
-    if only_files:
-        for dirpath, dirnames, filenames in os.walk(path):
-            for filename in filenames:
-                if ext is None:
-                    os.remove(os.path.join(dirpath, filename))
-                else:
-                    if filename.endswith(f'.{ext}'):
-                        os.remove(os.path.join(dirpath, filename))
-    else:
-        if ext is None:
-            _del(path)
+    if os.path.isdir(path):
+        default_exts = ['__MACOSX', 'Debug', 'DS_Store', 'dSYM']
+        if exts is None:
+            exts = default_exts
+        elif isinstance(exts, list):
+            exts.extend(default_exts)
         else:
-            for f in glob.glob(f'{path}/*.{ext}'):
-                _del(path)
+            raise ValueError('parameter exts should be list')
+
+        for f in os.listdir(path):
+            file = os.path.join(path, f)
+            for e in exts:
+                if file.endswith(e):
+                    delete(file)
+
+    elif os.path.isfile:
+        os.remove(path)
+    else:
+        raise ValueError(f'{path} does\'nt exist!')
 
 
 def execute_module(module_name, context=None):
-    module = importlib.import_module(f'hackintosh.commands.impl.{module_name}_impl')
+    module = importlib.import_module(
+        f'hackintosh.commands.impl.{module_name}_impl')
     functions = sorted(filter((lambda x: re.search(r'^_\d+', x)), dir(module)))
     for f in functions:
         func = getattr(module, f)
@@ -235,7 +265,8 @@ def execute_module(module_name, context=None):
 
 def clover_kext_patches(patches, output, template=None):
     if template is None:
-        template = Template(open(os.path.join(REPO_ROOT, 'templates', 'clover_kexts_to_patch.templ')).read())
+        template = Template(open(os.path.join(
+            REPO_ROOT, 'templates', 'clover_kexts_to_patch.templ')).read())
 
     with open(output, 'a') as f:
         for p in patches:

@@ -2,7 +2,9 @@ from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, PKG_ROO
 from hackintosh.lib import message, cleanup, execute, zip_dir
 from subprocess import Popen, PIPE
 
-import click, os, shutil
+import click
+import os
+import shutil
 
 
 @click.group(short_help='Commands for setting client settings.')
@@ -18,14 +20,16 @@ def reports():
     execute('kextstat | grep -y applelpc', 'applelpc.out')
     execute('kextstat | grep -y appleintelcpu', 'appleintelcpu.out')
     execute('kextstat | grep -y applehda', 'applehda.out')
-    execute('ls -l /System/Library/Extensions/AppleHDA.kext/Contents/Resources/*.zml*', 'applehda_res.out')
+    execute('ls -l /System/Library/Extensions/AppleHDA.kext/Contents/Resources/*.zml*',
+            'applehda_res.out')
     execute('pmset -g assertions', 'assertions.out')
     execute('system_profiler SPSerialATADataType | grep TRIM', 'assertions.out')
     message('This is a time-consuming operation...')
-    execute('sudo touch /System/Library/Extensions && sudo kextcache -u /', 'kextcache.out')
+    execute(
+        'sudo touch /System/Library/Extensions && sudo kextcache -u /', 'kextcache.out')
 
-    # zip_dir(STAGE_DIR, os.path.join(OUTPUT_DIR, 'out.zip'), '.out')
-
+    # TODO: fix the structure in zip file
+    zip_dir(STAGE_DIR, os.path.join(OUTPUT_DIR, 'out.zip'), '.out')
 
 
 @cli.command(short_help='Switch repository location: pkg or local.')
@@ -48,15 +52,19 @@ def switch_repo():
 
 @cli.command(short_help='Clone local Repository.')
 def clone_repo():
-    shutil.copytree(os.path.join(PKG_ROOT, 'repo'), os.path.join(os.getcwd(), 'repo'))
+    shutil.copytree(os.path.join(PKG_ROOT, 'repo'),
+                    os.path.join(os.getcwd(), 'repo'))
     message('Created local repository stub directory.')
 
 
 @cli.command(short_help='Show current client settings.')
 def info():
-    message({'Hackintosh Workbench Version: ': 'blue', click.style(CLIENT_SETTINGS['version']): 'green'})
-    message({'Laptop Series: ': 'blue', click.style(CLIENT_SETTINGS['current_series']): 'green'})
-    message({'Repository Location: ': 'blue', click.style(CLIENT_SETTINGS['repo_location']): 'green'})
+    message({'Hackintosh Workbench Version: ': 'blue',
+             click.style(CLIENT_SETTINGS['version']): 'green'})
+    message({'Laptop Series: ': 'blue', click.style(
+        CLIENT_SETTINGS['current_series']): 'green'})
+    message({'Repository Location: ': 'blue', click.style(
+        CLIENT_SETTINGS['repo_location']): 'green'})
 
 
 @cli.command(short_help='Set default laptop series.')
