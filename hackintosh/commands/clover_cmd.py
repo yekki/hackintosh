@@ -1,5 +1,5 @@
 from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR
-from hackintosh.lib import clover_kext_patches, cleanup, unzip, download_sourceforge
+from hackintosh.lib import clover_kext_patches, cleanup, unzip
 from subprocess import call
 
 import click
@@ -57,5 +57,5 @@ def kexts_to_patch(patch):
 
 @cli.command(short_help='Download the latest clover bootloader.')
 def download():
-    download_sourceforge('cloverefiboot', 'Installer')
+    #download_sourceforge('cloverefiboot', 'Installer')
     unzip()

@@ -12,7 +12,7 @@
     "sound_card": "ALC292",
     "ethernet_card": "Intel"
   },
-  "kext":{
+  "kexts":{
     "os-x-fake-pci-id":["FakePCIID.kext","FakePCIID_Intel_HD_Graphics", "FakePCIID_Intel_HDMI_Audio.kext"]
   },
   "acpi": {

@@ -1,23 +1,11 @@
-from hackintosh import PKG_ROOT, STAGE_DIR, OUTPUT_DIR, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META
-from bs4 import BeautifulSoup
-from urllib.request import urlopen
+from hackintosh import PKG_ROOT, REPO_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, message
+from hackintosh.parser import parse
 from inspect import signature
 from distutils.dir_util import copy_tree
 from subprocess import call
 from string import Template
 
-
-import requests
-import cgi
-import zipfile
-import os
-import click
-import shutil
-import glob
-import logging
-import re
-import importlib
-import json
+import requests, cgi, zipfile, os, click, shutil, re, importlib
 
 
 def execute(cmd, filename=None):
@@ -39,11 +27,6 @@ def zip_dir(path, filename, suffix=None):
                     zipf.write(os.path.join(root, file))
 
 
-def error(msg, fg='red'):
-    click.echo(click.style(msg, fg=fg))
-    exit(-1)
-
-
 def print_kext(meta, kexts=None):
     message(f"Project Name: {meta['project']} Author: {meta['author']}")
     if kexts:
@@ -51,17 +34,12 @@ def print_kext(meta, kexts=None):
     print()
 
 
-def message(msg, fg='blue', nl=False):
-    if isinstance(msg, dict):
-        str = ''
-        for k, v in msg.items():
-            str += click.style(k, fg=v)
-        click.echo(str)
-    else:
-        click.echo(click.style(msg, fg=fg))
-
-    if nl:
-        print('')
+def cleanup_dir(path):
+    for root, dirs, files in os.walk(path, topdown=False):
+        for name in files:
+            os.remove(os.path.join(root, name))
+        for name in dirs:
+            os.rmdir(os.path.join(root, name))
 
 
 def delete(path):
@@ -76,25 +54,14 @@ def rebuild_kextcache():
 
 
 def download_kext(meta):
-    if meta['source'] == 'bitbucket':
-        download_bitbucket(meta['author'], meta['project'])
-    elif meta['source'] == 'github':
-        if 'filter' in meta['options'].keys():
-            download_github(meta['author'], meta['project'],
-                            meta['options']['filter'])
-        else:
-            download_github(meta['author'], meta['project'])
-    elif meta['source'] == 'sourceforge':
-        download_sourceforge(meta['project'], meta['options']['nav'])
-    elif meta['source'] == 'local':
-        kext = meta['project'] + '.kext'
-        shutil.copytree(os.path.join(REPO_ROOT, 'common', 'kexts', kext),
-                        os.path.join(OUTPUT_DIR, kext))
+    p = parse(meta)
+    if p:
+        download(p['url'], p['name'])
     else:
-        raise ValueError(f"Unsupported source type:{meta['source']}")
+        raise ValueError(f'Failed to parse project meta:{meta}')
 
 
-def download(url, folder=STAGE_DIR, filename=None):
+def download(url, filename=None, folder=STAGE_DIR):
     r = requests.get(url, stream=True)
 
     if not filename:
@@ -119,51 +86,7 @@ def download(url, folder=STAGE_DIR, filename=None):
     return filename
 
 
-def download_github(account, project, filter=None):
-    url = f'https://api.github.com/repos/{account}/{project}/releases/latest'
-    resp = json.loads(urlopen(url).read())
-
-    if filter is None:
-        filter = 'RELEASE'
-
-    for asset in resp['assets']:
-        if filter in asset['name']:
-            download(asset['browser_download_url'], STAGE_DIR, asset['name'])
-
-
-def download_sourceforge(project_name, nav='', search='.zip'):
-    url = f'https://sourceforge.net/projects/{project_name}/files/{nav}'
-    soup = BeautifulSoup(urlopen(url), 'html.parser')
-
-    try:
-        rows = soup.find('table', id='files_list').find('tbody').findAll('tr')
-        for row in rows:
-            filename = row.attrs['title']
-
-            if search in filename:
-                url = f'http://sourceforge.net/projects/{project_name}/files/{nav}/{filename}/download'
-                download(url, STAGE_DIR, filename)
-                break
-    except AttributeError as e:
-        logging.error(f'can not found tag:{e}')
-
-
-def download_bitbucket(author, project_name, folder=STAGE_DIR, filter=None):
-    url = f'https://bitbucket.org/{author}/{project_name}/downloads/'
-    soup = BeautifulSoup(urlopen(url), 'html.parser')
-    try:
-        list = [i.text for i in soup.findAll('a', {"class": "execute"})]
-        if filter:
-            list = [i for i in list if filter in i]
-
-        return download(f'{url}{list[0]}', folder, list[0])
-    except AttributeError as e:
-        logging.error(f"Can's found tag:{e}")
-
-
 def cleanup():
-    global STAGE_DIR, OUTPUT_DIR
-
     if os.path.join(os.getcwd(), 'hackintosh') == PKG_ROOT:
         cleanup_dirs(STAGE_DIR, OUTPUT_DIR, rmdir=True)
     else:
@@ -206,8 +129,6 @@ def copy_dir(src, dst, filter=None):
 
 # keep is a list which should be kept, others will be removed.
 def unzip(keep=None):
-    global STAGE_DIR, OUTPUT_DIR
-
     unzip_dir(STAGE_DIR, OUTPUT_DIR)
     path = os.path.join(OUTPUT_DIR, 'Release')
     if os.path.isdir(path):
@@ -263,6 +184,18 @@ def execute_module(module_name, context=None):
             func()
 
 
+def execute_func(module_name, func_name, params=None):
+    module = importlib.import_module(
+        f'hackintosh.commands.impl.{module_name}_impl')
+    
+    func = getattr(module, f'_{func_name}')
+
+    if params is None:
+        func()
+    else:
+        func(params)
+
+
 def clover_kext_patches(patches, output, template=None):
     if template is None:
         template = Template(open(os.path.join(
@@ -272,3 +205,14 @@ def clover_kext_patches(patches, output, template=None):
         for p in patches:
             content = template.substitute(p)
             f.write(content)
+
+
+def download_kexts(kexts):
+    
+    keep_kexts = []
+
+    for k, v in kexts.items():
+        download_kext(ALL_META['projects'][k])
+        keep_kexts.extend(v)
+
+    return keep_kexts

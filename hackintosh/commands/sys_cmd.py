@@ -1,13 +1,11 @@
-from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, PKG_ROOT, save_conf
-from hackintosh.lib import message, cleanup, execute, zip_dir
-from subprocess import Popen, PIPE
+from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, PKG_ROOT, REPO_ROOT, save_conf
+from hackintosh.lib import message, cleanup, execute, zip_dir, del_by_exts, cleanup_dir
+from subprocess import call
 
-import click
-import os
-import shutil
+import click, os, shutil, glob
 
 
-@click.group(short_help='Commands for setting client settings.')
+@click.group(short_help='Commands for system maintenances.')
 def cli():
     pass
 
@@ -31,6 +29,37 @@ def reports():
     # TODO: fix the structure in zip file
     zip_dir(STAGE_DIR, os.path.join(OUTPUT_DIR, 'out.zip'), '.out')
 
+
+@cli.command(short_help='Update all patches.')
+@click.option('-t', '--type', required=True, type=click.Choice(['static', 'hot']),
+              help='Choose the laptop series')
+def update_patches():
+    if type == 'hot':
+        call([f'git clone https://github.com/RehabMan/OS-X-Clover-Laptop-Config {STAGE_DIR}/OS-X-Clover-Laptop-Config'],
+             shell=True)
+
+        path = os.path.join(REPO_ROOT, 'patches', 'hot', 'dsl')
+        shutil.rmtree(path)
+        shutil.copytree(os.path.join(STAGE_DIR, 'OS-X-Clover-Laptop-Config', 'hotpatch'), path)
+
+        path = os.path.join(REPO_ROOT, 'patches', 'hot', 'config')
+        del_by_exts(path, exts=['plist'])
+
+        for file in glob.glob(f"{os.path.join(STAGE_DIR, 'OS-X-Clover-Laptop-Config')}/*.plist"):
+            shutil.copy2(file, path)
+    elif type == 'static':
+        call([f'git clone https://github.com/RehabMan/Laptop-DSDT-Patch.git {STAGE_DIR}/patches'], shell=True)
+
+        patches_root = os.path.join(REPO_ROOT, 'patches', 'static')
+
+        cleanup_dir(patches_root)
+
+        for file in glob.glob(f"{os.path.join(STAGE_DIR, 'patches')}/**/*.txt"):
+            shutil.copy2(file, patches_root)
+    else:
+        raise ValueError(f'Unsupported patch type:{type}.')
+
+    message('Finished.')
 
 @cli.command(short_help='Switch repository location: pkg or local.')
 def switch_repo():

@@ -1,10 +1,8 @@
-from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR, ALL_META
-from hackintosh.lib import error, message, del_by_exts
+from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR, ALL_META, message, error
+from hackintosh.lib import del_by_exts
 from subprocess import call
 
-import os
-import glob
-import shutil
+import os, glob, shutil
 
 # iasl61 come from MaciASL
 _IASL = os.path.join(PKG_ROOT, 'bin', ALL_META['tools']['iasl'])

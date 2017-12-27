@@ -1,4 +1,5 @@
-from hackintosh.lib import download, unzip, cleanup, download_sourceforge, download_github
+from hackintosh import ALL_META
+from hackintosh.lib import unzip, cleanup, download_kext, download
 import click
 
 
@@ -9,8 +10,7 @@ import click
 def cli(alc, voodoohda, patcher):
     cleanup()
 
-    if alc: download_github('vit9696', 'AppleALC')
-    if voodoohda: download_sourceforge('voodoohda', search='pkg.zip')
-    if patcher: download('https://codeload.github.com/Mirone/AppleHDAPatcher/zip/master',
-                         filename='AppleHDAPatcher-master.zip')
+    if alc: download_kext(ALL_META['projects']['AppleALC'])
+    if voodoohda: download_kext(ALL_META['projects']['VoodooHDA'])
+    if patcher: download('https://codeload.github.com/Mirone/AppleHDAPatcher/zip/master', filename='AppleHDAPatcher-master.zip')
     unzip()

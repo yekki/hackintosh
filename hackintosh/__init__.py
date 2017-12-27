@@ -1,7 +1,7 @@
-import os, json, sys, logging
+import os, json, sys, logging, click
 
-if sys.version_info < (3, 4):
-    raise 'Must be using Python 3.4 or above'
+#if sys.version_info < (3, 4):
+#    raise 'Must be using Python 3.4 or above'
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
 
@@ -12,7 +12,7 @@ PKG_ROOT = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.join(PKG_ROOT, 'repo')
 ENV = os.environ.copy()
 ENV['PATH'] = f"{os.path.join(PKG_ROOT, 'bin')}:{ENV['PATH']}"
-
+DEBUG = True
 ALL_META = dict()
 LAPTOP_META = dict()
 
@@ -28,6 +28,28 @@ def save_conf(data=None):
                            separators=(',', ': '), ensure_ascii=False))
     return data
 
+
+def debug(msg, fg='yellow'):
+    if DEBUG:
+        click.echo(click.style(msg, fg=fg))
+
+
+def error(msg, fg='red'):
+    click.echo(click.style(msg, fg=fg))
+    exit(-1)
+
+
+def message(msg, fg='blue', nl=False):
+    if isinstance(msg, dict):
+        str = ''
+        for k, v in msg.items():
+            str += click.style(k, fg=v)
+        click.echo(str)
+    else:
+        click.echo(click.style(msg, fg=fg))
+
+    if nl:
+        print('')
 
 # check client config file, if not found then create new one
 if os.path.isfile(CLIENT_SETTINGS_FILE):

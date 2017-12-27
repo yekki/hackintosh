@@ -1,5 +1,5 @@
-from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, CLIENT_SETTINGS
-from hackintosh.lib import download_kext, cleanup, unzip, message, print_kext, error
+from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, CLIENT_SETTINGS, error
+from hackintosh.lib import download_kext, cleanup, unzip, message, print_kext, download_kexts
 from subprocess import check_call, CalledProcessError
 import click, os
 
@@ -56,18 +56,15 @@ def laptop():
     message(f"Downloading kexts for laptop:{CLIENT_SETTINGS['current_series']}:")
 
     kexts = []
-    projects = {}
 
-    projects.update(ALL_META['kext']['essential'])
-    projects.update(LAPTOP_META['kext'])
+    k1 = download_kexts(ALL_META['patches']['system']['kexts'])
+    k2 = download_kexts(LAPTOP_META['kexts'])
 
-    for k, v in projects.items():
-        kext = ALL_META['kext']['supported'][k]
-        kexts.extend(v)
-        download_kext(kext)
-    else:
+    kexts.extend(k1)
+    kexts.extend(k2)
+
+    if kexts is not None:
         unzip(kexts)
-
 
 @cli.command(short_help='Show all supported kexts.')
 @click.option('-s', '--supported', is_flag=True, help='Show all supported kext projects.')

@@ -1,5 +1,5 @@
-from hackintosh import LAPTOP_META, STAGE_DIR, LAPTOP_ROOT, ALL_META, PKG_ROOT, CLIENT_SETTINGS, OUTPUT_DIR
-from hackintosh.lib import cleanup, execute_module, message, error
+from hackintosh import LAPTOP_META, STAGE_DIR, LAPTOP_ROOT, ALL_META, PKG_ROOT, CLIENT_SETTINGS, OUTPUT_DIR, error, message
+from hackintosh.lib import cleanup, execute_module
 from subprocess import call
 import click, os, shutil
 

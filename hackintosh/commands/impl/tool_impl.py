@@ -1,5 +1,5 @@
-from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT
-from hackintosh.lib import unzip_file, download, download_rehabman, delete, error, message
+from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT, ALL_META, error
+from hackintosh.lib import unzip_file, download, cleanup_dir, message, download_kext
 from subprocess import call
 import os, stat, shutil, glob
 
@@ -25,8 +25,7 @@ def _update_tool(zip_file, cmd_name):
 
 
 def _1_ssdtPRgen():
-    download('https://codeload.github.com/Piker-Alpha/ssdtPRGen.sh/zip/Beta', folder=STAGE_DIR,
-             filename='ssdtPRGen.sh-Beta.zip')
+    download('https://codeload.github.com/Piker-Alpha/ssdtPRGen.sh/zip/Beta', filename='ssdtPRGen.sh-Beta.zip')
     ssdtPRGen_root = os.path.join(os.path.expanduser('~'), 'Library', 'ssdtPRGen')
 
     if os.path.isdir(ssdtPRGen_root):
@@ -47,7 +46,7 @@ def _2_patches():
 
     patches_root = os.path.join(REPO_ROOT, 'patches')
 
-    delete(patches_root, only_files=True)
+    cleanup_dir(patches_root)
 
     for file in glob.glob(f"{os.path.join(STAGE_DIR, 'patches')}/**/*.txt"):
         shutil.copy2(file, patches_root)
@@ -56,12 +55,13 @@ def _2_patches():
 
 
 def _3_iasl():
-    filename = download_rehabman('acpica')
+    filename = download_kext(ALL_META['projects']['acpica'])
     _update_tool(filename, 'iasl')
     message('iasl is updated.')
 
 
 def _4_patchmatic():
-    filename = download_rehabman('os-x-maciasl-patchmatic', filter='patchmatic')
-    _update_tool(filename, 'patchmatic')
-    message('patchmatic is updated.')
+    pass
+    #filename = download_rehabman('os-x-maciasl-patchmatic', filter='patchmatic')
+    #_update_tool(filename, 'patchmatic')
+    #message('patchmatic is updated.')
