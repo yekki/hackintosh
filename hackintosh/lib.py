@@ -56,7 +56,7 @@ def rebuild_kextcache():
 def download_kext(meta):
     p = parse(meta)
     if p:
-        download(p['url'], p['name'])
+        return download(p['url'], p['name'])
     else:
         raise ValueError(f'Failed to parse project meta:{meta}')
 
@@ -171,8 +171,7 @@ def del_by_exts(path, exts=None):
 
 
 def execute_module(module_name, context=None):
-    module = importlib.import_module(
-        f'hackintosh.commands.impl.{module_name}_impl')
+    module = import_module_impl(module_name)
     functions = sorted(filter((lambda x: re.search(r'^_\d+', x)), dir(module)))
     for f in functions:
         func = getattr(module, f)
@@ -216,3 +215,11 @@ def download_kexts(kexts):
         keep_kexts.extend(v)
 
     return keep_kexts
+
+
+def import_module_impl(name):
+    ret = name.rsplit('.', 1)
+    module_path = ret[0]
+    module_name = ret[1]
+
+    return importlib.import_module(f"{module_path}.impl.{module_name.replace('cmd', 'impl')}")

@@ -16,7 +16,7 @@
       "source": "bitbucket",
       "project": "os-x-maciasl-patchmatic",
       "account": "Rehabman",
-      "options": {}
+      "options": {"filter":"patchmatic"}
     },
     "os-x-voodoo-ps2-controller": {
       "source": "bitbucket",

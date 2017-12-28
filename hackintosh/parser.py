@@ -1,7 +1,7 @@
 from hackintosh import REPO_ROOT, error, debug
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
-import json, os, sys
+import json, os
 
 
 def _github(meta):
