@@ -1,12 +1,9 @@
-from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR
+from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR, error
 from hackintosh.lib import clover_kext_patches, cleanup, unzip
 from subprocess import call
 
-import click
-import os
-import shutil
-import logging
-import sys
+import click, os, shutil, sys
+
 
 
 @click.group(short_help="Commands for external devices.")
@@ -33,7 +30,7 @@ def brightness_control():
     if os.path.exists(pnlf):
         shutil.copy2(pnlf, OUTPUT_DIR)
     else:
-        logging.error(f'failed to find ACPI file at {pnlf}')
+        error(f'failed to find ACPI file at {pnlf}')
 
     kext = os.path.join(f'{STAGE_DIR}/probook.git',
                         'kexts', 'AppleBacklightInjector.kext')
@@ -42,7 +39,7 @@ def brightness_control():
         shutil.copytree(kext, os.path.join(
             OUTPUT_DIR, 'AppleBacklightInjector.kext'))
     else:
-        logging.error(f'failed to find kext at {kext}')
+        error(f'failed to find kext at {kext}')
 
     clover_kext_patches(ALL_META['patches']['brightness_control']['clover']['kexts_to_patch'],
                         os.path.join(OUTPUT_DIR, 'patch.plist'))
