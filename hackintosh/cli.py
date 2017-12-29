@@ -1,4 +1,6 @@
 from hackintosh import PKG_ROOT, error, debug
+from hackintosh.lib import cleanup
+
 from pathlib import Path
 import click, os, glob
 
@@ -15,13 +17,18 @@ class MainCLI(click.MultiCommand):
         return rv
 
     def get_command(self, ctx, name):
-        try:
-            if name.endswith('.py'):
-                return
-            mod = __import__(
-                f'hackintosh.commands.{name}_cmd', None, None, ['cli'])
-        except ImportError as e:
-            debug(e)
-            error(f'No command named: {name}.')
+        ns = {}
+        fn = f"{os.path.join(PKG_ROOT, 'commands')}/{name}_cmd.py"
+
+        if os.path.exists(fn):
+            with open(fn) as f:
+                code = compile(f.read(), fn, 'exec')
+                eval(code, ns, ns)
+        elif name == 'cleanup':
+            cleanup()
+            click.clear()
+            return
         else:
-            return mod.cli
+            return
+
+        return ns['cli']

@@ -1,8 +1,8 @@
-from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, PKG_ROOT, REPO_ROOT, save_conf
-from hackintosh.lib import message, cleanup, execute, zip_dir, del_by_exts, cleanup_dir
+from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, PKG_ROOT, save_conf
+from hackintosh.lib import message, cleanup, execute, zip_dir, to_num, download_project, unzip
 from subprocess import call
 
-import click, os, shutil, glob
+import click, os, shutil
 
 
 @click.group(short_help='Commands for system maintenances.')
@@ -66,10 +66,49 @@ def info():
 
 
 @cli.command(short_help='Set default laptop series.')
-@click.option('-s', '--series', required=True, type=click.Choice(ALL_META['supported']),
+@click.option('-s', '--series', required=True, type=click.Choice(ALL_META['certified']['series']),
               help='Choose the laptop series')
 def laptop(series):
     if series in ALL_META['supported']:
         CLIENT_SETTINGS['current_series'] = series
         save_conf(CLIENT_SETTINGS)
         message(f'Your current laptop series is {series}')
+
+
+@cli.command(short_help='Open urls.')
+def open():
+    ans = True
+    while ans:
+
+        print('\n'.join([f"{i+1}.{v['desc']}" for i, v in enumerate(ALL_META['bookmark'])]) + "\n" + str(len(ALL_META['bookmark']) + 1) + '.Exit\n')
+
+        ans = input("What would you like to access? ")
+
+        index = to_num(ans)
+
+        if index == 0:
+            print("\n Not Valid Choice Try again")
+        elif index == len(ALL_META['bookmark']) + 1:
+            print("\n Goodbye")
+            ans = None
+        else:
+            m = ALL_META['bookmark'][index-1]
+
+            if m['uri'].startswith('http'):
+                click.launch(m['uri'])
+            else:
+                call(["open " + m['desc']], shell=True)
+
+
+
+@cli.command(short_help='Download Apps.')
+@click.argument('kexts', nargs=-1, type=click.STRING)
+def download(kexts):
+    cleanup()
+    for k in kexts:
+        if k in ALL_META['projects'].keys():
+            download_project(ALL_META['projects'][k])
+        else:
+            message(f'{k} is not supported.')
+    unzip()
+    pass

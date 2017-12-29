@@ -11,94 +11,116 @@
     "iasl": "iasl61",
     "patchmatic": "patchmatic"
   },
+  "bookmark": [
+    {"uri": "/Library/Extensions", "desc":"/Library/Extensions"},
+    {"uri": "/EFI/EFI", "desc":"/EFI/EFI"},
+    {"uri": "http://www.yekki.me", "desc":"Yekki home page"},
+    {"uri": "https://github.com/rehabman", "desc":"Rehabman github"},
+    {"uri": "https://www.tonymacx86.com", "desc":"Tonymacx86 website"}
+  ],
   "projects": {
     "os-x-maciasl-patchmatic": {
       "source": "bitbucket",
       "project": "os-x-maciasl-patchmatic",
+      "type": "cmd",
       "account": "Rehabman",
       "options": {"filter":"patchmatic"}
     },
     "os-x-voodoo-ps2-controller": {
       "source": "bitbucket",
       "project": "os-x-voodoo-ps2-controller",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-acpi-debug": {
       "source": "bitbucket",
       "project": "os-x-acpi-debug",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-usb-inject-all": {
       "source": "bitbucket",
       "project": "os-x-usb-inject-all",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-generic-usb3": {
       "source": "bitbucket",
       "project": "os-x-generic-usb3",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-brcmpatchram": {
       "source": "bitbucket",
       "project": "os-x-brcmpatchram",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-acpi-keyboard": {
       "source": "bitbucket",
       "project": "os-x-acpi-keyboard",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-acpi-battery-driver": {
       "source": "bitbucket",
       "project": "os-x-acpi-battery-driver",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-intel-backlight": {
       "source": "bitbucket",
       "project": "os-x-intel-backlight",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-fakesmc-kozlek": {
       "source": "bitbucket",
       "project": "os-x-fakesmc-kozlek",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-eapd-codec-commander": {
       "source": "bitbucket",
       "project": "os-x-eapd-codec-commander",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-fake-pci-id": {
       "source": "bitbucket",
       "project": "os-x-fake-pci-id",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "os-x-intel-network": {
       "source": "bitbucket",
       "project": "os-x-intel-network",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
     },
     "acpica": {
       "source": "bitbucket",
       "project": "acpica",
+      "type": "cmd",
       "account": "rehabman",
       "options": {}
     },
     "IntelGraphicsDVMTFixup": {
       "source": "github",
       "project": "IntelGraphicsDVMTFixup",
+      "type": "kext",
       "account": "BarbaraPalvin",
       "options": {
         "filter": ""
@@ -107,6 +129,7 @@
     "IntelGraphicsFixup": {
       "source": "sourceforge",
       "project": "IntelGraphicsFixup",
+      "type": "kext",
       "account": "lvs1974",
       "options": {
         "nav": "/Release"
@@ -115,34 +138,57 @@
     "VoodooHDA": {
       "source": "sourceforge",
       "project": "voodoohda",
+      "type": "pkg",
       "account": "",
       "options": {
         "ext": ".pkg.zip"
       }
     },
+      "Clover": {
+      "source": "sourceforge",
+      "project": "cloverefiboot",
+      "type": "pkg",
+      "account": "",
+      "options": {
+        "nav": "Installer"
+      }
+    },
     "Lilu": {
       "source": "github",
       "project": "Lilu",
+      "type": "kext",
       "account": "vit9696",
       "options": {}
     },
     "Shiki": {
       "source": "github",
       "project": "Shiki",
+      "type": "kext",
       "account": "vit9696",
       "options": {}
     },
     "AppleALC": {
       "source": "github",
       "project": "AppleALC",
+      "type": "kext",
       "account": "vit9696",
       "options": {}
     },
     "AppleBacklightInjector": {
       "source": "local",
       "project": "AppleBacklightInjector",
+      "type": "kext",
       "account": "Rehabman",
       "options": {}
+    },
+    "AppleHDAPatcher": {
+      "source": "github",
+      "project": "AppleHDAPatcher",
+      "type": "app",
+      "account": "Mirone",
+      "options": {
+        "from": "source"
+      }
     }
   },
   "external_device": {

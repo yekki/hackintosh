@@ -31,7 +31,8 @@ def save_conf(data=None):
 
 def debug(msg, fg='yellow'):
     if DEBUG:
-        click.echo(click.style(msg, fg=fg))
+        pass
+        #click.echo(click.style(msg, fg=fg))
 
 
 def error(msg, fg='red'):

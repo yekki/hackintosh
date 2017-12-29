@@ -1,5 +1,5 @@
 from hackintosh import ALL_META, LAPTOP_META, OUTPUT_DIR, CLIENT_SETTINGS, error
-from hackintosh.lib import download_kext, cleanup, unzip, message, print_kext, download_kexts
+from hackintosh.lib import download_project, cleanup, unzip, message, print_kext, download_kexts
 from subprocess import check_call, CalledProcessError
 import click, os
 
@@ -16,7 +16,7 @@ def download(kexts):
 
     for k in kexts:
         if k in ALL_META['kext']['supported'].keys():
-            download_kext(ALL_META['kext']['supported'][k])
+            download_project(ALL_META['kext']['supported'][k])
         else:
             message(f'{k} is not supported.')
     unzip()
@@ -30,7 +30,7 @@ def install(voodoops2):
         if not os.path.exists(os.path.join(OUTPUT_DIR, 'VoodooPS2Daemon')) or os.path.exists(
                 os.path.join(OUTPUT_DIR, 'org.rehabman.voodoo.driver.Daemon.plist')):
             message("VoodooPS2 isn't exists, downloading it now...")
-            download_kext(ALL_META['kext']['supported']['os-x-voodoo-ps2-controller'])
+            download_project(ALL_META['kext']['supported']['os-x-voodoo-ps2-controller'])
             unzip(ALL_META['kext']['essential']['os-x-voodoo-ps2-controller'])
 
         message("VoodooPS2 downloaded, installing now...")

@@ -53,7 +53,7 @@ def rebuild_kextcache():
     call(['sudo', '/usr/sbin/kextcache', '-i', '/'])
 
 
-def download_kext(meta):
+def download_project(meta):
     p = parse(meta)
     if p:
         return download(p['url'], p['name'])
@@ -135,10 +135,6 @@ def unzip(keep=None):
         copy_tree(path, OUTPUT_DIR)
         shutil.rmtree(path)
 
-    # for f in ('__MACOSX', 'Debug', '.DS_Store'):
-    #    delete(os.path.join(OUTPUT_DIR, f))
-
-    # delete(OUTPUT_DIR, ext='md5', only_files=True)
     del_by_exts(OUTPUT_DIR)
 
     if keep is not None:
@@ -146,11 +142,12 @@ def unzip(keep=None):
             if f not in keep:
                 delete(os.path.join(OUTPUT_DIR, f))
 
+    del_by_exts(STAGE_DIR)
 
 def del_by_exts(path, exts=None):
 
     if os.path.isdir(path):
-        default_exts = ['__MACOSX', 'Debug', 'DS_Store', 'dSYM']
+        default_exts = ['__MACOSX', 'Debug', 'DS_Store', 'dSYM', 'md5']
         if exts is None:
             exts = default_exts
         elif isinstance(exts, list):
@@ -211,11 +208,17 @@ def download_kexts(kexts):
     keep_kexts = []
 
     for k, v in kexts.items():
-        download_kext(ALL_META['projects'][k])
+        download_project(ALL_META['projects'][k])
         keep_kexts.extend(v)
 
     return keep_kexts
 
+
+def to_num(n):
+    try:
+        return int(n)
+    except ValueError:
+        return 0
 
 def import_module_impl(name):
     ret = name.rsplit('.', 1)

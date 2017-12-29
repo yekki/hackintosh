@@ -1,5 +1,5 @@
 from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT, ALL_META, error
-from hackintosh.lib import unzip_file, download, cleanup_dir, message, download_kext, del_by_exts
+from hackintosh.lib import unzip_file, download, cleanup_dir, message, download_project, del_by_exts
 from subprocess import call
 import os, stat, shutil, glob
 
@@ -72,12 +72,12 @@ def _2_patches():
 
 
 def _3_iasl():
-    filename = download_kext(ALL_META['projects']['acpica'])
+    filename = download_project(ALL_META['projects']['acpica'])
     _update_tool(filename, 'iasl')
     message('iasl is updated.')
 
 
 def _4_patchmatic():
-    filename = download_kext(ALL_META['projects']['os-x-maciasl-patchmatic'])
+    filename = download_project(ALL_META['projects']['os-x-maciasl-patchmatic'])
     _update_tool(filename, 'patchmatic')
     message('patchmatic is updated.')

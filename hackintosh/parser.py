@@ -4,17 +4,23 @@ from urllib.request import urlopen
 import json, os
 
 
+def _get(meta, key, default):
+    if key in meta['options'].keys():
+        return meta['options'][key]
+    else:
+        return default
+
 def _github(meta):
+    f = _get(meta, 'from', None)
+
+    if f == 'source':
+        return {'url': f"https://codeload.github.com/{meta['account']}/{meta['project']}/zip/master", 'name':f"{meta['project']}-master.zip"}
+
     url = f"https://api.github.com/repos/{meta['account']}/{meta['project']}/releases/latest"
     resp = json.loads(urlopen(url).read())
 
-    if 'filter' in meta['options'].keys():
-        f = meta['options']['filter']
-    else:
-        f = 'RELEASE'
-
     for asset in resp['assets']:
-        if f in asset['name']:
+        if _get(meta, 'filter', 'RELEASE') in asset['name']:
             return {'url': asset['browser_download_url'], 'name': asset['name']}
 
     return None
@@ -76,6 +82,9 @@ def _sourceforge(meta):
 def _local(meta):
     return {'url': os.path.join(REPO_ROOT, 'common', 'kexts', f"{meta['project']}.kext"), 'name': meta['project']}
 
+# for future
+def _direct(meta):
+    return {'url': meta['options']['url'], 'name': meta['options']['name']}
 
 def parse(meta):
     if meta:
