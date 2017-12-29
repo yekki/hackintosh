@@ -29,7 +29,8 @@ def build(hotpatch):
         else:
             error('failed to hotpatch.')
     else:
-        execute_module('acpi')
+        #TODO ugly, should be fixed
+        execute_module('hackintosh.commands.acpi_cmd')
 
 
 @cli.command(short_help='Show ACPI patches in json format.')

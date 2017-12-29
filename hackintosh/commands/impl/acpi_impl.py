@@ -27,12 +27,12 @@ def handle_patche_list(acpi_list, ext, dest=None):
                 if os.path.exists(file):
                     files.append(file)
                 else:
-                    file = os.path.join(REPO_ROOT, 'patches', 'static', f)
+                    file = os.path.join(REPO_ROOT, 'patches', 'static', 'patches', f)
                     if os.path.exists(file):
                         files.append(file)
                     else:
                         file = os.path.join(
-                            REPO_ROOT, 'patches', 'hot', 'hotpatch', f)
+                            REPO_ROOT, 'patches', 'hot', 'hotpatch', 'patches', f)
                         if os.path.exists(file):
                             files.append(file)
 
@@ -103,7 +103,20 @@ def _5_apply_ssdt_patches():
         call([f'{_PATCHMATIC}', dsl_file, patch_file, dsl_file])
 
 
-def _6_compile_acpi():
+def _6_check_dsl():
+    files = os.listdir(STAGE_DIR)
+    losts = []
+    call('say hello', shell=True)
+    for s in LAPTOP_META['acpi']['patches']['ssdt_list']:
+        print(s)
+        if f'{s}.dsl' not in files:
+            losts.append(s)
+
+    if len(losts) > 0:
+        handle_patche_list(losts, 'dsl')
+
+
+def _7_compile_acpi():
     for f in glob.glob(f'{STAGE_DIR}/*.dsl'):
         filename = os.path.basename(f).split('.')[0]
         call([f'{_IASL}', '-vr', '-w1', '-p',
@@ -112,7 +125,7 @@ def _6_compile_acpi():
     handle_patche_list(LAPTOP_META['ACPI_LIST'], '.aml', OUTPUT_DIR)
 
 
-def _7_check():
+def _8_check():
     s1 = [f.replace('.aml', '') for f in os.listdir(OUTPUT_DIR)]
     s2 = set(LAPTOP_META['ACPI_LIST'])
     s3 = s2.difference(s1)
