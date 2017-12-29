@@ -81,16 +81,17 @@ def open():
     ans = True
     while ans:
 
-        print('\n'.join([f"{i+1}.{v['desc']}" for i, v in enumerate(ALL_META['bookmark'])]) + "\n" + str(len(ALL_META['bookmark']) + 1) + '.Exit\n')
+        message('\n'.join([f"{i+1}.{v['desc']}" for i, v in enumerate(ALL_META['bookmark'])]) + "\n" + str(len(ALL_META['bookmark']) + 1) + '.Exit\n')
 
-        ans = input("What would you like to access? ")
+        message("What would you like to access? ")
+        ans = click.getchar()
 
         index = to_num(ans)
 
         if index == 0:
-            print("\n Not Valid Choice Try again")
+            message("\n Not Valid Choice Try again", fg="red")
         elif index == len(ALL_META['bookmark']) + 1:
-            print("\n Goodbye")
+            message("\n Goodbye")
             ans = None
         else:
             m = ALL_META['bookmark'][index-1]
@@ -98,7 +99,8 @@ def open():
             if m['uri'].startswith('http'):
                 click.launch(m['uri'])
             else:
-                call(["open " + m['desc']], shell=True)
+                #call(["open " + m['desc']], shell=True)
+                click.launch(m['uri'], locate=True)
 
 
 @cli.command(short_help='Install widgets.')

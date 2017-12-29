@@ -2,7 +2,7 @@ from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR,
 from hackintosh.lib import del_by_exts
 from subprocess import call
 
-import os, glob, shutil
+import os, glob, shutil, click
 
 # iasl61 come from MaciASL
 _IASL = os.path.join(PKG_ROOT, 'bin', ALL_META['tools']['iasl'])
@@ -43,9 +43,9 @@ def handle_patche_list(acpi_list, ext, dest=None):
         for f in files:
             shutil.copy2(f, STAGE_DIR)
     else:
-        with open(dest, 'w') as outfile:
+        with click.open_file(dest, 'w') as outfile:
             for f in files:
-                with open(f) as infile:
+                with click.open_file(f) as infile:
                     outfile.write(infile.read())
 
 
