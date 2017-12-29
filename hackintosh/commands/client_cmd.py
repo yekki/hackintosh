@@ -1,6 +1,7 @@
-from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, PKG_ROOT, save_conf
-from hackintosh.lib import message, cleanup, execute, zip_dir, to_num, download_project, unzip
+from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, save_conf, error
+from hackintosh.lib import message, cleanup, execute, zip_dir, to_num, download_project, unzip, download_kexts, print_project, cleanup_dirs, clover_kext_patches
 from subprocess import call
+from subprocess import check_call, CalledProcessError
 
 import click, os, shutil
 
@@ -100,9 +101,35 @@ def open():
                 call(["open " + m['desc']], shell=True)
 
 
+@cli.command(short_help='Install widgets.')
+@click.option('-v', '--voodoops2', is_flag=True,
+              help='Install VoodooPS2Daemon & org.rehabman.voodoo.driver.Daemon.plist')
+def install(voodoops2):
+    if voodoops2:
+        if not os.path.exists(os.path.join(OUTPUT_DIR, 'VoodooPS2Daemon')) or os.path.exists(
+                os.path.join(OUTPUT_DIR, 'org.rehabman.voodoo.driver.Daemon.plist')):
+            message("VoodooPS2 isn't exists, downloading it now...")
+            download_project(ALL_META['kext']['supported']['os-x-voodoo-ps2-controller'])
+            unzip(ALL_META['kext']['essential']['os-x-voodoo-ps2-controller'])
 
-@cli.command(short_help='Download Apps.')
-@click.argument('kexts', nargs=-1, type=click.STRING)
+        message("VoodooPS2 downloaded, installing now...")
+
+        try:
+            check_call(f'sudo cp {OUTPUT_DIR}/VoodooPS2Daemon /usr/bin', shell=True)
+            message('VoodooPS2Daemon is installed.')
+        except CalledProcessError:
+            error('Failed to install VoodooPS2 widgets: VoodooPS2Daemon')
+
+        try:
+            check_call(f'sudo cp {OUTPUT_DIR}/org.rehabman.voodoo.driver.Daemon.plist /Library/LaunchDaemons',
+                       shell=True)
+            message('org.rehabman.voodoo.driver.Daemon.plist is installed.')
+        except CalledProcessError:
+            error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')
+
+
+@cli.command(short_help='Download projects.')
+@click.argument('projects', nargs=-1, type=click.STRING)
 def download(kexts):
     cleanup()
     for k in kexts:
@@ -112,3 +139,77 @@ def download(kexts):
             message(f'{k} is not supported.')
     unzip()
     pass
+
+
+@cli.command(short_help=f"Download kexts for laptop:{CLIENT_SETTINGS['current_series']}")
+def laptop():
+    cleanup()
+
+    message(f"Downloading kexts for laptop:{CLIENT_SETTINGS['current_series']}:")
+
+    kexts = []
+
+    k1 = download_kexts(ALL_META['patches']['system']['kexts'])
+    k2 = download_kexts(LAPTOP_META['kexts'])
+
+    kexts.extend(k1)
+    kexts.extend(k2)
+
+    if kexts is not None:
+        unzip(kexts)
+
+
+@cli.command(short_help='Show all app projects.')
+def app_info():
+    message('Supported app projects:')
+    [print_project(v) for v in ALL_META['projects'].values() if v['type'] == 'app']
+
+    message('Supported pkg projects:')
+    [print_project(v) for v in ALL_META['projects'].values() if v['type'] == 'pkg']
+
+
+@cli.command(short_help='Show all kext projects.')
+@click.option('-s', '--supported', is_flag=True, help='Show all supported kext projects.')
+@click.option('-l', '--laptop', is_flag=True, help='Show kexts for current laptop.')
+@click.option('-c', '--common', is_flag=True, help='Show system kexts for hackintosh installation.')
+def kext_info(supported, laptop, common):
+
+    if supported:
+        message('Supported kexts projects:')
+        [print_project(v) for v in ALL_META['projects'].values() if v['type'] == 'kext']
+
+
+    if laptop:
+        message(f"kexts for laptop {CLIENT_SETTINGS['current_series']}:")
+        projects = {}
+        projects.update(LAPTOP_META['kexts'])
+        projects.update(ALL_META['patches']['system']['kexts'])
+        for k, v in projects.items():
+            pmeta = ALL_META['projects'][k]
+            kexts = ','.join(v)
+            print_project(pmeta, kexts)
+
+    if common:
+        message('kexts for all laptops:')
+        for k, v in ALL_META['patches']['system']['kexts'].items():
+            pmeta = ALL_META['projects'][k]
+            kexts = ','.join(v)
+            print_project(pmeta, kexts)
+
+
+@cli.command(short_help="Commands for external devices.")
+@click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
+              help='Choose the device id')
+def device(id):
+    cleanup()
+    download_kexts(ALL_META['external_device'][id]['kexts'])
+    unzip()
+
+    cleanup_dirs(os.path.join(OUTPUT_DIR, 'kexts'), os.path.join(OUTPUT_DIR, 'clover'))
+
+    for k in os.listdir(OUTPUT_DIR):
+        if k.endswith('.kext'):
+            shutil.move(os.path.join(OUTPUT_DIR, k), os.path.join(OUTPUT_DIR, 'kexts'))
+
+    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
+                        os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))

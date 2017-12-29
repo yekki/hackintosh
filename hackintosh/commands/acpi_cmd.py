@@ -3,7 +3,9 @@ from hackintosh.lib import cleanup, execute_module
 from subprocess import call
 import click, os, shutil
 
+
 _IASL = os.path.join(PKG_ROOT, 'bin', ALL_META['tools']['iasl'])
+
 
 @click.group(short_help="Commands for patching & building DSDT/SSDT(s).")
 def cli():

@@ -27,8 +27,8 @@ def zip_dir(path, filename, suffix=None):
                     zipf.write(os.path.join(root, file))
 
 
-def print_kext(meta, kexts=None):
-    message(f"Project Name: {meta['project']} Author: {meta['author']}")
+def print_project(meta, kexts=None):
+    message(f"Project Name: {meta['project']} Author: {meta['account']}")
     if kexts:
         message(kexts, fg='green')
     print()

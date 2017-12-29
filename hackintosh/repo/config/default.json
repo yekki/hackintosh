@@ -194,7 +194,7 @@
   "external_device": {
     "bcm94352z": {
       "type": "combo",
-      "kext": {
+      "kexts": {
         "os-x-brcmpatchram": [
           "BrcmFirmwareRepo.kext",
           "BrcmPatchRAM2.kext"
@@ -210,7 +210,7 @@
     },
     "bta-408": {
       "type": "bt",
-      "kext": {
+      "kexts": {
         "os-x-brcmpatchram": [
           "BrcmFirmwareRepo.kext",
           "BrcmPatchRAM2.kext"
@@ -263,7 +263,7 @@
       }
     },
     "brightness_control": {
-      "kext": {
+      "kexts": {
         "AppleBacklightInjector": [
           "AppleBacklightInjector.kext"
         ]

@@ -1,4 +1,4 @@
-from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR, ALL_META, message, error
+from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR, ALL_META, error
 from hackintosh.lib import del_by_exts
 from subprocess import call
 
@@ -32,7 +32,7 @@ def handle_patche_list(acpi_list, ext, dest=None):
                         files.append(file)
                     else:
                         file = os.path.join(
-                            REPO_ROOT, 'patches', 'hot', 'hotpatch', 'patches', f)
+                            REPO_ROOT, 'patches', 'hot', 'patches', f)
                         if os.path.exists(file):
                             files.append(file)
 
@@ -106,9 +106,7 @@ def _5_apply_ssdt_patches():
 def _6_check_dsl():
     files = os.listdir(STAGE_DIR)
     losts = []
-    call('say hello', shell=True)
     for s in LAPTOP_META['acpi']['patches']['ssdt_list']:
-        print(s)
         if f'{s}.dsl' not in files:
             losts.append(s)
 
@@ -133,5 +131,3 @@ def _8_check():
     if len(s3):
         for i in s3:
             error(f'Failed to build {i}.')
-    else:
-        message('Finished.')
