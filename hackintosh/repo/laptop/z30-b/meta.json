@@ -16,7 +16,7 @@
     },
     "ethernet_card": "Intel"
   },
-  "kext": {
+  "kexts": {
     "IntelGraphicsDVMTFixup": ["IntelGraphicsDVMTFixup.kext"],
     "AppleALC": ["AppleALC.kext"],
     "os-x-fake-pci-id": ["FakePCIID_Intel_HDMI_Audio.kext", "FakePCIID.kext"]
