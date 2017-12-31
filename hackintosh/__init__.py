@@ -84,3 +84,5 @@ else:
 
 if not bool(ALL_META): raise ValueError("The global meta data is empty.")
 if not bool(LAPTOP_META): raise ValueError("The laptop meta data is empty.")
+
+_IASL = os.path.join(PKG_ROOT, 'bin', ALL_META['tools']['iasl'])

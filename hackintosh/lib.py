@@ -168,7 +168,7 @@ def del_by_exts(path, exts=None):
 
 
 def execute_module(module_name, context=None):
-    module = import_module_impl(module_name)
+    module = importlib.import_module(f'hackintosh.commands.{module_name}')
     functions = sorted(filter((lambda x: re.search(r'^_\d+', x)), dir(module)))
     for f in functions:
         func = getattr(module, f)
@@ -184,9 +184,9 @@ def execute_module(module_name, context=None):
             click.pause('Press any key continue.')
 
 
-def execute_func(module_name, func_name, params=None):
+def _execute_func(module_name, func_name, params=None):
     module = importlib.import_module(
-        f'hackintosh.commands.impl.{module_name}_impl')
+        f'hackintosh.commands.{module_name}')
     
     func = getattr(module, f'_{func_name}')
 
@@ -199,6 +199,20 @@ def execute_func(module_name, func_name, params=None):
         click.secho(ret, fg='blue', bold=True)
         click.pause('Press any key continue.')
 
+
+def execute_func(module_name, func_name, params=None):
+    module = importlib.import_module(f'hackintosh.commands.{module_name}')
+
+    if f'_{func_name}' in dir(module):
+        func = getattr(module, f'_{func_name}')
+    else:
+        r = r'^_\d+_' + re.escape(func_name)
+        func = getattr(module, list(filter((lambda x: re.search(r, x)), dir(module)))[0])
+
+    if params:
+        func(params)
+    else:
+        func()
 
 def clover_kext_patches(patches, output, template=None):
     if template is None:
@@ -227,10 +241,3 @@ def to_num(n):
         return int(n)
     except ValueError:
         return 0
-
-def import_module_impl(name):
-    ret = name.rsplit('.', 1)
-    module_path = ret[0]
-    module_name = ret[1]
-
-    return importlib.import_module(f"{module_path}.impl.{module_name.replace('cmd', 'impl')}")

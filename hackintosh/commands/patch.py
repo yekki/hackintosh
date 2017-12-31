@@ -34,6 +34,7 @@ def _brightness_control():
     clover_kext_patches(ALL_META['patches']['brightness_control']['clover']['kexts_to_patch'],
                         os.path.join(OUTPUT_DIR, 'patch.plist'))
 
+    return 'All widgets for patch are prepared.'
 
 def _system():
     kexts = download_kexts(ALL_META['patches']['system']['kexts'])
@@ -43,3 +44,5 @@ def _system():
 
     clover_kext_patches(ALL_META['patches']['system']['clover']['kexts_to_patch'],
                         os.path.join(OUTPUT_DIR, 'patch.plist'))
+
+    return 'All widgets for patch are prepared.'
