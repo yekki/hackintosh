@@ -66,10 +66,11 @@ def _1_initialize():
     else:
         error(f"{_PATCHMATIC} not found, please install it firstly.")
 
+    return 'Checked compile tools successful.'
 
 def _2_prepare_acpi_files():
     handle_patche_list(LAPTOP_META['ACPI_LIST'], 'aml')
-
+    return 'Staged native acpi files.'
 
 def _3_decompile():
     refs_file = os.path.join(LAPTOP_ROOT, 'patches', 'refs.txt')
@@ -80,7 +81,7 @@ def _3_decompile():
     del_by_exts(STAGE_DIR, exts=['aml'])
 
     handle_patche_list(LAPTOP_META['ACPI_LIST'], 'dsl')
-
+    return 'Decompiled native acpi files.'
 
 def _4_apply_dsdt_patches():
     handle_patche_list(LAPTOP_META['acpi']['patches']['dsdt'], 'txt', os.path.join(
@@ -88,6 +89,7 @@ def _4_apply_dsdt_patches():
     call([f'{_PATCHMATIC}', f'{STAGE_DIR}/DSDT.dsl',
           f'{STAGE_DIR}/DSDT_PATCHES.txt', f'{STAGE_DIR}/DSDT.dsl'])
 
+    return 'Applied patches to DSDT.'
 
 def _5_apply_ssdt_patches():
     keys = [x.upper() for x in LAPTOP_META['acpi']['patches']['ssdt'].keys()]
@@ -102,6 +104,7 @@ def _5_apply_ssdt_patches():
             LAPTOP_META['acpi']['patches']['ssdt'][ssdt.lower()], 'txt', patch_file)
         call([f'{_PATCHMATIC}', dsl_file, patch_file, dsl_file])
 
+    return 'Applied patches to SSDT(s).'
 
 def _6_check_dsl():
     files = os.listdir(STAGE_DIR)
@@ -113,6 +116,7 @@ def _6_check_dsl():
     if len(losts) > 0:
         handle_patche_list(losts, 'dsl')
 
+    return 'Checked & appended DSL files.'
 
 def _7_compile_acpi():
     for f in glob.glob(f'{STAGE_DIR}/*.dsl'):
@@ -122,6 +126,7 @@ def _7_compile_acpi():
 
     handle_patche_list(LAPTOP_META['ACPI_LIST'], '.aml', OUTPUT_DIR)
 
+    return 'Compiled all files.'
 
 def _8_check():
     s1 = [f.replace('.aml', '') for f in os.listdir(OUTPUT_DIR)]
@@ -131,3 +136,5 @@ def _8_check():
     if len(s3):
         for i in s3:
             error(f'Failed to build {i}.')
+
+    return 'Final check passed.'

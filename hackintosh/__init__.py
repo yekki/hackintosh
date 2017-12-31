@@ -1,11 +1,16 @@
-import os, json, sys, logging, click
+import os, json, sys, click
 
-#if sys.version_info < (3, 4):
-#    raise 'Must be using Python 3.4 or above'
+if sys.version_info < (3, 4):
+    raise ValueError('Must be using Python 3.4 or above')
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
+APP_NAME='Hackintosh Workbench'
 
-CLIENT_SETTINGS_FILE = os.path.join(os.path.expanduser('~'), '.yekki.json')
+if not os.path.exists(click.get_app_dir(APP_NAME)):
+    os.mkdir(click.get_app_dir(APP_NAME))
+    exit()
+
+CLIENT_SETTINGS_FILE = os.path.join(click.get_app_dir(APP_NAME), '.yekki.json')
+
 STAGE_DIR = os.path.join(os.getcwd(), 'stage')
 OUTPUT_DIR = os.path.join(os.getcwd(), 'output')
 PKG_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -31,26 +36,12 @@ def save_conf(data=None):
 
 def debug(msg, fg='yellow'):
     if DEBUG:
-        pass
-        #click.echo(click.style(msg, fg=fg))
+        click.secho(msg, fg=fg)
 
 
 def error(msg, fg='red'):
-    click.echo(click.style(msg, fg=fg))
+    click.secho(msg, fg=fg)
     exit(-1)
-
-
-def message(msg, fg='blue', nl=False):
-    if isinstance(msg, dict):
-        str = ''
-        for k, v in msg.items():
-            str += click.style(k, fg=v)
-        click.echo(str)
-    else:
-        click.echo(click.style(msg, fg=fg))
-
-    if nl:
-        print('')
 
 # check client config file, if not found then create new one
 if os.path.isfile(CLIENT_SETTINGS_FILE):
@@ -71,7 +62,7 @@ if not os.path.exists(_META_PATH):
     CLIENT_SETTINGS['repo_fixed'] = True
     save_conf(CLIENT_SETTINGS)
     REPO_ROOT = os.path.join(PKG_ROOT, 'repo')
-    logging.info("Can't find local repository, auto switch to pkg repository.")
+    click.secho("Can't find local repository, auto switch to pkg repository.", fg='red')
     _META_PATH = os.path.join(REPO_ROOT, 'config', 'default.json')
     LAPTOP_ROOT = os.path.join(REPO_ROOT, 'laptop', CLIENT_SETTINGS['current_series'])
 

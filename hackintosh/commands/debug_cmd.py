@@ -1,11 +1,8 @@
 import click
 
+APP_NAME = 'yekki'
 
 @click.command()
 def cli():
-    MARKER = '# Everything below is ignored\n'
-    message = click.edit('\n\n' + MARKER)
-    print(message)
-    if message is not None:
-        return message.split(MARKER, 1)[0].rstrip('\n')
+    print(click.get_app_dir(APP_NAME))
 

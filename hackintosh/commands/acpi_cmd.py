@@ -1,4 +1,4 @@
-from hackintosh import LAPTOP_META, STAGE_DIR, LAPTOP_ROOT, ALL_META, PKG_ROOT, CLIENT_SETTINGS, OUTPUT_DIR, error, message
+from hackintosh import LAPTOP_META, STAGE_DIR, LAPTOP_ROOT, ALL_META, PKG_ROOT, CLIENT_SETTINGS, OUTPUT_DIR, error
 from hackintosh.lib import cleanup, execute_module
 from subprocess import call
 import click, os, shutil
@@ -27,9 +27,9 @@ def build(hotpatch):
         rst = os.path.join(STAGE_DIR, f'SSDT-{series}.aml')
         if os.path.exists(rst):
             shutil.move(rst, OUTPUT_DIR)
-            message('Finished.')
+            click.echo('Finished.')
         else:
-            error('failed to hotpatch.')
+            error('Failed to hotpatch.')
     else:
         #TODO ugly, should be fixed
         execute_module('hackintosh.commands.acpi_cmd')
@@ -37,12 +37,12 @@ def build(hotpatch):
 
 @cli.command(short_help='Show ACPI patches in json format.')
 def info():
-    message('SSDT List:')
-    message(', '.join(LAPTOP_META['acpi']['patches']['ssdt_list']), fg='green', nl=True)
+    click.echo('SSDT List:')
+    click.secho(', '.join(LAPTOP_META['acpi']['patches']['ssdt_list']), fg='green', nl=True)
 
     for k in LAPTOP_META['acpi']['patches']['ssdt'].keys():
-        message(f"{k.upper()} Patches:")
-        message(', '.join(LAPTOP_META['acpi']['patches']['ssdt'][k]), fg='green', nl=True)
+        click.echo(f"{k.upper()} Patches:")
+        click.secho(', '.join(LAPTOP_META['acpi']['patches']['ssdt'][k]), fg='green', nl=True)
 
-    message('DSDT Patches:')
-    message(', '.join(LAPTOP_META['acpi']['patches']['dsdt']), fg='green')
+    click.echo('DSDT Patches:')
+    click.secho(', '.join(LAPTOP_META['acpi']['patches']['dsdt']), fg='green')

@@ -1,7 +1,7 @@
 from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT, ALL_META, error
-from hackintosh.lib import unzip_file, download, cleanup_dir, message, download_project, del_by_exts
+from hackintosh.lib import unzip_file, download, cleanup_dir, download_project, del_by_exts
 from subprocess import call
-import os, stat, shutil, glob
+import os, stat, shutil, glob, click
 
 
 def _update_tool(zip_file, cmd_name):
@@ -40,7 +40,7 @@ def _1_ssdtPRgen():
         st = os.stat(path)
         os.chmod(file, st.st_mode | stat.S_IEXEC)
 
-    message('ssdtPRGen is updated.')
+    return 'ssdtPRGen is updated.'
 
 
 def _2_patches():
@@ -53,7 +53,7 @@ def _2_patches():
     for file in glob.glob(f"{os.path.join(STAGE_DIR, 'patches')}/**/*.txt"):
         shutil.copy2(file, patches_root)
 
-    message('ACPI static patches are updated.')
+    click.echo('ACPI static patches are updated.')
 
     call([f'git clone https://github.com/RehabMan/OS-X-Clover-Laptop-Config {STAGE_DIR}/OS-X-Clover-Laptop-Config'],
          shell=True)
@@ -68,16 +68,16 @@ def _2_patches():
     for file in glob.glob(f"{os.path.join(STAGE_DIR, 'OS-X-Clover-Laptop-Config')}/*.plist"):
         shutil.copy2(file, path)
 
-    message('ACPI hot patches are updated.')
+    return 'ACPI hot patches are updated.'
 
 
 def _3_iasl():
     filename = download_project(ALL_META['projects']['acpica'])
     _update_tool(filename, 'iasl')
-    message('iasl is updated.')
+    return 'iasl is updated.'
 
 
 def _4_patchmatic():
     filename = download_project(ALL_META['projects']['os-x-maciasl-patchmatic'])
     _update_tool(filename, 'patchmatic')
-    message('patchmatic is updated.')
+    return 'patchmatic is updated.'

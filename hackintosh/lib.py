@@ -1,4 +1,4 @@
-from hackintosh import PKG_ROOT, REPO_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, message
+from hackintosh import PKG_ROOT, REPO_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, DEBUG
 from hackintosh.parser import parse
 from inspect import signature
 from distutils.dir_util import copy_tree
@@ -28,10 +28,10 @@ def zip_dir(path, filename, suffix=None):
 
 
 def print_project(meta, kexts=None):
-    message(f"Project Name: {meta['project']} Author: {meta['account']}")
+    click.echo(f"- Project Name: {meta['project']} Author: {meta['account']}")
     if kexts:
-        message(kexts, fg='green')
-    print()
+        click.secho(f'  {kexts}', fg='green')
+
 
 
 def cleanup_dir(path):
@@ -175,9 +175,13 @@ def execute_module(module_name, context=None):
         sig = signature(func)
 
         if 'ctx' in sig.parameters.keys():
-            func(context)
+            ret = func(context)
         else:
-            func()
+            ret = func()
+
+        if DEBUG:
+            click.secho(ret, fg='blue', bold=True)
+            click.pause('Press any key continue.')
 
 
 def execute_func(module_name, func_name, params=None):
@@ -187,9 +191,13 @@ def execute_func(module_name, func_name, params=None):
     func = getattr(module, f'_{func_name}')
 
     if params is None:
-        func()
+        ret = func()
     else:
-        func(params)
+        ret = func(params)
+
+    if DEBUG:
+        click.secho(ret, fg='blue', bold=True)
+        click.pause('Press any key continue.')
 
 
 def clover_kext_patches(patches, output, template=None):

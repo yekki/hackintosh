@@ -1,6 +1,5 @@
-from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, save_conf, error
-from hackintosh.lib import message, cleanup, execute, zip_dir, to_num, download_project, unzip, download_kexts, print_project, cleanup_dirs, clover_kext_patches
-from subprocess import call
+from hackintosh import CLIENT_SETTINGS, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, CLIENT_SETTINGS_FILE, save_conf, error
+from hackintosh.lib import cleanup, execute, zip_dir, to_num, download_project, unzip, download_kexts, print_project, cleanup_dirs, clover_kext_patches
 from subprocess import check_call, CalledProcessError
 
 import click, os, shutil
@@ -23,7 +22,7 @@ def reports():
             'applehda_res.out')
     execute('pmset -g assertions', 'assertions.out')
     execute('system_profiler SPSerialATADataType | grep TRIM', 'assertions.out')
-    message('This is a time-consuming operation...')
+    click.echo('This is a time-consuming operation...')
     execute(
         'sudo touch /System/Library/Extensions && sudo kextcache -u /', 'kextcache.out')
 
@@ -39,10 +38,10 @@ def switch_repo():
         loc = CLIENT_SETTINGS['repo_location']
         if loc == 'pkg':
             CLIENT_SETTINGS['repo_location'] = 'local'
-            message('Switched to local repository.')
+            click.echo('Switched to local repository.')
         elif loc == 'local':
             CLIENT_SETTINGS['repo_location'] = 'pkg'
-            message('Switched to pkg repository.')
+            click.echo('Switched to pkg repository.')
         else:
             raise ValueError(f'Unsupported repository type: {loc}')
 
@@ -53,17 +52,17 @@ def switch_repo():
 def clone_repo():
     shutil.copytree(os.path.join(PKG_ROOT, 'repo'),
                     os.path.join(os.getcwd(), 'repo'))
-    message('Created local repository stub directory.')
+    click.echo('Created local repository stub directory.')
 
 
 @cli.command(short_help='Show current client settings.')
 def info():
-    message({'Hackintosh Workbench Version: ': 'blue',
-             click.style(CLIENT_SETTINGS['version']): 'green'})
-    message({'Laptop Series: ': 'blue', click.style(
-        CLIENT_SETTINGS['current_series']): 'green'})
-    message({'Repository Location: ': 'blue', click.style(
-        CLIENT_SETTINGS['repo_location']): 'green'})
+    click.secho('Hackintosh Workbench Version: ', bold=True)
+    click.secho(CLIENT_SETTINGS['version'], fg='green')
+    click.secho('Laptop Series: ', bold=True)
+    click.secho(CLIENT_SETTINGS['current_series'], fg='green')
+    click.secho('Repository Location: ', bold=True)
+    click.secho(CLIENT_SETTINGS['repo_location'], fg='green')
 
 
 @cli.command(short_help='Set default laptop series.')
@@ -73,7 +72,7 @@ def laptop(series):
     if series in ALL_META['supported']:
         CLIENT_SETTINGS['current_series'] = series
         save_conf(CLIENT_SETTINGS)
-        message(f'Your current laptop series is {series}')
+        click.echo(f'Your current laptop series is {series}')
 
 
 @cli.command(short_help='Open urls.')
@@ -81,17 +80,17 @@ def open():
     ans = True
     while ans:
 
-        message('\n'.join([f"{i+1}.{v['desc']}" for i, v in enumerate(ALL_META['bookmark'])]) + "\n" + str(len(ALL_META['bookmark']) + 1) + '.Exit\n')
+        click.echo('\n'.join([f"{i+1}.{v['desc']}" for i, v in enumerate(ALL_META['bookmark'])]) + "\n" + str(len(ALL_META['bookmark']) + 1) + '.Exit\n')
 
-        message("What would you like to access? ")
+        click.echo("What would you like to access? ")
         ans = click.getchar()
 
         index = to_num(ans)
 
         if index == 0:
-            message("\n Not Valid Choice Try again", fg="red")
+            click.secho("\n Not Valid Choice Try again", fg="red")
         elif index == len(ALL_META['bookmark']) + 1:
-            message("\n Goodbye")
+            click.echo("\n Goodbye")
             ans = None
         else:
             m = ALL_META['bookmark'][index-1]
@@ -101,7 +100,7 @@ def open():
             else:
                 #call(["open " + m['desc']], shell=True)
                 click.launch(m['uri'], locate=True)
-
+        click.clear()
 
 @cli.command(short_help='Install widgets.')
 @click.option('-v', '--voodoops2', is_flag=True,
@@ -110,22 +109,22 @@ def install(voodoops2):
     if voodoops2:
         if not os.path.exists(os.path.join(OUTPUT_DIR, 'VoodooPS2Daemon')) or os.path.exists(
                 os.path.join(OUTPUT_DIR, 'org.rehabman.voodoo.driver.Daemon.plist')):
-            message("VoodooPS2 isn't exists, downloading it now...")
+            click.echo("VoodooPS2 isn't exists, downloading it now...")
             download_project(ALL_META['kext']['supported']['os-x-voodoo-ps2-controller'])
             unzip(ALL_META['kext']['essential']['os-x-voodoo-ps2-controller'])
 
-        message("VoodooPS2 downloaded, installing now...")
+            click.echo("VoodooPS2 downloaded, installing now...")
 
         try:
             check_call(f'sudo cp {OUTPUT_DIR}/VoodooPS2Daemon /usr/bin', shell=True)
-            message('VoodooPS2Daemon is installed.')
+            click.echo('VoodooPS2Daemon is installed.')
         except CalledProcessError:
             error('Failed to install VoodooPS2 widgets: VoodooPS2Daemon')
 
         try:
             check_call(f'sudo cp {OUTPUT_DIR}/org.rehabman.voodoo.driver.Daemon.plist /Library/LaunchDaemons',
                        shell=True)
-            message('org.rehabman.voodoo.driver.Daemon.plist is installed.')
+            click.echo('org.rehabman.voodoo.driver.Daemon.plist is installed.')
         except CalledProcessError:
             error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')
 
@@ -138,7 +137,7 @@ def download(kexts):
         if k in ALL_META['projects'].keys():
             download_project(ALL_META['projects'][k])
         else:
-            message(f'{k} is not supported.')
+            click.echo(f'{k} is not supported.')
     unzip()
     pass
 
@@ -147,7 +146,7 @@ def download(kexts):
 def laptop():
     cleanup()
 
-    message(f"Downloading kexts for laptop:{CLIENT_SETTINGS['current_series']}:")
+    click.echo(f"Downloading kexts for laptop:{CLIENT_SETTINGS['current_series']}:")
 
     kexts = []
 
@@ -163,10 +162,10 @@ def laptop():
 
 @cli.command(short_help='Show all app projects.')
 def app_info():
-    message('Supported app projects:')
+    click.secho('Supported app projects:', bold=True)
     [print_project(v) for v in ALL_META['projects'].values() if v['type'] == 'app']
 
-    message('Supported pkg projects:')
+    click.secho('Supported pkg projects:', bold=True)
     [print_project(v) for v in ALL_META['projects'].values() if v['type'] == 'pkg']
 
 
@@ -177,12 +176,12 @@ def app_info():
 def kext_info(supported, laptop, common):
 
     if supported:
-        message('Supported kexts projects:')
+        click.echo('Supported kexts projects:')
         [print_project(v) for v in ALL_META['projects'].values() if v['type'] == 'kext']
 
 
     if laptop:
-        message(f"kexts for laptop {CLIENT_SETTINGS['current_series']}:")
+        click.echo(f"kexts for laptop {CLIENT_SETTINGS['current_series']}:")
         projects = {}
         projects.update(LAPTOP_META['kexts'])
         projects.update(ALL_META['patches']['system']['kexts'])
@@ -192,7 +191,7 @@ def kext_info(supported, laptop, common):
             print_project(pmeta, kexts)
 
     if common:
-        message('kexts for all laptops:')
+        click.echo('kexts for all laptops:')
         for k, v in ALL_META['patches']['system']['kexts'].items():
             pmeta = ALL_META['projects'][k]
             kexts = ','.join(v)
@@ -215,3 +214,8 @@ def device(id):
 
     clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
                         os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
+
+
+@cli.command(short_help="Edit client config file.")
+def edit():
+    click.edit(filename=CLIENT_SETTINGS_FILE)
