@@ -1,4 +1,4 @@
-from hackintosh import PKG_ROOT, REPO_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, DEBUG
+from hackintosh import PKG_ROOT, REPO_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, DEBUG, error
 from hackintosh.parser import parse
 from inspect import signature
 from distutils.dir_util import copy_tree
@@ -33,7 +33,6 @@ def print_project(meta, kexts=None):
         click.secho(f'  {kexts}', fg='green')
 
 
-
 def cleanup_dir(path):
     for root, dirs, files in os.walk(path, topdown=False):
         for name in files:
@@ -58,7 +57,7 @@ def download_project(meta):
     if p:
         return download(p['url'], p['name'])
     else:
-        raise ValueError(f'Failed to parse project meta:{meta}')
+        error(f'Failed to parse project meta:{meta}')
 
 
 def download(url, filename=None, folder=STAGE_DIR):
@@ -71,13 +70,17 @@ def download(url, filename=None, folder=STAGE_DIR):
         else:
             filename = url.split("/")[-1]
 
-    total_length = int(r.headers.get('content-length'))
+    try:
+        total_length = int(r.headers.get('content-length'))
+    except TypeError:
+        error('Please try again.')
+
     download_file_path = os.path.join(folder, filename)
     with open(download_file_path, "wb") as f:
         expected_size = (total_length / 1024) + 1
         with click.progressbar(r.iter_content(1024), length=expected_size, bar_template='%(label)s  %(bar)s | %(info)s',
                                label=filename, fill_char=click.style(
-                                   u'█', fg='cyan'),
+                    u'█', fg='cyan'),
                                empty_char=' ') as chunks:
             for chunk in chunks:
                 f.write(chunk)
@@ -144,8 +147,8 @@ def unzip(keep=None):
 
     del_by_exts(STAGE_DIR)
 
-def del_by_exts(path, exts=None):
 
+def del_by_exts(path, exts=None):
     if os.path.isdir(path):
         default_exts = ['__MACOSX', 'Debug', 'DS_Store', 'dSYM', 'md5']
         if exts is None:
@@ -153,7 +156,7 @@ def del_by_exts(path, exts=None):
         elif isinstance(exts, list):
             exts.extend(default_exts)
         else:
-            raise ValueError('parameter exts should be list')
+            error('parameter exts should be list')
 
         for f in os.listdir(path):
             file = os.path.join(path, f)
@@ -164,7 +167,7 @@ def del_by_exts(path, exts=None):
     elif os.path.isfile:
         os.remove(path)
     else:
-        raise ValueError(f'{path} does\'nt exist!')
+        error(f'{path} does\'nt exist!')
 
 
 def execute_module(module_name, context=None):
@@ -187,7 +190,7 @@ def execute_module(module_name, context=None):
 def _execute_func(module_name, func_name, params=None):
     module = importlib.import_module(
         f'hackintosh.commands.{module_name}')
-    
+
     func = getattr(module, f'_{func_name}')
 
     if params is None:
@@ -214,6 +217,7 @@ def execute_func(module_name, func_name, params=None):
     else:
         func()
 
+
 def clover_kext_patches(patches, output, template=None):
     if template is None:
         template = Template(open(os.path.join(
@@ -226,7 +230,6 @@ def clover_kext_patches(patches, output, template=None):
 
 
 def download_kexts(kexts):
-    
     keep_kexts = []
 
     for k, v in kexts.items():

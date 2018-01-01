@@ -1,12 +1,8 @@
-from hackintosh import PKG_ROOT, REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR, ALL_META, error
+from hackintosh import REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR, IASL, PATCHMATIC, error
 from hackintosh.lib import del_by_exts
 from subprocess import call
 
 import os, glob, shutil, click
-
-# iasl61 come from MaciASL
-_IASL = os.path.join(PKG_ROOT, 'bin', ALL_META['tools']['iasl'])
-_PATCHMATIC = os.path.join(PKG_ROOT, 'bin', ALL_META['tools']['patchmatic'])
 
 
 # if param dest is None, then patches will be copy to STAGE_DIR
@@ -50,8 +46,8 @@ def handle_patche_list(acpi_list, ext, dest=None):
 
 
 def _1_initialize():
-    if os.path.isfile(_IASL):
-        if os.access(_IASL, os.X_OK):
+    if os.path.isfile(IASL):
+        if os.access(IASL, os.X_OK):
             acpi_list = LAPTOP_META['acpi']['patches']['ssdt_list']
             acpi_list.append('DSDT')
             LAPTOP_META['ACPI_LIST'] = acpi_list
@@ -60,36 +56,40 @@ def _1_initialize():
     else:
         error(f"{_IASL} not found, please install it firstly.")
 
-    if os.path.isfile(_PATCHMATIC):
-        if not os.access(_PATCHMATIC, os.X_OK):
-            error(f"{_PATCHMATIC} isn't not executable.")
+    if os.path.isfile(PATCHMATIC):
+        if not os.access(PATCHMATIC, os.X_OK):
+            error(f"{PATCHMATIC} isn't not executable.")
     else:
-        error(f"{_PATCHMATIC} not found, please install it firstly.")
+        error(f"{PATCHMATIC} not found, please install it firstly.")
 
     return 'Checked compile tools successful.'
+
 
 def _2_prepare_acpi_files():
     handle_patche_list(LAPTOP_META['ACPI_LIST'], 'aml')
     return 'Staged native acpi files.'
+
 
 def _3_decompile():
     refs_file = os.path.join(LAPTOP_ROOT, 'patches', 'refs.txt')
     if os.path.isfile(refs_file):
         shutil.copyfile(refs_file, os.path.join(os.getcwd(), 'refs.txt'))
 
-    call([f'{_IASL} -da -dl {STAGE_DIR}/DSDT.aml {STAGE_DIR}/SSDT*.aml'], shell=True)
+    call([f'{IASL} -da -dl {STAGE_DIR}/DSDT.aml {STAGE_DIR}/SSDT*.aml'], shell=True)
     del_by_exts(STAGE_DIR, exts=['aml'])
 
     handle_patche_list(LAPTOP_META['ACPI_LIST'], 'dsl')
     return 'Decompiled native acpi files.'
 
+
 def _4_apply_dsdt_patches():
     handle_patche_list(LAPTOP_META['acpi']['patches']['dsdt'], 'txt', os.path.join(
         STAGE_DIR, 'DSDT_PATCHES.txt'), )
-    call([f'{_PATCHMATIC}', f'{STAGE_DIR}/DSDT.dsl',
+    call([f'{PATCHMATIC}', f'{STAGE_DIR}/DSDT.dsl',
           f'{STAGE_DIR}/DSDT_PATCHES.txt', f'{STAGE_DIR}/DSDT.dsl'])
 
     return 'Applied patches to DSDT.'
+
 
 def _5_apply_ssdt_patches():
     keys = [x.upper() for x in LAPTOP_META['acpi']['patches']['ssdt'].keys()]
@@ -102,9 +102,10 @@ def _5_apply_ssdt_patches():
         patch_file = f'{STAGE_DIR}/{ssdt}_PATCH.txt'
         handle_patche_list(
             LAPTOP_META['acpi']['patches']['ssdt'][ssdt.lower()], 'txt', patch_file)
-        call([f'{_PATCHMATIC}', dsl_file, patch_file, dsl_file])
+        call([f'{PATCHMATIC}', dsl_file, patch_file, dsl_file])
 
     return 'Applied patches to SSDT(s).'
+
 
 def _6_check_dsl():
     files = os.listdir(STAGE_DIR)
@@ -118,15 +119,17 @@ def _6_check_dsl():
 
     return 'Checked & appended DSL files.'
 
+
 def _7_compile_acpi():
     for f in glob.glob(f'{STAGE_DIR}/*.dsl'):
         filename = os.path.basename(f).split('.')[0]
-        call([f'{_IASL}', '-vr', '-w1', '-p',
+        call([f'{IASL}', '-vr', '-w1', '-p',
               f'{OUTPUT_DIR}/{filename}.aml', f'{STAGE_DIR}/{filename}.dsl'])
 
     handle_patche_list(LAPTOP_META['ACPI_LIST'], '.aml', OUTPUT_DIR)
 
     return 'Compiled all files.'
+
 
 def _8_check():
     s1 = [f.replace('.aml', '') for f in os.listdir(OUTPUT_DIR)]

@@ -10,11 +10,13 @@ def _get(meta, key, default):
     else:
         return default
 
+
 def _github(meta):
     f = _get(meta, 'from', None)
 
     if f == 'source':
-        return {'url': f"https://codeload.github.com/{meta['account']}/{meta['project']}/zip/master", 'name':f"{meta['project']}-master.zip"}
+        return {'url': f"https://codeload.github.com/{meta['account']}/{meta['project']}/zip/master",
+                'name': f"{meta['project']}-master.zip"}
 
     url = f"https://api.github.com/repos/{meta['account']}/{meta['project']}/releases/latest"
     resp = json.loads(urlopen(url).read())
@@ -82,9 +84,11 @@ def _sourceforge(meta):
 def _local(meta):
     return {'url': os.path.join(REPO_ROOT, 'common', 'kexts', f"{meta['project']}.kext"), 'name': meta['project']}
 
+
 # for future
 def _direct(meta):
     return {'url': meta['options']['url'], 'name': meta['options']['name']}
+
 
 def parse(meta):
     if meta:

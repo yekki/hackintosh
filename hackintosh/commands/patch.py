@@ -36,6 +36,7 @@ def _brightness_control():
 
     return 'All widgets for patch are prepared.'
 
+
 def _system():
     kexts = download_kexts(ALL_META['patches']['system']['kexts'])
 

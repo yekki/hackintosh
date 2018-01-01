@@ -1,31 +1,47 @@
-from hackintosh import CLIENT_SETTINGS, LAPTOP_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, CLIENT_SETTINGS_FILE, save_conf, error
-from hackintosh.lib import execute_module, cleanup, execute, zip_dir, to_num, download_project, unzip, download_kexts, print_project, cleanup_dirs, clover_kext_patches, execute_func
+from hackintosh import IASL, CLIENT_SETTINGS, LAPTOP_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, \
+    CLIENT_SETTINGS_FILE, save_conf, error
+from hackintosh.lib import execute_module, cleanup, execute, zip_dir, to_num, download_project, unzip, download_kexts, \
+    print_project, cleanup_dirs, clover_kext_patches, execute_func
+
 from subprocess import check_call, call, CalledProcessError
 
-import click, os, shutil, re
+import click, os, shutil
 
 
-#TODO: failed to execute on ssdtPRgen at first time.
-@click.group(context_settings=CLIENT_SETTINGS['context_settings'])
+# TODO: failed to execute on ssdtPRgen at first time.
+# TODO: debug feature
+# @click.group(context_settings=CLIENT_SETTINGS['context_settings'], cls=MAIN_CLI)
+@click.group()
+# @click.option('--debug/--no-debug', default=False)
 def cli():
-    """Command on common"""
+    pass
+
+
+@cli.command(short_help='Cleanup stage & output directories.')
+@click.confirmation_option(help='Cleanup stage & output directories.',
+                           prompt="Are you sure you want to stage & output directories?")
+def clean():
+    cleanup()
+    click.clear()
+
 
 @cli.command(short_help='Update tools & patches.')
 @click.option('-a', '--all', is_flag=True, help='Update all tools & patches.')
 @click.option('-t', '--tool', type=click.Choice(['iasl', 'patchmatic', 'patches', 'ssdtPRgen']),
               help='Chosen the tool which will be updated.')
-def update(all, tool):
+@click.pass_context
+def update(ctx, all, tool):
     cleanup()
 
     if all:
         execute_module('update')
+    elif tool:
+        execute_func('update', tool)
     else:
-        if tool:
-            execute_func('update', tool)
-
+        click.echo(ctx.get_help())
 
 @cli.command(short_help='Archive problem reporting files.')
-def dignostic():
+def diagnostic():
     cleanup()
 
     execute('kextstat | grep -y acpiplat', 'acpiplat.out')
@@ -42,6 +58,7 @@ def dignostic():
 
     # TODO: wrong structure in zip file
     zip_dir(STAGE_DIR, os.path.join(OUTPUT_DIR, 'out.zip'), '.out')
+
 
 @cli.command(short_help="Commands for external devices.")
 @click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
@@ -74,11 +91,12 @@ def edit():
     click.edit(filename=CLIENT_SETTINGS_FILE)
 
 
+#TODO: lost FakePCIID_Intel_HD_Graphics.kext, DisplayMergeNub.kext
 @cli.command(short_help=f"Download kexts for laptop:{CLIENT_SETTINGS['current_series']}")
 def laptop():
     cleanup()
 
-    click.echo(f"Downloading kexts for laptop:{CLIENT_SETTINGS['current_series']}:")
+    click.echo(f"Downloading kexts for laptop: {CLIENT_SETTINGS['current_series']}:")
 
     kexts = []
 
@@ -92,20 +110,21 @@ def laptop():
         unzip(kexts)
 
 
-
 @cli.command(short_help='Show all kext projects.')
 @click.option('-s', '--supported', is_flag=True, help='Show all supported kext projects.')
 @click.option('-l', '--laptop', is_flag=True, help='Show kexts for current laptop.')
 @click.option('-c', '--common', is_flag=True, help='Show system kexts for hackintosh installation.')
-def kext_info(supported, laptop, common):
+@click.pass_context
+def kext_info(ctx, supported, laptop, common):
+    if not (supported or laptop or common):
+        print(ctx.get_help())
 
     if supported:
-        click.echo('Supported kexts projects:')
+        click.secho('Supported kexts projects:', bold=True)
         [print_project(v) for v in ALL_META['projects'].values() if v['type'] == 'kext']
 
-
     if laptop:
-        click.echo(f"kexts for laptop {CLIENT_SETTINGS['current_series']}:")
+        click.secho(f"kexts for laptop {CLIENT_SETTINGS['current_series']}:", bold=True)
         projects = {}
         projects.update(LAPTOP_META['kexts'])
         projects.update(ALL_META['patches']['system']['kexts'])
@@ -124,15 +143,18 @@ def kext_info(supported, laptop, common):
 
 @cli.command(short_help='Download projects.')
 @click.argument('projects', nargs=-1, type=click.STRING)
-def download(kexts):
+@click.pass_context
+def download(ctx, projects):
     cleanup()
-    for k in kexts:
-        if k in ALL_META['projects'].keys():
-            download_project(ALL_META['projects'][k])
+    if not projects:
+        print(ctx.get_help())
+    for p in projects:
+        if p in ALL_META['projects'].keys():
+            download_project(ALL_META['projects'][p])
         else:
-            click.echo(f'{k} is not supported.')
+            click.echo(f'{p} is not supported.')
     unzip()
-    pass
+
 
 @cli.command(short_help='Show all app projects.')
 def app_info():
@@ -149,7 +171,7 @@ def clone():
                     os.path.join(os.getcwd(), 'repo'))
     click.echo('Created local repository stub directory.')
 
-
+#TODO: should be fixed!
 @cli.command(short_help='Switch repository location: pkg or local.')
 def switch():
     if CLIENT_SETTINGS['repo_fixed']:
@@ -168,7 +190,6 @@ def switch():
     save_conf(CLIENT_SETTINGS)
 
 
-
 @cli.command(short_help='Show current client settings.')
 def client_info():
     click.secho('Hackintosh Workbench Version: ', bold=True)
@@ -182,8 +203,8 @@ def client_info():
 @cli.command(short_help='Set default laptop series.')
 @click.option('-s', '--series', required=True, type=click.Choice(ALL_META['certified']['series']),
               help='Choose the laptop series')
-def serie(series):
-    if series in ALL_META['supported']:
+def series(series):
+    if series in ALL_META['certified']['series']:
         CLIENT_SETTINGS['current_series'] = series
         save_conf(CLIENT_SETTINGS)
         click.echo(f'Your current laptop series is {series}')
@@ -194,7 +215,8 @@ def open():
     ans = True
     while ans:
 
-        click.echo('\n'.join([f"{i+1}.{v['desc']}" for i, v in enumerate(ALL_META['bookmark'])]) + "\n" + str(len(ALL_META['bookmark']) + 1) + '.Exit\n')
+        click.echo('\n'.join([f"{i+1}.{v['desc']}" for i, v in enumerate(ALL_META['bookmark'])]) + "\n" + str(
+            len(ALL_META['bookmark']) + 1) + '.Exit\n')
 
         click.echo("What would you like to access? ")
         ans = click.getchar()
@@ -207,7 +229,7 @@ def open():
             click.echo("\n Goodbye")
             ans = None
         else:
-            m = ALL_META['bookmark'][index-1]
+            m = ALL_META['bookmark'][index - 1]
 
             if m['uri'].startswith('http'):
                 click.launch(m['uri'])
@@ -215,16 +237,19 @@ def open():
                 click.launch(m['uri'], locate=True)
         click.clear()
 
+
 @cli.command(short_help='Install widgets.')
 @click.option('-v', '--voodoops2', is_flag=True,
               help='Install VoodooPS2Daemon & org.rehabman.voodoo.driver.Daemon.plist')
-def install(voodoops2):
+@click.pass_context
+def install(ctx, voodoops2):
     if voodoops2:
-        if not os.path.exists(os.path.join(OUTPUT_DIR, 'VoodooPS2Daemon')) or os.path.exists(
-                os.path.join(OUTPUT_DIR, 'org.rehabman.voodoo.driver.Daemon.plist')):
+        if not (os.path.exists(os.path.join(OUTPUT_DIR, 'VoodooPS2Daemon')) and os.path.exists(
+                os.path.join(OUTPUT_DIR, 'org.rehabman.voodoo.driver.Daemon.plist'))):
             click.echo("VoodooPS2 isn't exists, downloading it now...")
-            download_project(ALL_META['kext']['supported']['os-x-voodoo-ps2-controller'])
-            unzip(ALL_META['kext']['essential']['os-x-voodoo-ps2-controller'])
+            cleanup()
+            download_project(ALL_META['projects']['os-x-voodoo-ps2-controller'])
+            unzip()
 
             click.echo("VoodooPS2 downloaded, installing now...")
 
@@ -240,6 +265,8 @@ def install(voodoops2):
             click.echo('org.rehabman.voodoo.driver.Daemon.plist is installed.')
         except CalledProcessError:
             error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')
+    else:
+        click.echo(ctx.get_help())
 
 
 @cli.command(short_help='Build & patch ACPI files.')
@@ -253,7 +280,7 @@ def acpi_build(hotpatch):
             shutil.copy2(os.path.join(src, f), os.path.join(STAGE_DIR, f))
 
         os.chdir(STAGE_DIR)
-        call([f'{_IASL} SSDT-{series}.dsl'], shell=True)
+        call([f'{IASL} SSDT-{series}.dsl'], shell=True)
         rst = os.path.join(STAGE_DIR, f'SSDT-{series}.aml')
         if os.path.exists(rst):
             shutil.move(rst, OUTPUT_DIR)
@@ -262,37 +289,32 @@ def acpi_build(hotpatch):
             error('Failed to hotpatch.')
     else:
         # TODO ugly, should be fixed
-        execute_module('hackintosh.commands.acpi_cmd')
+        execute_module('acpi')
 
 
 @cli.command(short_help='Show ACPI patches in json format.')
 def acpi_info():
-    click.echo('SSDT List:')
+    click.secho(f"For {LAPTOP_META['series']}\n", bold=True)
+    click.secho('SSDT List:', bold=True)
     click.secho(', '.join(LAPTOP_META['acpi']['patches']['ssdt_list']), fg='green', nl=True)
 
     for k in LAPTOP_META['acpi']['patches']['ssdt'].keys():
-        click.echo(f"{k.upper()} Patches:")
+        click.secho(f"{k.upper()} Patches:", bold=True)
         click.secho(', '.join(LAPTOP_META['acpi']['patches']['ssdt'][k]), fg='green', nl=True)
 
-    click.echo('DSDT Patches:')
+    click.secho('DSDT Patches:', bold=True)
     click.secho(', '.join(LAPTOP_META['acpi']['patches']['dsdt']), fg='green')
 
 
 @cli.command(short_help="Debug command.")
 def debug():
-    print(click.get_current_context().info_name)
+    """Demonstrates using the pager."""
+    lines = []
+    for x in range(200):
+        lines.append('%s. Hello World!' % click.style(str(x), fg='green'))
+
+    click.echo_via_pager('\n'.join(lines))
 
 
 if __name__ == '__main__':
     cli()
-
-
-
-
-
-
-
-
-
-
-

@@ -3,7 +3,7 @@ import os, json, sys, click
 if sys.version_info < (3, 4):
     raise ValueError('Must be using Python 3.4 or above')
 
-APP_NAME='Hackintosh Workbench'
+APP_NAME = 'Hackintosh Workbench'
 
 if not os.path.exists(click.get_app_dir(APP_NAME)):
     os.mkdir(click.get_app_dir(APP_NAME))
@@ -17,7 +17,7 @@ PKG_ROOT = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.join(PKG_ROOT, 'repo')
 ENV = os.environ.copy()
 ENV['PATH'] = f"{os.path.join(PKG_ROOT, 'bin')}:{ENV['PATH']}"
-DEBUG = True
+DEBUG = False
 ALL_META = dict()
 LAPTOP_META = dict()
 
@@ -42,6 +42,7 @@ def debug(msg, fg='yellow'):
 def error(msg, fg='red'):
     click.secho(msg, fg=fg)
     exit(-1)
+
 
 # check client config file, if not found then create new one
 if os.path.isfile(CLIENT_SETTINGS_FILE):
@@ -70,7 +71,7 @@ if not os.path.exists(_META_PATH):
 if os.path.exists(_META_PATH):
     ALL_META = json.load(open(_META_PATH))
 else:
-    raise LookupError(
+    error(
         f"Can't find not found system meta file:{_META_PATH}")
 
 # load laptop meta data
@@ -79,10 +80,12 @@ _META_PATH = os.path.join(LAPTOP_ROOT, 'meta.json')
 if os.path.exists(_META_PATH):
     LAPTOP_META = json.load(open((_META_PATH)))
 else:
-    raise LookupError(
+    error(
         f"can't find laptop meta file: {_META_PATH}")
 
-if not bool(ALL_META): raise ValueError("The global meta data is empty.")
-if not bool(LAPTOP_META): raise ValueError("The laptop meta data is empty.")
+if not bool(ALL_META): error("The global meta data is empty.")
+if not bool(LAPTOP_META): error("The laptop meta data is empty.")
 
-_IASL = os.path.join(PKG_ROOT, 'bin', ALL_META['tools']['iasl'])
+# iasl61 come from MaciASL
+IASL = os.path.join(PKG_ROOT, 'bin', ALL_META['tools']['iasl'])
+PATCHMATIC = os.path.join(PKG_ROOT, 'bin', ALL_META['tools']['patchmatic'])

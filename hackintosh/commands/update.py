@@ -29,7 +29,6 @@ def _1_ssdtPRgen():
     if os.path.isdir(ssdtPRGen_root):
         shutil.rmtree(ssdtPRGen_root)
 
-
     unzip_file(os.path.join(STAGE_DIR, 'ssdtPRGen.sh-Beta.zip'), STAGE_DIR)
 
     path = os.path.join(STAGE_DIR, 'ssdtPRGen.sh-Beta')
