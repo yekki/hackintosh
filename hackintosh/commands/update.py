@@ -1,6 +1,6 @@
 from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT, ALL_META, error
-from hackintosh.lib import unzip_file, download, cleanup_dir, download_project, del_by_exts
-from subprocess import call
+from hackintosh.lib import unzip_file, download, cleanup_dir, download_project, del_by_exts, git_clone
+
 import os, stat, shutil, glob, click
 
 
@@ -43,8 +43,7 @@ def _1_ssdtPRgen():
 
 
 def _2_patches():
-    call([f'git clone https://github.com/RehabMan/Laptop-DSDT-Patch.git {STAGE_DIR}/patches'], shell=True)
-
+    git_clone('https://github.com/RehabMan/Laptop-DSDT-Patch.git', 'patches')
     patches_root = os.path.join(REPO_ROOT, 'patches', 'static', 'patches')
 
     cleanup_dir(patches_root)
@@ -54,20 +53,22 @@ def _2_patches():
 
     click.echo('ACPI static patches are updated.')
 
-    call([f'git clone https://github.com/RehabMan/OS-X-Clover-Laptop-Config {STAGE_DIR}/OS-X-Clover-Laptop-Config'],
-         shell=True)
+    git_clone('https://github.com/RehabMan/OS-X-Clover-Laptop-Config', 'config')
 
     path = os.path.join(REPO_ROOT, 'patches', 'hot', 'patches')
     shutil.rmtree(path)
-    shutil.copytree(os.path.join(STAGE_DIR, 'OS-X-Clover-Laptop-Config', 'hotpatch'), path)
+    shutil.copytree(os.path.join(STAGE_DIR, 'config', 'hotpatch'), path)
 
     path = os.path.join(REPO_ROOT, 'patches', 'hot', 'config')
+
     del_by_exts(path, exts=['plist'])
 
-    for file in glob.glob(f"{os.path.join(STAGE_DIR, 'OS-X-Clover-Laptop-Config')}/*.plist"):
+    for file in glob.glob(f"{os.path.join(STAGE_DIR, 'config')}/*.plist"):
         shutil.copy2(file, path)
 
-    return 'ACPI hot patches are updated.'
+    click.echo('ACPI hot patches are updated.')
+
+    return 'ACPI patches are updated.'
 
 
 def _3_iasl():

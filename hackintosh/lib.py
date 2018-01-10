@@ -1,11 +1,65 @@
 from hackintosh import PKG_ROOT, REPO_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, DEBUG, error
 from hackintosh.parser import parse
+
+from git import Repo
+
 from inspect import signature
 from distutils.dir_util import copy_tree
 from subprocess import call
 from string import Template
+from functools import wraps
 
-import requests, cgi, zipfile, os, click, shutil, re, importlib
+import requests, cgi, zipfile, os, click, shutil, re, importlib, types
+
+
+def cleanup(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if os.path.join(os.getcwd(), 'hackintosh') == PKG_ROOT:
+            cleanup_dirs(STAGE_DIR, OUTPUT_DIR, rmdir=True)
+        else:
+            cleanup_dirs(STAGE_DIR, OUTPUT_DIR)
+
+        delete(os.path.join(os.getcwd(), 'refs.txt'))
+        ret = func(*args, **kwargs)
+        return ret
+
+    return wrapper
+
+
+def post(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        r = func(*args, **kwargs)
+        _unzip()
+
+        if r and isinstance(r, list):
+            for f in os.listdir(OUTPUT_DIR):
+                if f not in r:
+                    delete(os.path.join(OUTPUT_DIR, f))
+        elif isinstance(r, types.FunctionType):
+            r()
+        return r
+
+    return wrapper
+
+
+def _unzip():
+    unzip_dir(STAGE_DIR, OUTPUT_DIR)
+    path = os.path.join(OUTPUT_DIR, 'Release')
+
+    if os.path.isdir(path):
+        copy_tree(path, OUTPUT_DIR)
+        shutil.rmtree(path)
+
+    del_by_exts(OUTPUT_DIR)
+
+def unzip(kexts=None):
+    _unzip()
+
+    for f in os.listdir(OUTPUT_DIR):
+        if f not in kexts:
+            delete(os.path.join(OUTPUT_DIR, f))
 
 
 def execute(cmd, filename=None):
@@ -89,15 +143,6 @@ def download(url, filename=None, folder=STAGE_DIR):
     return filename
 
 
-def cleanup():
-    if os.path.join(os.getcwd(), 'hackintosh') == PKG_ROOT:
-        cleanup_dirs(STAGE_DIR, OUTPUT_DIR, rmdir=True)
-    else:
-        cleanup_dirs(STAGE_DIR, OUTPUT_DIR)
-
-    delete(os.path.join(os.getcwd(), 'refs.txt'))
-
-
 def unzip_dir(from_dir, to_dir, ext='.zip'):
     for item in os.listdir(from_dir):
         if item.endswith(ext):
@@ -128,24 +173,6 @@ def copy_dir(src, dst, filter=None):
         s = os.path.join(src, item)
         if os.path.exists(s):
             shutil.copy2(s, os.path.join(dst, item))
-
-
-# keep is a list which should be kept, others will be removed.
-def unzip(keep=None):
-    unzip_dir(STAGE_DIR, OUTPUT_DIR)
-    path = os.path.join(OUTPUT_DIR, 'Release')
-    if os.path.isdir(path):
-        copy_tree(path, OUTPUT_DIR)
-        shutil.rmtree(path)
-
-    del_by_exts(OUTPUT_DIR)
-
-    if keep is not None:
-        for f in os.listdir(OUTPUT_DIR):
-            if f not in keep:
-                delete(os.path.join(OUTPUT_DIR, f))
-
-    del_by_exts(STAGE_DIR)
 
 
 def del_by_exts(path, exts=None):
@@ -187,22 +214,6 @@ def execute_module(module_name, context=None):
             click.pause('Press any key continue.')
 
 
-def _execute_func(module_name, func_name, params=None):
-    module = importlib.import_module(
-        f'hackintosh.commands.{module_name}')
-
-    func = getattr(module, f'_{func_name}')
-
-    if params is None:
-        ret = func()
-    else:
-        ret = func(params)
-
-    if DEBUG:
-        click.secho(ret, fg='blue', bold=True)
-        click.pause('Press any key continue.')
-
-
 def execute_func(module_name, func_name, params=None):
     module = importlib.import_module(f'hackintosh.commands.{module_name}')
 
@@ -231,7 +242,6 @@ def clover_kext_patches(patches, output, template=None):
 
 def download_kexts(kexts):
     keep_kexts = []
-
     for k, v in kexts.items():
         download_project(ALL_META['projects'][k])
         keep_kexts.extend(v)
@@ -244,3 +254,13 @@ def to_num(n):
         return int(n)
     except ValueError:
         return 0
+
+
+def git_clone(url, dir):
+    path = os.path.join(STAGE_DIR, dir)
+
+    if os.path.exists(path):
+        cleanup_dirs([path])
+    else:
+        os.mkdir(path)
+        Repo.clone_from(url, path)

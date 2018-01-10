@@ -35,6 +35,7 @@ def _bitbucket(meta):
         f = None
 
     url = f"https://bitbucket.org/{meta['account']}/{meta['project']}/downloads/"
+
     soup = BeautifulSoup(urlopen(url), 'html.parser')
     try:
         list = [i.text for i in soup.findAll('a', {"class": "execute"})]

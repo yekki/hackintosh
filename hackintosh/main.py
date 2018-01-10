@@ -1,6 +1,6 @@
 from hackintosh import IASL, CLIENT_SETTINGS, LAPTOP_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, \
     CLIENT_SETTINGS_FILE, save_conf, error
-from hackintosh.lib import execute_module, cleanup, execute, zip_dir, to_num, download_project, unzip, download_kexts, \
+from hackintosh.lib import execute_module, cleanup, execute, zip_dir, to_num, download_project, post, download_kexts, \
     print_project, cleanup_dirs, clover_kext_patches, execute_func
 
 from subprocess import check_call, call, CalledProcessError
@@ -20,8 +20,8 @@ def cli():
 @cli.command(short_help='Cleanup stage & output directories.')
 @click.confirmation_option(help='Cleanup stage & output directories.',
                            prompt="Are you sure you want to stage & output directories?")
+@cleanup
 def clean():
-    cleanup()
     click.clear()
 
 
@@ -30,9 +30,8 @@ def clean():
 @click.option('-t', '--tool', type=click.Choice(['iasl', 'patchmatic', 'patches', 'ssdtPRgen']),
               help='Chosen the tool which will be updated.')
 @click.pass_context
+@cleanup
 def update(ctx, all, tool):
-    cleanup()
-
     if all:
         execute_module('update')
     elif tool:
@@ -40,10 +39,10 @@ def update(ctx, all, tool):
     else:
         click.echo(ctx.get_help())
 
-@cli.command(short_help='Archive problem reporting files.')
-def diagnostic():
-    cleanup()
 
+@cli.command(short_help='Archive problem reporting files.')
+@cleanup
+def diagnostic():
     execute('kextstat | grep -y acpiplat', 'acpiplat.out')
     execute('kextstat | grep -y applelpc', 'applelpc.out')
     execute('kextstat | grep -y appleintelcpu', 'appleintelcpu.out')
@@ -63,10 +62,10 @@ def diagnostic():
 @cli.command(short_help="Commands for external devices.")
 @click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
               help='Choose the device id')
+@cleanup
+@post
 def device(id):
-    cleanup()
     download_kexts(ALL_META['external_device'][id]['kexts'])
-    unzip()
 
     cleanup_dirs(os.path.join(OUTPUT_DIR, 'kexts'), os.path.join(OUTPUT_DIR, 'clover'))
 
@@ -81,8 +80,8 @@ def device(id):
 @cli.command(short_help='Prepare all stuff for device.')
 @click.option('-p', '--patch', required=True, type=click.Choice(ALL_META['patches'].keys()),
               help='Choose the laptop series')
+@cleanup
 def patch(patch):
-    cleanup()
     execute_func('patch', patch)
 
 
@@ -91,11 +90,11 @@ def edit():
     click.edit(filename=CLIENT_SETTINGS_FILE)
 
 
-#TODO: lost FakePCIID_Intel_HD_Graphics.kext, DisplayMergeNub.kext
+# TODO: lost FakePCIID_Intel_HD_Graphics.kext, DisplayMergeNub.kext
 @cli.command(short_help=f"Download kexts for laptop:{CLIENT_SETTINGS['current_series']}")
+@cleanup
+@post
 def laptop():
-    cleanup()
-
     click.echo(f"Downloading kexts for laptop: {CLIENT_SETTINGS['current_series']}:")
 
     kexts = []
@@ -106,8 +105,7 @@ def laptop():
     kexts.extend(k1)
     kexts.extend(k2)
 
-    if kexts is not None:
-        unzip(kexts)
+    return kexts
 
 
 @cli.command(short_help='Show all kext projects.')
@@ -144,8 +142,9 @@ def kext_info(ctx, supported, laptop, common):
 @cli.command(short_help='Download projects.')
 @click.argument('projects', nargs=-1, type=click.STRING)
 @click.pass_context
+@cleanup
+@post
 def download(ctx, projects):
-    cleanup()
     if not projects:
         print(ctx.get_help())
     for p in projects:
@@ -153,7 +152,6 @@ def download(ctx, projects):
             download_project(ALL_META['projects'][p])
         else:
             click.echo(f'{p} is not supported.')
-    unzip()
 
 
 @cli.command(short_help='Show all app projects.')
@@ -171,7 +169,8 @@ def clone():
                     os.path.join(os.getcwd(), 'repo'))
     click.echo('Created local repository stub directory.')
 
-#TODO: should be fixed!
+
+# TODO: should be fixed!
 @cli.command(short_help='Switch repository location: pkg or local.')
 def switch():
     if CLIENT_SETTINGS['repo_fixed']:
@@ -242,37 +241,39 @@ def open():
 @click.option('-v', '--voodoops2', is_flag=True,
               help='Install VoodooPS2Daemon & org.rehabman.voodoo.driver.Daemon.plist')
 @click.pass_context
+@cleanup
+@post
 def install(ctx, voodoops2):
     if voodoops2:
         if not (os.path.exists(os.path.join(OUTPUT_DIR, 'VoodooPS2Daemon')) and os.path.exists(
                 os.path.join(OUTPUT_DIR, 'org.rehabman.voodoo.driver.Daemon.plist'))):
-            click.echo("VoodooPS2 isn't exists, downloading it now...")
-            cleanup()
+            click.echo("VoodooPS2 doesn't exist, downloading it now...")
             download_project(ALL_META['projects']['os-x-voodoo-ps2-controller'])
-            unzip()
 
-            click.echo("VoodooPS2 downloaded, installing now...")
+            def _post():
+                click.echo("VoodooPS2 downloaded, installing now...")
+                try:
+                    check_call(f'sudo cp {OUTPUT_DIR}/VoodooPS2Daemon /usr/bin', shell=True)
+                    click.echo('VoodooPS2Daemon is installed.')
+                except CalledProcessError:
+                    error('Failed to install VoodooPS2 widgets: VoodooPS2Daemon')
 
-        try:
-            check_call(f'sudo cp {OUTPUT_DIR}/VoodooPS2Daemon /usr/bin', shell=True)
-            click.echo('VoodooPS2Daemon is installed.')
-        except CalledProcessError:
-            error('Failed to install VoodooPS2 widgets: VoodooPS2Daemon')
+                try:
+                    check_call(f'sudo cp {OUTPUT_DIR}/org.rehabman.voodoo.driver.Daemon.plist /Library/LaunchDaemons',
+                               shell=True)
+                    click.echo('org.rehabman.voodoo.driver.Daemon.plist is installed.')
+                except CalledProcessError:
+                    error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')
 
-        try:
-            check_call(f'sudo cp {OUTPUT_DIR}/org.rehabman.voodoo.driver.Daemon.plist /Library/LaunchDaemons',
-                       shell=True)
-            click.echo('org.rehabman.voodoo.driver.Daemon.plist is installed.')
-        except CalledProcessError:
-            error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')
+            return _post
     else:
         click.echo(ctx.get_help())
 
 
 @cli.command(short_help='Build & patch ACPI files.')
 @click.option('-h', '--hotpatch', is_flag=True, help='Build hotpatches')
+@cleanup
 def acpi_build(hotpatch):
-    cleanup()
     if hotpatch:
         src = os.path.join(LAPTOP_ROOT, 'hotpatches')
         series = CLIENT_SETTINGS['current_series'].upper()
@@ -294,7 +295,7 @@ def acpi_build(hotpatch):
 
 @cli.command(short_help='Show ACPI patches in json format.')
 def acpi_info():
-    click.secho(f"For {LAPTOP_META['series']}\n", bold=True)
+    click.secho(f"{LAPTOP_META['description']}\n", bold=True)
     click.secho('SSDT List:', bold=True)
     click.secho(', '.join(LAPTOP_META['acpi']['patches']['ssdt_list']), fg='green', nl=True)
 

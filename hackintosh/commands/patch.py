@@ -1,18 +1,14 @@
 from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR, ENV, error
-from hackintosh.lib import clover_kext_patches, download_kexts, unzip
+from hackintosh.lib import clover_kext_patches, download_kexts, git_clone, unzip
 from subprocess import call
 
 import os, shutil
 
 
 def _brightness_control():
-    cmd = ['git', 'clone', 'https://github.com/RehabMan/HP-ProBook-4x30s-DSDT-Patch', f'{STAGE_DIR}/probook.git']
-    if not os.path.exists(f'{STAGE_DIR}/probook.git'):
-        call(cmd)
 
-    cmd = ['git', 'clone', 'https://github.com/RehabMan/OS-X-Clover-Laptop-Config.git', f'{STAGE_DIR}/guide.git']
-    if not os.path.exists(f'{STAGE_DIR}/guide.git'):
-        call(cmd)
+    git_clone('https://github.com/RehabMan/HP-ProBook-4x30s-DSDT-Patch', 'probook.git')
+    git_clone('https://github.com/RehabMan/OS-X-Clover-Laptop-Config.git', 'guide.git')
 
     pnlf = os.path.join(STAGE_DIR, 'guide.git', 'build', 'SSDT-PNLF.aml')
 
