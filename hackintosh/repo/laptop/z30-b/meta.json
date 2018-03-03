@@ -2,8 +2,8 @@
   "series": "z30-b",
   "description": "Toshiba Portege z30-b",
   "author": "Gary Niu",
-  "osx_ver": "10.13",
-  "osx_build": "17A405",
+  "osx_ver": "10.13.3",
+  "osx_build": "17D102",
   "device": {
     "cpu": {
       "number": "i5-5300U",
@@ -19,7 +19,7 @@
   "kexts": {
     "IntelGraphicsDVMTFixup": ["IntelGraphicsDVMTFixup.kext"],
     "AppleALC": ["AppleALC.kext"],
-    "os-x-fake-pci-id": ["FakePCIID_Intel_HDMI_Audio.kext", "FakePCIID.kext"]
+    "os-x-fake-pci-id": ["FakePCIID_Intel_HDMI_Audio.kext", "FakePCIID.kext", "FakePCIID_Broadcom_WiFi.kext"]
   },
   "acpi": {
     "bios": "3.20",

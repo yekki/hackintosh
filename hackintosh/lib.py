@@ -82,7 +82,7 @@ def zip_dir(path, filename, suffix=None):
 
 
 def print_project(meta, kexts=None):
-    click.echo(f"- Project Name: {meta['project']} Author: {meta['account']}")
+    click.echo(f"- Name:{meta['project']}, Author: {meta['account']}")
     if kexts:
         click.secho(f'  {kexts}', fg='green')
 

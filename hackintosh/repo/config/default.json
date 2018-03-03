@@ -132,7 +132,7 @@
       "type": "kext",
       "account": "lvs1974",
       "options": {
-        "nav": "/Release"
+        "nav": "Release"
       }
     },
     "VoodooHDA": {
