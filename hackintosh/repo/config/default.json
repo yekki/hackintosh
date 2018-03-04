@@ -227,28 +227,10 @@
         "os-x-fakesmc-kozlek": [
           "FakeSMC.kext"
         ],
-        "IntelGraphicsFixup": [
-          "IntelGraphicsFixup.kext"
-        ],
-        "Lilu": [
-          "Lilu.kext"
-        ],
-        "Shiki": [
-          "Shiki.kext"
-        ],
-        "os-x-acpi-battery-driver": [
-          "ACPIBatteryManager.kext"
-        ],
         "os-x-voodoo-ps2-controller": [
           "VoodooPS2Controller.kext",
           "VoodooPS2Daemon",
           "org.rehabman.voodoo.driver.Daemon.plist"
-        ],
-        "os-x-usb-inject-all": [
-          "USBInjectAll.kext"
-        ],
-        "os-x-intel-network": [
-          "IntelMausiEthernet.kext"
         ]
       },
       "clover": {

@@ -27,39 +27,33 @@ def cleanup(func):
     return wrapper
 
 
-def post(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        r = func(*args, **kwargs)
-        _unzip()
+def unzip(kexts=None, to_dir=None):
+    unzip_dir(STAGE_DIR, STAGE_DIR)
+    from_dirs = [os.path.join(STAGE_DIR, 'Release'), STAGE_DIR]
+    ends = ('.kext', '.app', '.plist', 'VoodooPS2Daemon')
 
-        if r and isinstance(r, list):
-            for f in os.listdir(OUTPUT_DIR):
-                if f not in r:
-                    delete(os.path.join(OUTPUT_DIR, f))
-        elif isinstance(r, types.FunctionType):
-            r()
-        return r
+    if to_dir:
+        to_dir = os.path.join(OUTPUT_DIR, to_dir)
+        if not os.path.exists(to_dir):
+            os.mkdir(to_dir)
 
-    return wrapper
+        for f in from_dirs:
+            for k in os.listdir(f):
+                if (kexts and k in kexts) or (kexts is None and k.endswith(ends)):
+                    shutil.move(os.path.join(f, k), os.path.join(OUTPUT_DIR, to_dir))
 
+        del_by_exts(to_dir)
+    else:
+        for f in from_dirs:
+            for k in os.listdir(f):
+                if kexts:
+                    if k in kexts:
+                        shutil.move(os.path.join(f, k), os.path.join(OUTPUT_DIR))
+                else:
+                    if k.endswith(ends):
+                        shutil.move(os.path.join(f, k), os.path.join(OUTPUT_DIR))
 
-def _unzip():
-    unzip_dir(STAGE_DIR, OUTPUT_DIR)
-    path = os.path.join(OUTPUT_DIR, 'Release')
-
-    if os.path.isdir(path):
-        copy_tree(path, OUTPUT_DIR)
-        shutil.rmtree(path)
-
-    del_by_exts(OUTPUT_DIR)
-
-def unzip(kexts=None):
-    _unzip()
-
-    for f in os.listdir(OUTPUT_DIR):
-        if f not in kexts:
-            delete(os.path.join(OUTPUT_DIR, f))
+        del_by_exts(OUTPUT_DIR)
 
 
 def execute(cmd, filename=None):

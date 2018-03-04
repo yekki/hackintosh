@@ -1,7 +1,7 @@
 from hackintosh import IASL, CLIENT_SETTINGS, LAPTOP_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, \
     CLIENT_SETTINGS_FILE, save_conf, error
-from hackintosh.lib import execute_module, cleanup, execute, zip_dir, to_num, download_project, post, download_kexts, \
-    print_project, cleanup_dirs, clover_kext_patches, execute_func
+from hackintosh.lib import execute_module, cleanup, execute, zip_dir, to_num, download_project, download_kexts, \
+    print_project, cleanup_dirs, clover_kext_patches, execute_func, unzip
 
 from subprocess import check_call, call, CalledProcessError
 
@@ -43,38 +43,21 @@ def update(ctx, all, tool):
 @cli.command(short_help='Archive problem reporting files.')
 @cleanup
 def diagnostic():
-    execute('kextstat | grep -y acpiplat', 'acpiplat.out')
-    execute('kextstat | grep -y applelpc', 'applelpc.out')
-    execute('kextstat | grep -y appleintelcpu', 'appleintelcpu.out')
-    execute('kextstat | grep -y applehda', 'applehda.out')
-    execute('ls -l /System/Library/Extensions/AppleHDA.kext/Contents/Resources/*.zml*',
-            'applehda_res.out')
-    execute('pmset -g assertions', 'assertions.out')
-    execute('system_profiler SPSerialATADataType | grep TRIM', 'assertions.out')
-    click.echo('This is a time-consuming operation...')
-    execute(
-        'sudo touch /System/Library/Extensions && sudo kextcache -u /', 'kextcache.out')
-
-    # TODO: wrong structure in zip file
-    zip_dir(STAGE_DIR, os.path.join(OUTPUT_DIR, 'out.zip'), '.out')
+   #Todo
+    pass
 
 
 @cli.command(short_help="Commands for external devices.")
 @click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
               help='Choose the device id')
 @cleanup
-@post
 def device(id):
-    download_kexts(ALL_META['external_device'][id]['kexts'])
-
+    kexts = download_kexts(ALL_META['external_device'][id]['kexts'])
     cleanup_dirs(os.path.join(OUTPUT_DIR, 'kexts'), os.path.join(OUTPUT_DIR, 'clover'))
 
-    for k in os.listdir(OUTPUT_DIR):
-        if k.endswith('.kext'):
-            shutil.move(os.path.join(OUTPUT_DIR, k), os.path.join(OUTPUT_DIR, 'kexts'))
+    unzip(kexts, 'kexts')
 
-    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
-                        os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
+    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'], os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
 
 
 @cli.command(short_help='Prepare all stuff for device.')
@@ -93,7 +76,6 @@ def edit():
 # TODO: lost FakePCIID_Intel_HD_Graphics.kext, DisplayMergeNub.kext
 @cli.command(short_help=f"Download kexts for laptop:{CLIENT_SETTINGS['current_series']}")
 @cleanup
-@post
 def laptop():
     click.echo(f"Downloading kexts for laptop: {CLIENT_SETTINGS['current_series']}:")
 
@@ -143,7 +125,6 @@ def kext_info(ctx, supported, laptop, common):
 @click.argument('projects', nargs=-1, type=click.STRING)
 @click.pass_context
 @cleanup
-@post
 def download(ctx, projects):
     if not projects:
         print(ctx.get_help())
@@ -152,6 +133,7 @@ def download(ctx, projects):
             download_project(ALL_META['projects'][p])
         else:
             click.echo(f'{p} is not supported.')
+    unzip()
 
 
 @cli.command(short_help='Show all app projects.')
@@ -242,7 +224,6 @@ def open():
               help='Install VoodooPS2Daemon & org.rehabman.voodoo.driver.Daemon.plist')
 @click.pass_context
 @cleanup
-@post
 def install(ctx, voodoops2):
     if voodoops2:
         if not (os.path.exists(os.path.join(OUTPUT_DIR, 'VoodooPS2Daemon')) and os.path.exists(
@@ -310,12 +291,7 @@ def acpi_info():
 @cli.command(short_help="Debug command.")
 def debug():
     """Demonstrates using the pager."""
-    lines = []
-    for x in range(200):
-        lines.append('%s. Hello World!' % click.style(str(x), fg='green'))
-
-    click.echo_via_pager('\n'.join(lines))
-
+    pass
 
 if __name__ == '__main__':
     cli()
