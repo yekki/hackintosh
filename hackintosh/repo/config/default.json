@@ -181,6 +181,13 @@
       "account": "Rehabman",
       "options": {}
     },
+    "DisplayMergeNub": {
+      "source": "local",
+      "project": "DisplayMergeNub",
+      "type": "kext",
+      "account": "yekki",
+      "options": {}
+    },
     "AppleHDAPatcher": {
       "source": "github",
       "project": "AppleHDAPatcher",

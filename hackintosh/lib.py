@@ -4,12 +4,11 @@ from hackintosh.parser import parse
 from git import Repo
 
 from inspect import signature
-from distutils.dir_util import copy_tree
-from subprocess import call
+from subprocess import check_call, call, CalledProcessError
 from string import Template
 from functools import wraps
 
-import requests, cgi, zipfile, os, click, shutil, re, importlib, types
+import requests, cgi, zipfile, os, click, shutil, re, importlib
 
 
 def cleanup(func):
@@ -27,6 +26,20 @@ def cleanup(func):
     return wrapper
 
 
+def install_kext(kext, dir=OUTPUT_DIR):
+    try:
+        if type(kext) is list:
+            for k in kext:
+                check_call(f'sudo cp -R {dir}/{k} /Library/Extensions', shell=True)
+        else:
+            check_call(f'sudo cp -R {dir}/{kext} /Library/Extensions', shell=True)
+        click.echo('rebuilding caches and fix permissions')
+        check_call(f'sudo touch /System/Library/Extensions && sudo kextcache -u /', shell=True)
+        click.echo('kext(s) is installed.')
+    except CalledProcessError:
+        error(f'Failed to install kext:{kext}')
+
+
 def unzip(kexts=None, to_dir=None):
     unzip_dir(STAGE_DIR, STAGE_DIR)
     from_dirs = [os.path.join(STAGE_DIR, 'Release'), STAGE_DIR]
@@ -38,20 +51,22 @@ def unzip(kexts=None, to_dir=None):
             os.mkdir(to_dir)
 
         for f in from_dirs:
-            for k in os.listdir(f):
-                if (kexts and k in kexts) or (kexts is None and k.endswith(ends)):
-                    shutil.move(os.path.join(f, k), os.path.join(OUTPUT_DIR, to_dir))
+            if os.path.exists(f):
+                for k in os.listdir(f):
+                    if (kexts and k in kexts) or (kexts is None and k.endswith(ends)):
+                        shutil.move(os.path.join(f, k), os.path.join(OUTPUT_DIR, to_dir))
 
         del_by_exts(to_dir)
     else:
         for f in from_dirs:
-            for k in os.listdir(f):
-                if kexts:
-                    if k in kexts:
-                        shutil.move(os.path.join(f, k), os.path.join(OUTPUT_DIR))
-                else:
-                    if k.endswith(ends):
-                        shutil.move(os.path.join(f, k), os.path.join(OUTPUT_DIR))
+            if os.path.exists(f):
+                for k in os.listdir(f):
+                    if kexts:
+                        if k in kexts:
+                            shutil.move(os.path.join(f, k), os.path.join(OUTPUT_DIR))
+                    else:
+                        if k.endswith(ends):
+                            shutil.move(os.path.join(f, k), os.path.join(OUTPUT_DIR))
 
         del_by_exts(OUTPUT_DIR)
 
@@ -75,8 +90,16 @@ def zip_dir(path, filename, suffix=None):
                     zipf.write(os.path.join(root, file))
 
 
-def print_project(meta, kexts=None):
-    click.echo(f"- Name:{meta['project']}, Author: {meta['account']}")
+def print_project(meta, kexts=None, show_update_date=False):
+
+    if show_update_date:
+        m = parse(meta)
+        s = f", Updated:{m.get('updated_at', 'None')}"
+    else:
+        s = ""
+
+    click.echo(f"- Name:{meta['project']}, Author: {meta['account']}{s}")
+
     if kexts:
         click.secho(f'  {kexts}', fg='green')
 
@@ -103,7 +126,12 @@ def rebuild_kextcache():
 def download_project(meta):
     p = parse(meta)
     if p:
-        return download(p['url'], p['name'])
+        url = p.get('url', '')
+        if url.startswith('/'):
+            shutil.copy(url, OUTPUT_DIR)
+            return p['name']
+        else:
+            return download(p['url'], p['name'])
     else:
         error(f'Failed to parse project meta:{meta}')
 

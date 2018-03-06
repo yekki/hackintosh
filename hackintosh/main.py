@@ -1,6 +1,6 @@
 from hackintosh import IASL, CLIENT_SETTINGS, LAPTOP_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, \
     CLIENT_SETTINGS_FILE, save_conf, error
-from hackintosh.lib import execute_module, cleanup, execute, zip_dir, to_num, download_project, download_kexts, \
+from hackintosh.lib import execute_module, cleanup, install_kext, to_num, download_project, download_kexts, \
     print_project, cleanup_dirs, clover_kext_patches, execute_func, unzip
 
 from subprocess import check_call, call, CalledProcessError
@@ -40,13 +40,6 @@ def update(ctx, all, tool):
         click.echo(ctx.get_help())
 
 
-@cli.command(short_help='Archive problem reporting files.')
-@cleanup
-def diagnostic():
-   #Todo
-    pass
-
-
 @cli.command(short_help="Commands for external devices.")
 @click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
               help='Choose the device id')
@@ -57,7 +50,8 @@ def device(id):
 
     unzip(kexts, 'kexts')
 
-    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'], os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
+    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
+                        os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
 
 
 @cli.command(short_help='Prepare all stuff for device.')
@@ -91,34 +85,28 @@ def laptop():
 
 
 @cli.command(short_help='Show all kext projects.')
-@click.option('-s', '--supported', is_flag=True, help='Show all supported kext projects.')
-@click.option('-l', '--laptop', is_flag=True, help='Show kexts for current laptop.')
-@click.option('-c', '--common', is_flag=True, help='Show system kexts for hackintosh installation.')
-@click.pass_context
-def kext_info(ctx, supported, laptop, common):
-    if not (supported or laptop or common):
-        print(ctx.get_help())
-
-    if supported:
+@click.option('-s', '--scope', required=True, type=click.Choice(['supported', 'laptop', 'common']),
+              help='Choose the scope of kexts')
+@click.option('-d', '--dynamic', is_flag=True, help='Show last update date.')
+def kext_info(scope, dynamic):
+    if scope == 'supported':
         click.secho('Supported kexts projects:', bold=True)
-        [print_project(v) for v in ALL_META['projects'].values() if v['type'] == 'kext']
-
-    if laptop:
+        [print_project(v, dynamic) for v in ALL_META['projects'].values() if v['type'] == 'kext']
+    elif scope == 'laptop':
         click.secho(f"kexts for laptop {CLIENT_SETTINGS['current_series']}:", bold=True)
         projects = {}
         projects.update(LAPTOP_META['kexts'])
         projects.update(ALL_META['patches']['system']['kexts'])
         for k, v in projects.items():
             pmeta = ALL_META['projects'][k]
-            kexts = ','.join(v)
-            print_project(pmeta, kexts)
-
-    if common:
+            kexts = ', '.join(v)
+            print_project(pmeta, kexts, dynamic)
+    elif scope == 'common':
         click.echo('kexts for all laptops:')
         for k, v in ALL_META['patches']['system']['kexts'].items():
             pmeta = ALL_META['projects'][k]
             kexts = ','.join(v)
-            print_project(pmeta, kexts)
+            print_project(pmeta, kexts, dynamic)
 
 
 @cli.command(short_help='Download projects.')
@@ -150,6 +138,11 @@ def clone():
     shutil.copytree(os.path.join(PKG_ROOT, 'repo'),
                     os.path.join(os.getcwd(), 'repo'))
     click.echo('Created local repository stub directory.')
+
+
+@cli.command(short_help='Open output in finder.')
+def finder():
+    click.launch(OUTPUT_DIR)
 
 
 # TODO: should be fixed!
@@ -221,32 +214,39 @@ def open():
 
 @cli.command(short_help='Install widgets.')
 @click.option('-v', '--voodoops2', is_flag=True,
-              help='Install VoodooPS2Daemon & org.rehabman.voodoo.driver.Daemon.plist')
+              help='Install VoodooPs2')
+@click.option('-b', '--brcm', is_flag=True,
+              help='Install Broadcom patches')
 @click.pass_context
 @cleanup
-def install(ctx, voodoops2):
+def install(ctx, voodoops2, brcm):
     if voodoops2:
-        if not (os.path.exists(os.path.join(OUTPUT_DIR, 'VoodooPS2Daemon')) and os.path.exists(
-                os.path.join(OUTPUT_DIR, 'org.rehabman.voodoo.driver.Daemon.plist'))):
-            click.echo("VoodooPS2 doesn't exist, downloading it now...")
-            download_project(ALL_META['projects']['os-x-voodoo-ps2-controller'])
+        click.echo("Downloading VoodooPS2 now...")
+        download_project(ALL_META['projects']['os-x-voodoo-ps2-controller'])
+        unzip(['VoodooPS2Daemon', 'org.rehabman.voodoo.driver.Daemon.plist', 'VoodooPS2Controller.kext'])
+        click.echo("VoodooPS2 downloaded, installing now...")
 
-            def _post():
-                click.echo("VoodooPS2 downloaded, installing now...")
-                try:
-                    check_call(f'sudo cp {OUTPUT_DIR}/VoodooPS2Daemon /usr/bin', shell=True)
-                    click.echo('VoodooPS2Daemon is installed.')
-                except CalledProcessError:
-                    error('Failed to install VoodooPS2 widgets: VoodooPS2Daemon')
+        install_kext('VoodooPS2Controller.kext')
 
-                try:
-                    check_call(f'sudo cp {OUTPUT_DIR}/org.rehabman.voodoo.driver.Daemon.plist /Library/LaunchDaemons',
-                               shell=True)
-                    click.echo('org.rehabman.voodoo.driver.Daemon.plist is installed.')
-                except CalledProcessError:
-                    error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')
+        try:
+            check_call(f'sudo cp {OUTPUT_DIR}/VoodooPS2Daemon /usr/bin', shell=True)
+            click.echo('VoodooPS2Daemon is installed.')
+        except CalledProcessError:
+            error('Failed to install VoodooPS2 widgets: VoodooPS2Daemon')
 
-            return _post
+        try:
+            check_call(f'sudo cp {OUTPUT_DIR}/org.rehabman.voodoo.driver.Daemon.plist /Library/LaunchDaemons',
+                       shell=True)
+            click.echo('org.rehabman.voodoo.driver.Daemon.plist is installed.')
+        except CalledProcessError:
+            error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')
+    elif brcm:
+        click.echo("Downloading Broadcom patches now...")
+        download_project(ALL_META['projects']['os-x-brcmpatchram'])
+        unzip(['BrcmFirmwareRepo.kext', 'BrcmPatchRAM2.kext'])
+        click.echo("Broadcom patches downloaded, installing now...")
+        install_kext(['BrcmFirmwareRepo.kext', 'BrcmPatchRAM2.kext'])
+        click.echo('Broadcom patches is installed.')
     else:
         click.echo(ctx.get_help())
 
@@ -256,7 +256,7 @@ def install(ctx, voodoops2):
 @cleanup
 def acpi_build(hotpatch):
     if hotpatch:
-        src = os.path.join(LAPTOP_ROOT, 'hotpatches')
+        src = os.path.join(LAPTOP_ROOT, 'patches', 'hot')
         series = CLIENT_SETTINGS['current_series'].upper()
         for f in os.listdir(src):
             shutil.copy2(os.path.join(src, f), os.path.join(STAGE_DIR, f))
@@ -292,6 +292,7 @@ def acpi_info():
 def debug():
     """Demonstrates using the pager."""
     pass
+
 
 if __name__ == '__main__':
     cli()

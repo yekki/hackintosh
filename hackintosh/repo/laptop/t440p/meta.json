@@ -1,5 +1,4 @@
-{
-  "series": "t440p",
+{"series": "t440p",
   "description": "Lenovo ThinkPad T440p",
   "author": "Gary Niu",
   "osx_ver": "10.13.2",
@@ -13,7 +12,16 @@
     "ethernet_card": "Intel"
   },
   "kexts":{
-    "os-x-fake-pci-id":["FakePCIID.kext","FakePCIID_Intel_HD_Graphics", "FakePCIID_Intel_HDMI_Audio.kext"]
+    "os-x-fake-pci-id":["FakePCIID.kext","FakePCIID_Intel_HD_Graphics", "FakePCIID_Intel_HDMI_Audio.kext"],
+    "os-x-acpi-battery-driver":["ACPIBatteryManager"],
+    "os-x-eapd-codec-commander":["CodecCommander.kext"],
+    "os-x-intel-network":["IntelMausiEthernet.kext"],
+    "Lilu":["Lilu.kext"],
+    "Shiki":["Shiki.kext"],
+    "AppleALC":["AppleALC.kext"],
+    "IntelGraphicsFixup":["IntelGraphicsFixup.kext"],
+    "AppleBacklightInjector":["AppleBacklightInjector.kext"],
+    "DisplayMergeNub":["DisplayMergeNub.kext"]
   },
   "acpi": {
     "bios": "2.39",

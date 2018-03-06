@@ -10,16 +10,16 @@ def handle_patche_list(acpi_list, ext, dest=None):
     files = []
 
     for f in [f'{item}.{ext}' for item in acpi_list]:
-        file = os.path.join(LAPTOP_ROOT, 'origin',
+        file = os.path.join(LAPTOP_ROOT, 'bios',
                             LAPTOP_META['acpi']['bios'], f)
         if os.path.exists(file):
             files.append(file)
         else:
-            file = os.path.join(LAPTOP_ROOT, 'patches', f)
+            file = os.path.join(LAPTOP_ROOT, 'patches', 'static', f)
             if os.path.exists(file):
                 files.append(file)
             else:
-                file = os.path.join(REPO_ROOT, 'common', 'patches', f)
+                file = os.path.join(REPO_ROOT, 'common', 'patches', 'static', f)
                 if os.path.exists(file):
                     files.append(file)
                 else:
@@ -71,7 +71,7 @@ def _2_prepare_acpi_files():
 
 
 def _3_decompile():
-    refs_file = os.path.join(LAPTOP_ROOT, 'patches', 'refs.txt')
+    refs_file = os.path.join(LAPTOP_ROOT, 'patches', 'static', 'refs.txt')
     if os.path.isfile(refs_file):
         shutil.copyfile(refs_file, os.path.join(os.getcwd(), 'refs.txt'))
 

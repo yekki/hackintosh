@@ -1,7 +1,7 @@
-from hackintosh import REPO_ROOT, error, debug
+from hackintosh import REPO_ROOT, CLIENT_SETTINGS, error
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
-import json, os, re
+import json, os
 
 
 def _github(meta):
@@ -80,7 +80,15 @@ def _sourceforge(meta):
 
 
 def _local(meta):
-    return {'url': os.path.join(REPO_ROOT, 'common', 'kexts', f"{meta['project']}.kext"), 'name': meta['project']}
+    path = os.path.join(REPO_ROOT, 'common', 'kexts', f"{meta['project']}.kext")
+
+    if not os.path.exists(path):
+        path = os.path.join(REPO_ROOT, 'laptop', CLIENT_SETTINGS['current_series'], 'kexts', f"{meta['project']}.kext")
+
+    if os.path.exists(path):
+        return {'url': path, 'name': meta['project']}
+    else:
+        error(f"{meta['project']} not exist at {path}")
 
 
 # for future
