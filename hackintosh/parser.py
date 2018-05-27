@@ -14,7 +14,8 @@ def _github(meta):
     resp = json.loads(urlopen(url).read())
 
     for asset in resp['assets']:
-        if meta.get('filter', 'RELEASE') in asset['name']:
+
+        if meta['options'].get('filter', '') in asset['name']:
             return {'url': asset['browser_download_url'], 'author': asset['uploader']['login'], 'name': asset['name'],
                     'updated_at': asset['updated_at'][:10]}
 
@@ -67,7 +68,7 @@ def _sourceforge(meta):
         e = 'zip'
 
     url = f"https://sourceforge.net/projects/{meta['project']}/files/{n}"
-
+    print(url);exit()
     soup = BeautifulSoup(urlopen(url), 'html.parser')
 
     row = soup.find('table', id='files_list').find('tbody').find('tr')

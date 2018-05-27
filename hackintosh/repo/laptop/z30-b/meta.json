@@ -17,15 +17,16 @@
     "ethernet_card": "Intel"
   },
   "kexts": {
-    "IntelGraphicsDVMTFixup": ["IntelGraphicsDVMTFixup.kext"],
-    "AppleALC": ["AppleALC.kext"],
-    "os-x-fake-pci-id": ["FakePCIID_Intel_HDMI_Audio.kext", "FakePCIID.kext", "FakePCIID_Broadcom_WiFi.kext"],
-    "Lilu": ["Lilu.kext"],
-    "Shiki": ["Shiki.kext"],
     "IntelGraphicsFixup": ["IntelGraphicsFixup.kext"],
     "os-x-acpi-battery-driver": ["ACPIBatteryManager.kext"],
     "os-x-intel-network": ["IntelMausiEthernet.kext"],
-    "os-x-usb-inject-all": ["USBInjectAll.kext"]
+    "os-x-usb-inject-all": ["USBInjectAll.kext"],
+     "IntelGraphicsDVMTFixup": ["IntelGraphicsDVMTFixup.kext"],
+    "AppleALC": ["AppleALC.kext"],
+    "os-x-fake-pci-id": ["FakePCIID_Intel_HDMI_Audio.kext"],
+    "Lilu": ["Lilu.kext"],
+    "Shiki": ["Shiki.kext"],
+    "os-x-eapd-codec-commander": ["CodecCommander.kext"]
   },
   "acpi": {
     "bios": "3.20",

@@ -127,13 +127,11 @@
       }
     },
     "IntelGraphicsFixup": {
-      "source": "sourceforge",
+      "source": "github",
       "project": "IntelGraphicsFixup",
       "type": "kext",
       "account": "lvs1974",
-      "options": {
-        "nav": "Release"
-      }
+      "options": {"filter": "RELEASE"}
     },
     "VoodooHDA": {
       "source": "sourceforge",
@@ -158,21 +156,21 @@
       "project": "Lilu",
       "type": "kext",
       "account": "vit9696",
-      "options": {}
+      "options": {"filter": "RELEASE"}
     },
     "Shiki": {
       "source": "github",
       "project": "Shiki",
       "type": "kext",
       "account": "vit9696",
-      "options": {}
+      "options": {"filter": "RELEASE"}
     },
     "AppleALC": {
       "source": "github",
       "project": "AppleALC",
       "type": "kext",
       "account": "vit9696",
-      "options": {}
+      "options": {"filter": "RELEASE"}
     },
     "AppleBacklightInjector": {
       "source": "local",
