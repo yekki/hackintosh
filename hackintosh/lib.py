@@ -8,7 +8,7 @@ from subprocess import check_call, call, CalledProcessError
 from string import Template
 from functools import wraps
 
-import requests, cgi, zipfile, os, click, shutil, re, importlib
+import requests, cgi, zipfile, os, click, shutil, re, importlib, subprocess
 
 
 def cleanup(func):
@@ -122,13 +122,12 @@ def delete(path):
 def rebuild_kextcache():
     call(['sudo', '/usr/sbin/kextcache', '-i', '/'])
 
-
 def download_project(meta):
     p = parse(meta)
     if p:
         url = p.get('url', '')
         if url.startswith('/'):
-            shutil.copy(url, OUTPUT_DIR)
+            copy(url,OUTPUT_DIR)
             return p['name']
         else:
             return download(p['url'], p['name'])
@@ -150,6 +149,10 @@ def download(url, filename=None, folder=STAGE_DIR):
         total_length = int(r.headers.get('content-length'))
     except TypeError:
         error('Please try again.')
+
+    # change filename to void conflict with each other
+    if filename[0].isdigit():
+        filename = str(total_length) + '.' + filename
 
     download_file_path = os.path.join(folder, filename)
     with open(download_file_path, "wb") as f:
@@ -286,3 +289,23 @@ def git_clone(url, dir):
     else:
         os.mkdir(path)
         Repo.clone_from(url, path)
+
+
+def run(cmd, charset='utf-8'):
+    ret = subprocess.run(cmd, stdout=subprocess.PIPE)
+
+    return ret.stdout.decode(charset)
+
+
+def copy(src, dest, overwrite=True):
+
+    if os.path.isdir(dest):
+        cmd = ['cp', '-r', f'{src}', f'{dest}']
+        path = os.path.join(dest, src.split(sep='/')[-1])
+
+        if os.path.exists(path):
+            if overwrite: run(cmd)
+        else:
+            run(cmd)
+    else:
+        raise ValueError(f'{dest} does not exist.')

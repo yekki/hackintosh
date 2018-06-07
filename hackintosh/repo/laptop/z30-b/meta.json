@@ -21,7 +21,7 @@
     "os-x-acpi-battery-driver": ["ACPIBatteryManager.kext"],
     "os-x-intel-network": ["IntelMausiEthernet.kext"],
     "os-x-usb-inject-all": ["USBInjectAll.kext"],
-     "IntelGraphicsDVMTFixup": ["IntelGraphicsDVMTFixup.kext"],
+    "IntelGraphicsDVMTFixup": ["IntelGraphicsDVMTFixup.kext"],
     "AppleALC": ["AppleALC.kext"],
     "os-x-fake-pci-id": ["FakePCIID_Intel_HDMI_Audio.kext"],
     "Lilu": ["Lilu.kext"],

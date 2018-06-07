@@ -81,7 +81,7 @@ def laptop():
     kexts.extend(k1)
     kexts.extend(k2)
 
-    return kexts
+    unzip(kexts)
 
 
 @cli.command(short_help='Show all kext projects.')
