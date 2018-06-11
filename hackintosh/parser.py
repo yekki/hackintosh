@@ -1,4 +1,5 @@
-from hackintosh import REPO_ROOT, CLIENT_SETTINGS, error
+from hackintosh import REPO_ROOT, CLIENT_SETTINGS
+from hackintosh.utils import error
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import json, os
@@ -68,7 +69,8 @@ def _sourceforge(meta):
         e = 'zip'
 
     url = f"https://sourceforge.net/projects/{meta['project']}/files/{n}"
-    print(url);exit()
+    print(url);
+    exit()
     soup = BeautifulSoup(urlopen(url), 'html.parser')
 
     row = soup.find('table', id='files_list').find('tbody').find('tr')

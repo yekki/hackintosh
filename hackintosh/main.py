@@ -1,18 +1,15 @@
 from hackintosh import IASL, CLIENT_SETTINGS, LAPTOP_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, \
-    CLIENT_SETTINGS_FILE, save_conf, error
-from hackintosh.lib import execute_module, cleanup, install_kext, to_num, download_project, download_kexts, \
-    print_project, cleanup_dirs, clover_kext_patches, execute_func, unzip
+    CLIENT_SETTINGS_FILE
+
+from hackintosh.utils import delete, to_num, error, save_conf
+from hackintosh.commands import *
 
 from subprocess import check_call, call, CalledProcessError
 
 import click, os, shutil
 
 
-# TODO: failed to execute on ssdtPRgen at first time.
-# TODO: debug feature
-# @click.group(context_settings=CLIENT_SETTINGS['context_settings'], cls=MAIN_CLI)
 @click.group()
-# @click.option('--debug/--no-debug', default=False)
 def cli():
     pass
 
@@ -40,34 +37,11 @@ def update(ctx, all, tool):
         click.echo(ctx.get_help())
 
 
-@cli.command(short_help="Commands for external devices.")
-@click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
-              help='Choose the device id')
-@cleanup
-def device(id):
-    kexts = download_kexts(ALL_META['external_device'][id]['kexts'])
-    cleanup_dirs(os.path.join(OUTPUT_DIR, 'kexts'), os.path.join(OUTPUT_DIR, 'clover'))
-
-    unzip(kexts, 'kexts')
-
-    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
-                        os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
-
-
-@cli.command(short_help='Prepare all stuff for device.')
-@click.option('-p', '--patch', required=True, type=click.Choice(ALL_META['patches'].keys()),
-              help='Choose the laptop series')
-@cleanup
-def patch(patch):
-    execute_func('patch', patch)
-
-
 @cli.command(short_help="Edit client config file.")
 def edit():
     click.edit(filename=CLIENT_SETTINGS_FILE)
 
 
-# TODO: lost FakePCIID_Intel_HD_Graphics.kext, DisplayMergeNub.kext
 @cli.command(short_help=f"Download kexts for laptop:{CLIENT_SETTINGS['current_series']}")
 @cleanup
 def laptop():
@@ -82,6 +56,30 @@ def laptop():
     kexts.extend(k2)
 
     unzip(kexts)
+
+
+@cli.command(short_help="Commands for external devices.")
+@click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
+              help='Choose the device id')
+@cleanup
+def device(id):
+    kexts = download_kexts(ALL_META['external_device'][id]['kexts'])
+
+    delete(os.path.join(OUTPUT_DIR, 'kexts'))
+    delete(os.path.join(OUTPUT_DIR, 'clover'))
+
+    unzip(kexts, 'kexts')
+
+    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
+                        os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
+
+
+@cli.command(short_help='Prepare all stuff for device.')
+@click.option('-p', '--patch', required=True, type=click.Choice(ALL_META['patches'].keys()),
+              help='Choose the laptop series')
+@cleanup
+def patch(patch):
+    execute_func('patch', patch)
 
 
 @cli.command(short_help='Show all kext projects.')
@@ -141,27 +139,8 @@ def clone():
 
 
 @cli.command(short_help='Open output in finder.')
-def finder():
+def output():
     click.launch(OUTPUT_DIR)
-
-
-# TODO: should be fixed!
-@cli.command(short_help='Switch repository location: pkg or local.')
-def switch():
-    if CLIENT_SETTINGS['repo_fixed']:
-        CLIENT_SETTINGS['repo_fixed'] = False
-    else:
-        loc = CLIENT_SETTINGS['repo_location']
-        if loc == 'pkg':
-            CLIENT_SETTINGS['repo_location'] = 'local'
-            click.echo('Switched to local repository.')
-        elif loc == 'local':
-            CLIENT_SETTINGS['repo_location'] = 'pkg'
-            click.echo('Switched to pkg repository.')
-        else:
-            raise ValueError(f'Unsupported repository type: {loc}')
-
-    save_conf(CLIENT_SETTINGS)
 
 
 @cli.command(short_help='Show current client settings.')
@@ -180,8 +159,10 @@ def client_info():
 def series(series):
     if series in ALL_META['certified']['series']:
         CLIENT_SETTINGS['current_series'] = series
-        save_conf(CLIENT_SETTINGS)
+        save_conf(CLIENT_SETTINGS_FILE, CLIENT_SETTINGS)
         click.echo(f'Your current laptop series is {series}')
+    else:
+        click.echo(f'{series} does not exist.')
 
 
 @cli.command(short_help='Open urls.')
@@ -226,7 +207,7 @@ def install(ctx, voodoops2, brcm):
         unzip(['VoodooPS2Daemon', 'org.rehabman.voodoo.driver.Daemon.plist', 'VoodooPS2Controller.kext'])
         click.echo("VoodooPS2 downloaded, installing now...")
 
-        install_kext('VoodooPS2Controller.kext')
+        install_kexts('VoodooPS2Controller.kext')
 
         try:
             check_call(f'sudo cp {OUTPUT_DIR}/VoodooPS2Daemon /usr/bin', shell=True)
@@ -245,7 +226,7 @@ def install(ctx, voodoops2, brcm):
         download_project(ALL_META['projects']['os-x-brcmpatchram'])
         unzip(['BrcmFirmwareRepo.kext', 'BrcmPatchRAM2.kext'])
         click.echo("Broadcom patches downloaded, installing now...")
-        install_kext(['BrcmFirmwareRepo.kext', 'BrcmPatchRAM2.kext'])
+        install_kexts(['BrcmFirmwareRepo.kext', 'BrcmPatchRAM2.kext'])
         click.echo('Broadcom patches is installed.')
     else:
         click.echo(ctx.get_help())

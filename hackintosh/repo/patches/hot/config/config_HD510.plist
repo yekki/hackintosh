@@ -2,17 +2,29 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>Comment</key>
+	<string>This file is for Skylake graphics that require FakeID=0x19028086</string>
 	<key>ACPI</key>
 	<dict>
 		<key>AutoMerge</key>
 		<true/>
+		<key>FixHeaders</key>
+		<true/>
+		<key>Comment-DisabledAML</key>
+		<string>Disable other forms of CPU PM due to SSDT/Generate/PluginType=true</string>
+		<key>DisabledAML</key>
+		<array>
+			<string>SSDT.aml</string>
+			<string>SSDT-XCPM.aml</string>
+			<string>SSDT-PluginType1.aml</string>
+		</array>
 		<key>DSDT</key>
 		<dict>
+			<key>DropOEM_DSM</key>
+			<false/>
 			<key>Fixes</key>
 			<dict>
-				<key>FixHeaders</key>
-				<true/>
-				<key>#Comment-IRQ Fix</key>
+				<key>Comment-IRQ Fix</key>
 				<string>The following fixes may be needed for onboard audio/USB/etc</string>
 				<key>FixTMR</key>
 				<false/>
@@ -162,9 +174,7 @@
 				<true/>
 			</dict>
 			<key>NoOemTableId</key>
-			<true/>
-			<key>NoDynamicExtract</key>
-			<true/>
+			<false/>
 		</dict>
 	</dict>
 	<key>Boot</key>
@@ -223,6 +233,56 @@
 				<data>AhkAAA==</data>
 				<key>Comment</key>
 				<string>spoof 0x1902 just in case FakePCIID_Intel_HD_Graphics installed</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>name</string>
+				<key>Value</key>
+				<data>I2Rpc3BsYXkA</data>
+				<key>Comment</key>
+				<string>Inject &quot;name&quot; as (data)&quot;#display&quot; to disable graphics drivers on AMD</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>IOName</string>
+				<key>Value</key>
+				<string>#display</string>
+				<key>Comment</key>
+				<string>Inject &quot;IOName&quot; as &quot;#display&quot; to disable graphics drivers on AMD</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>class-code</string>
+				<key>Value</key>
+				<data>/////w==</data>
+				<key>Comment</key>
+				<string>Inject bogus class-code to prevent graphics drivers loading for AMD</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>vendor-id</string>
+				<key>Value</key>
+				<data>//8AAA==</data>
+				<key>Comment</key>
+				<string>Inject bogus vendor-id to prevent graphics drivers loading for AMD</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>device-id</string>
+				<key>Value</key>
+				<data>//8AAA==</data>
+				<key>Comment</key>
+				<string>Inject bogus device-id to prevent graphics drivers loading for AMD</string>
 			</dict>
 		</array>
 		<key>#AddProperties</key>
@@ -359,7 +419,7 @@
 		<key>Inject</key>
 		<dict>
 			<key>ATI</key>
-			<false/>
+			<true/>
 			<key>Intel</key>
 			<true/>
 			<key>NVidia</key>
@@ -379,6 +439,7 @@
 		<key>ForceKextsToLoad</key>
 		<array>
 			<string>\System\Library\Extensions\IONetworkingFamily.kext</string>
+			<string>\System\Library\Extensions\AppleIntelSKLGraphicsFramebuffer.kext</string>
 		</array>
 		<key>KextsToPatch</key>
 		<array>
@@ -454,10 +515,8 @@
 	</dict>
 	<key>SMBIOS</key>
 	<dict>
-		<key>ProductName-Comment</key>
-		<string>Using Haswell MacBookAir6,2 until Clover has support for Skylake identifiers</string>
 		<key>ProductName</key>
-		<string>MacBookAir6,2</string>
+		<string>MacBookPro13,1</string>
 		<key>Trust</key>
 		<true/>
 	</dict>

@@ -1,5 +1,6 @@
-from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR, ENV, error
-from hackintosh.lib import clover_kext_patches, download_kexts, git_clone, unzip
+from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR, ENV
+from hackintosh.commands import clover_kext_patches, download_kexts, git_clone, unzip
+from hackintosh.utils import error
 from subprocess import call
 
 import os, shutil

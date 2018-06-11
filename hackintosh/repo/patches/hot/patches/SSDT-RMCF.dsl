@@ -1,7 +1,9 @@
 // configuration data for other SSDTs in this pack
 
-DefinitionBlock("", "SSDT", 2, "hack", "RMCF", 0)
+#ifndef NO_DEFINITIONBLOCK
+DefinitionBlock("", "SSDT", 2, "hack", "_RMCF", 0)
 {
+#endif
     Device(RMCF)
     {
         Name(_ADR, 0)   // do not remove
@@ -80,8 +82,10 @@ DefinitionBlock("", "SSDT", 2, "hack", "RMCF", 0)
 
         // BKLT: Backlight control type
         //
-        // 0: Using IntelBacklight.kext
-        // 1: Using AppleBacklight.kext + AppleBacklightInjector.kext
+        // bit0=0: Using IntelBacklight.kext
+        // bit0=1: Using AppleBacklight.kext + AppleBacklightInjector.kext
+        // bit1=1: do not set LEVW
+        // bit2=1: set GRAN
         Name(BKLT, 1)
 
         // LMAX: Backlight PWM MAX.  Must match framebuffer in use.
@@ -89,6 +93,17 @@ DefinitionBlock("", "SSDT", 2, "hack", "RMCF", 0)
         // Ones: Default will be used (0x710 for Ivy/Sandy, 0xad9 for Haswell/Broadwell)
         // Other values: must match framebuffer
         Name(LMAX, Ones)
+
+        // LEVW: Initialization value for LEVW.
+        //
+        // Ones: Default will be used (0xC0000000)
+        // Other values: determines value to be used
+        Name(LEVW, Ones)
+
+        // GRAN: Initialization value for GRAN.
+        //
+        // Note: value not set for GRAN unless bit2 of BKLT set
+        Name(GRAN, 0)
 
         // FBTP: Framebuffer type. Determines IGPU PWM register layout.
         //  (advanced use: for overriding default for unsupported IGPU device-id)
@@ -98,5 +113,7 @@ DefinitionBlock("", "SSDT", 2, "hack", "RMCF", 0)
         // 2: Haswell/Broadwell/Skylake/KabyLake
         Name(FBTP, 0)
     }
+#ifndef NO_DEFINITIONBLOCK
 }
+#endif
 //EOF

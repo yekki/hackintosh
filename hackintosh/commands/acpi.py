@@ -1,43 +1,34 @@
-from hackintosh import REPO_ROOT, LAPTOP_ROOT, LAPTOP_META, STAGE_DIR, OUTPUT_DIR, IASL, PATCHMATIC, error
-from hackintosh.lib import del_by_exts
+from hackintosh import *
+from hackintosh.utils import error, delete
 from subprocess import call
+import os, glob, click, shutil
 
-import os, glob, shutil, click
+
+def find(filename):
+    search_paths = set()
+    search_paths.add(os.path.join(LAPTOP_ROOT, 'bios',
+                                  LAPTOP_META['acpi']['bios'], filename))
+    search_paths.add(os.path.join(LAPTOP_ROOT, 'patches', 'static', filename))
+    search_paths.add(os.path.join(LAPTOP_ROOT, 'patches', 'hot', filename))
+    search_paths.add(os.path.join(REPO_ROOT, 'common', 'patches', 'static', filename))
+    search_paths.add(os.path.join(REPO_ROOT, 'common', 'patches', 'hot', filename))
+    search_paths.add(os.path.join(REPO_ROOT, 'patches', 'static', 'patches', filename))
+    search_paths.add(os.path.join(REPO_ROOT, 'patches', 'hot', 'patches', filename))
+
+    for f in search_paths:
+        if os.path.exists(f):
+            return f
 
 
-# if param dest is None, then patches will be copy to STAGE_DIR
-def handle_patche_list(acpi_list, ext, dest=None):
-    files = []
+def handle_patche_list(acpi_list, ext, dest=STAGE_DIR):
+    files = set()
 
     for f in [f'{item}.{ext}' for item in acpi_list]:
-        file = os.path.join(LAPTOP_ROOT, 'bios',
-                            LAPTOP_META['acpi']['bios'], f)
-        if os.path.exists(file):
-            files.append(file)
-        else:
-            file = os.path.join(LAPTOP_ROOT, 'patches', 'static', f)
-            if os.path.exists(file):
-                files.append(file)
-            else:
-                file = os.path.join(REPO_ROOT, 'common', 'patches', 'static', f)
-                if os.path.exists(file):
-                    files.append(file)
-                else:
-                    file = os.path.join(REPO_ROOT, 'patches', 'static', 'patches', f)
-                    if os.path.exists(file):
-                        files.append(file)
-                    else:
-                        file = os.path.join(
-                            REPO_ROOT, 'patches', 'hot', 'patches', f)
-                        if os.path.exists(file):
-                            files.append(file)
+        filename = find(f)
+        if filename: files.add(filename)
 
-    if dest is None:
-        dest = STAGE_DIR
-
-    if dest == STAGE_DIR or dest == OUTPUT_DIR:
-        for f in files:
-            shutil.copy2(f, STAGE_DIR)
+    if os.path.isdir(dest):
+        [shutil.copy2(x, STAGE_DIR) for x in files]
     else:
         with click.open_file(dest, 'w') as outfile:
             for f in files:
@@ -46,21 +37,16 @@ def handle_patche_list(acpi_list, ext, dest=None):
 
 
 def _1_initialize():
-    if os.path.isfile(IASL):
-        if os.access(IASL, os.X_OK):
-            acpi_list = LAPTOP_META['acpi']['patches']['ssdt_list']
-            acpi_list.append('DSDT')
-            LAPTOP_META['ACPI_LIST'] = acpi_list
+    for t in [IASL, PATCHMATIC]:
+        if os.path.isfile(t):
+            if not os.access(IASL, os.X_OK):
+                error(f"{_IASL} isn't not executable.")
         else:
-            error(f"{_IASL} isn't not executable.")
-    else:
-        error(f"{_IASL} not found, please install it firstly.")
+            error(f"{t} not found, please install it firstly.")
 
-    if os.path.isfile(PATCHMATIC):
-        if not os.access(PATCHMATIC, os.X_OK):
-            error(f"{PATCHMATIC} isn't not executable.")
-    else:
-        error(f"{PATCHMATIC} not found, please install it firstly.")
+    acpi_list = LAPTOP_META['acpi']['patches']['ssdt_list']
+    acpi_list.append('DSDT')
+    LAPTOP_META['ACPI_LIST'] = acpi_list
 
     return 'Checked compile tools successful.'
 
@@ -71,12 +57,12 @@ def _2_prepare_acpi_files():
 
 
 def _3_decompile():
-    refs_file = os.path.join(LAPTOP_ROOT, 'patches', 'static', 'refs.txt')
+    refs_file = os.path.join(LAPTOP_ROOT, 'patches', 'common', 'refs.txt')
     if os.path.isfile(refs_file):
-        shutil.copyfile(refs_file, os.path.join(os.getcwd(), 'refs.txt'))
+        shutil.copy2(refs_file, os.getcwd() + os.pathsep)
 
     call([f'{IASL} -da -dl {STAGE_DIR}/DSDT.aml {STAGE_DIR}/SSDT*.aml'], shell=True)
-    del_by_exts(STAGE_DIR, exts=['aml'])
+    delete(STAGE_DIR, exts=['aml'])
 
     handle_patche_list(LAPTOP_META['ACPI_LIST'], 'dsl')
     return 'Decompiled native acpi files.'
@@ -141,3 +127,7 @@ def _8_check():
             error(f'Failed to build {i}.')
 
     return 'Final check passed.'
+
+
+if __name__ == '__main__':
+    pass

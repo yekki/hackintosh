@@ -1,13 +1,14 @@
 // To fix unsupported 8-series LPC devices
 
-DefinitionBlock("", "SSDT", 2, "hack", "LPC", 0)
+#ifndef NO_DEFINITIONBLOCK
+DefinitionBlock("", "SSDT", 2, "hack", "_LPC", 0)
 {
+#endif
     External(_SB.PCI0.LPCB, DeviceObj)
-
     Scope(_SB.PCI0.LPCB)
     {
-        OperationRegion(RMP1, PCI_Config, 2, 2)
-        Field(RMP1, AnyAcc, NoLock, Preserve)
+        OperationRegion(RMP0, PCI_Config, 2, 2)
+        Field(RMP0, AnyAcc, NoLock, Preserve)
         {
             LDID,16
         }
@@ -29,6 +30,8 @@ DefinitionBlock("", "SSDT", 2, "hack", "LPC", 0)
                 "device-id", Buffer() { 0x4b, 0x8c, 0, 0 },
                 "compatible", Buffer() { "pci8086,8c4b" },
             },
+            // list of 9-series LPC device-ids not natively supported (partial list)
+            0x8cc6,
             // list of 100-series LPC device-ids not natively supported (partial list)
             0x9d48, 0x9d58, 0xa14e, 0xa150,
             // and 200-series...
@@ -54,5 +57,7 @@ DefinitionBlock("", "SSDT", 2, "hack", "LPC", 0)
             Return (Package() { })
         }
     }
+#ifndef NO_DEFINITIONBLOCK
 }
+#endif
 //EOF

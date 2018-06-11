@@ -1,7 +1,8 @@
-from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT, ALL_META, error
-from hackintosh.lib import unzip_file, download, cleanup_dir, download_project, del_by_exts, git_clone
+from hackintosh import STAGE_DIR, PKG_ROOT, REPO_ROOT, ALL_META
+from hackintosh.commands import git_clone, download_project
+from hackintosh.utils import error, delete, unzip_file, download
 
-import os, stat, shutil, glob, click
+import os, stat, glob, click, shutil
 
 
 def _update_tool(zip_file, cmd_name):
@@ -14,8 +15,7 @@ def _update_tool(zip_file, cmd_name):
 
         file = os.path.join(PKG_ROOT, 'bin', cmd_name)
 
-        if os.path.isfile(file):
-            os.unlink(file)
+        if os.path.exists(file): os.unlink(file)
 
         shutil.copy2(os.path.join(STAGE_DIR, cmd_name), os.path.join(PKG_ROOT, 'bin'))
     else:
@@ -23,7 +23,7 @@ def _update_tool(zip_file, cmd_name):
 
 
 def _1_ssdtPRgen():
-    download('https://codeload.github.com/Piker-Alpha/ssdtPRGen.sh/zip/Beta', filename='ssdtPRGen.sh-Beta.zip')
+    download('https://codeload.github.com/Piker-Alpha/ssdtPRGen.sh/zip/Beta', STAGE_DIR, filename='ssdtPRGen.sh-Beta.zip')
     ssdtPRGen_root = os.path.join(os.path.expanduser('~'), 'Library', 'ssdtPRGen')
 
     if os.path.isdir(ssdtPRGen_root):
@@ -43,17 +43,17 @@ def _1_ssdtPRgen():
 
 
 def _2_patches():
-    git_clone('https://github.com/RehabMan/Laptop-DSDT-Patch.git', 'patches')
+    git_clone('https://github.com/RehabMan/Laptop-DSDT-Patch.git', os.path.join(STAGE_DIR, 'patches'))
     patches_root = os.path.join(REPO_ROOT, 'patches', 'static', 'patches')
 
-    cleanup_dir(patches_root)
+    delete(patches_root, keep=True)
 
     for file in glob.glob(f"{os.path.join(STAGE_DIR, 'patches')}/**/*.txt"):
         shutil.copy2(file, patches_root)
 
     click.echo('ACPI static patches are updated.')
 
-    git_clone('https://github.com/RehabMan/OS-X-Clover-Laptop-Config', 'config')
+    git_clone('https://github.com/RehabMan/OS-X-Clover-Laptop-Config', os.path.join(STAGE_DIR, 'config'))
 
     path = os.path.join(REPO_ROOT, 'patches', 'hot', 'patches')
     shutil.rmtree(path)
@@ -61,13 +61,12 @@ def _2_patches():
 
     path = os.path.join(REPO_ROOT, 'patches', 'hot', 'config')
 
-    del_by_exts(path, exts=['plist'])
+    delete(path, exts=['.plist'])
 
     for file in glob.glob(f"{os.path.join(STAGE_DIR, 'config')}/*.plist"):
         shutil.copy2(file, path)
 
     click.echo('ACPI hot patches are updated.')
-
     return 'ACPI patches are updated.'
 
 

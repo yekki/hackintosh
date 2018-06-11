@@ -2,17 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>Comment</key>
+	<string>This file is for HD3000 1600x900 or greater on 6-series chipset (typical)</string>
 	<key>ACPI</key>
 	<dict>
 		<key>AutoMerge</key>
 		<true/>
+		<key>FixHeaders</key>
+		<true/>
 		<key>DSDT</key>
 		<dict>
+			<key>DropOEM_DSM</key>
+			<false/>
 			<key>Fixes</key>
 			<dict>
-				<key>FixHeaders</key>
-				<true/>
-				<key>#Comment-IRQ Fix</key>
+				<key>Comment-IRQ Fix</key>
 				<string>The following fixes may be needed for onboard audio/USB/etc</string>
 				<key>FixTMR</key>
 				<false/>
@@ -185,9 +189,7 @@
 				<false/>
 			</dict>
 			<key>NoOemTableId</key>
-			<true/>
-			<key>NoDynamicExtract</key>
-			<true/>
+			<false/>
 		</dict>
 	</dict>
 	<key>Boot</key>
@@ -248,6 +250,56 @@
 				<data>AQAAAA==</data>
 				<key>Comment</key>
 				<string>for dual link LVDS cable, DualLink needed for high resolution HD3000</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>name</string>
+				<key>Value</key>
+				<data>I2Rpc3BsYXkA</data>
+				<key>Comment</key>
+				<string>Inject &quot;name&quot; as (data)&quot;#display&quot; to disable graphics drivers on AMD</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>IOName</string>
+				<key>Value</key>
+				<string>#display</string>
+				<key>Comment</key>
+				<string>Inject &quot;IOName&quot; as &quot;#display&quot; to disable graphics drivers on AMD</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>class-code</string>
+				<key>Value</key>
+				<data>/////w==</data>
+				<key>Comment</key>
+				<string>Inject bogus class-code to prevent graphics drivers loading for AMD</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>vendor-id</string>
+				<key>Value</key>
+				<data>//8AAA==</data>
+				<key>Comment</key>
+				<string>Inject bogus vendor-id to prevent graphics drivers loading for AMD</string>
+			</dict>
+			<dict>
+				<key>Device</key>
+				<string>ATI</string>
+				<key>Key</key>
+				<string>device-id</string>
+				<key>Value</key>
+				<data>//8AAA==</data>
+				<key>Comment</key>
+				<string>Inject bogus device-id to prevent graphics drivers loading for AMD</string>
 			</dict>
 			<dict>
 				<key>Device</key>
@@ -386,7 +438,7 @@
 		<key>Inject</key>
 		<dict>
 			<key>ATI</key>
-			<false/>
+			<true/>
 			<key>Intel</key>
 			<true/>
 			<key>NVidia</key>
