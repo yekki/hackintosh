@@ -10,14 +10,14 @@ from git import Repo
 
 from hackintosh.parser import parse
 from hackintosh.utils import error, delete, download, unzip_dir, copy_dir
-from hackintosh import OUTPUT_DIR, STAGE_DIR, REPO_ROOT, ALL_META, CLIENT_SETTINGS_FILE
+from hackintosh import OUTPUT_DIR, STAGE_DIR, REPO_ROOT, ALL_META, CLIENT_SETTINGS_FILE, CLIENT_SETTINGS
 from string import Template
 from inspect import signature
 from importlib import import_module
 
 import re
 
-__all__ = ['execute_module', 'execute_func', 'save_conf', 'install_kexts', 'cleanup', 'download_kexts', 'git_clone',
+__all__ = ['execute_module', 'execute_func', 'update_client_conf', 'install_kexts', 'cleanup', 'download_kexts', 'git_clone',
            'download_project', 'unzip', 'clover_kext_patches', 'print_project', 'rebuild_cache']
 
 
@@ -58,24 +58,23 @@ def execute_func(module_name, func_name, params=None):
         func()
 
 
-def save_conf(data):
+def update_client_conf():
     with open(CLIENT_SETTINGS_FILE, 'w', encoding='utf8') as f:
-        f.write(json.dumps(data,
+        f.write(json.dumps(CLIENT_SETTINGS,
                            indent=4, sort_keys=True,
                            separators=(',', ': '), ensure_ascii=False))
 
-
+# TODO
 def install_kexts(kexts):
     try:
         if type(kexts) is list:
             for k in kexts:
-                check_call(f'sudo cp -R {k} /Library/Extensions')
+                check_call(['/usr/bin/sudo', 'cp', '-R', f'{k}', '/Library/Extensions/'])
         else:
-            check_call(f'sudo cp -R {kexts} /Library/Extensions')
-
+            check_call(['/usr/bin/sudo', 'cp', '-R', f'{kexts}', '/Library/Extensions/'])
         echo('Rebuilding caches and fix permissions.')
-        check_call(f'sudo touch /System/Library/Extensions && sudo kextcache -u /')
-        echo('kext(s) is installed.')
+        rebuild_cache()
+        echo(f'kext(s) is installed.')
     except CalledProcessError:
         error(f'Failed to install kext:{kexts}')
 

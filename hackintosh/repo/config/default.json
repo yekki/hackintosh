@@ -249,6 +249,15 @@
         ]
       }
     },
+    "voodoops": {
+      "kexts": {
+        "os-x-voodoo-ps2-controller": [
+          "VoodooPS2Controller.kext",
+          "VoodooPS2Daemon",
+          "org.rehabman.voodoo.driver.Daemon.plist"
+        ]
+      }
+    },
     "brightness_control": {
       "kexts": {
         "AppleBacklightInjector": [

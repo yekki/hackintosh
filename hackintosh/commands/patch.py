@@ -1,7 +1,8 @@
 from hackintosh import ALL_META, STAGE_DIR, OUTPUT_DIR, ENV
-from hackintosh.commands import clover_kext_patches, download_kexts, git_clone, unzip
+from hackintosh.commands import clover_kext_patches, download_kexts, git_clone, unzip, install_kexts, download_project
 from hackintosh.utils import error
-from subprocess import call
+from subprocess import call, check_call, CalledProcessError
+from click import echo
 
 import os, shutil
 
@@ -44,3 +45,24 @@ def _system():
                         os.path.join(OUTPUT_DIR, 'patch.plist'))
 
     return 'All widgets for patch are prepared.'
+
+def _voodoops():
+    echo("Downloading VoodooPS2 now...")
+    download_project(ALL_META['projects']['os-x-voodoo-ps2-controller'])
+    unzip(['VoodooPS2Daemon', 'org.rehabman.voodoo.driver.Daemon.plist', 'VoodooPS2Controller.kext'])
+    echo("VoodooPS2 downloaded, installing now...")
+
+    install_kexts(os.path.join(OUTPUT_DIR, 'VoodooPS2Controller.kext'))
+
+    try:
+        check_call(['/usr/bin/sudo', 'cp', f'{OUTPUT_DIR}/VoodooPS2Daemon', '/usr/bin/'])
+        echo('VoodooPS2Daemon is installed.')
+    except CalledProcessError:
+        error('Failed to install VoodooPS2 widgets: VoodooPS2Daemon')
+
+    try:
+        check_call(['/usr/bin/sudo', 'cp', f'{OUTPUT_DIR}/org.rehabman.voodoo.driver.Daemon.plist',
+                    '/Library/LaunchDaemons/'])
+        echo('org.rehabman.voodoo.driver.Daemon.plist is installed.')
+    except CalledProcessError:
+        error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')

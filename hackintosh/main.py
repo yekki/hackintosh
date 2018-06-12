@@ -1,10 +1,10 @@
 from hackintosh import IASL, CLIENT_SETTINGS, LAPTOP_ROOT, ALL_META, STAGE_DIR, OUTPUT_DIR, LAPTOP_META, PKG_ROOT, \
     CLIENT_SETTINGS_FILE
 
-from hackintosh.utils import delete, to_num, error, save_conf
+from hackintosh.utils import delete, to_num, error
 from hackintosh.commands import *
 
-from subprocess import check_call, call, CalledProcessError
+from subprocess import call
 
 import click, os, shutil
 
@@ -159,7 +159,7 @@ def client_info():
 def series(series):
     if series in ALL_META['certified']['series']:
         CLIENT_SETTINGS['current_series'] = series
-        save_conf(CLIENT_SETTINGS_FILE, CLIENT_SETTINGS)
+        update_client_conf()
         click.echo(f'Your current laptop series is {series}')
     else:
         click.echo(f'{series} does not exist.')
@@ -191,45 +191,6 @@ def open():
             else:
                 click.launch(m['uri'], locate=True)
         click.clear()
-
-
-@cli.command(short_help='Install widgets.')
-@click.option('-v', '--voodoops2', is_flag=True,
-              help='Install VoodooPs2')
-@click.option('-b', '--brcm', is_flag=True,
-              help='Install Broadcom patches')
-@click.pass_context
-@cleanup
-def install(ctx, voodoops2, brcm):
-    if voodoops2:
-        click.echo("Downloading VoodooPS2 now...")
-        download_project(ALL_META['projects']['os-x-voodoo-ps2-controller'])
-        unzip(['VoodooPS2Daemon', 'org.rehabman.voodoo.driver.Daemon.plist', 'VoodooPS2Controller.kext'])
-        click.echo("VoodooPS2 downloaded, installing now...")
-
-        install_kexts('VoodooPS2Controller.kext')
-
-        try:
-            check_call(f'sudo cp {OUTPUT_DIR}/VoodooPS2Daemon /usr/bin', shell=True)
-            click.echo('VoodooPS2Daemon is installed.')
-        except CalledProcessError:
-            error('Failed to install VoodooPS2 widgets: VoodooPS2Daemon')
-
-        try:
-            check_call(f'sudo cp {OUTPUT_DIR}/org.rehabman.voodoo.driver.Daemon.plist /Library/LaunchDaemons',
-                       shell=True)
-            click.echo('org.rehabman.voodoo.driver.Daemon.plist is installed.')
-        except CalledProcessError:
-            error('Failed to install VoodooPS2 widgets: org.rehabman.voodoo.driver.Daemon.plist')
-    elif brcm:
-        click.echo("Downloading Broadcom patches now...")
-        download_project(ALL_META['projects']['os-x-brcmpatchram'])
-        unzip(['BrcmFirmwareRepo.kext', 'BrcmPatchRAM2.kext'])
-        click.echo("Broadcom patches downloaded, installing now...")
-        install_kexts(['BrcmFirmwareRepo.kext', 'BrcmPatchRAM2.kext'])
-        click.echo('Broadcom patches is installed.')
-    else:
-        click.echo(ctx.get_help())
 
 
 @cli.command(short_help='Build & patch ACPI files.')

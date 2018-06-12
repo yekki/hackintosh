@@ -6,6 +6,10 @@ from zipfile import ZipFile
 
 __all__ = ['copy_dir', 'error', 'to_num', 'save_conf', 'cleanup_by_exts', 'delete', 'download', 'unzip_dir', 'unzip_file']
 
+
+def check_root():
+    if os.geteuid() != 0: error('Please execute this command with sudo.')
+
 def _run(cmd, file=None, ignore_error=False):
     if file is None:
         if ignore_error:
