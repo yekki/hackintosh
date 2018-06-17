@@ -17,7 +17,8 @@ from importlib import import_module
 
 import re
 
-__all__ = ['execute_module', 'execute_func', 'update_client_conf', 'install_kexts', 'cleanup', 'download_kexts', 'git_clone',
+__all__ = ['execute_module', 'execute_func', 'update_client_conf', 'install_kexts', 'cleanup', 'download_kexts',
+           'git_clone',
            'download_project', 'unzip', 'clover_kext_patches', 'print_project', 'rebuild_cache']
 
 
@@ -64,7 +65,7 @@ def update_client_conf():
                            indent=4, sort_keys=True,
                            separators=(',', ': '), ensure_ascii=False))
 
-# TODO
+
 def install_kexts(kexts):
     try:
         if type(kexts) is list:
@@ -84,7 +85,11 @@ def cleanup(func):
     def wrapper(*args, **kwargs):
         delete(OUTPUT_DIR)
         delete(STAGE_DIR)
-        delete(os.path.join(os.getcwd(), 'refs.txt'))
+
+        try:
+            os.remove(os.path.join(os.getcwd(), 'refs.txt'))
+        except OSError:
+            pass
         ret = func(*args, **kwargs)
         return ret
 

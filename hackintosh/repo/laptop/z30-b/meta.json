@@ -66,8 +66,7 @@
         "SSDT-3",
         "SSDT-8",
         "SSDT-USB",
-        "SSDT-PNLF",
-        "SSDT-PluginType1"
+        "SSDT-PNLF"
       ]
     }
   }
