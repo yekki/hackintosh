@@ -28,7 +28,6 @@ def _bitbucket(meta):
         f = meta['options']['filter']
     else:
         f = None
-
     url = f"https://bitbucket.org/{meta['account']}/{meta['project']}/downloads/"
 
     soup = BeautifulSoup(urlopen(url), 'html.parser')
@@ -50,7 +49,7 @@ def _bitbucket(meta):
         ret = dict()
         ret['name'] = tr.find('a', class_='execute').text
         ret['author'] = tr.find('td', class_='uploaded-by').text
-        ret['url'] = 'https://bitbucket.org/{}'.format(tr.find('a', class_='execute')['href'])
+        ret['url'] = 'https://bitbucket.org{}'.format(tr.find('a', class_='execute')['href'])
         ret['updated_at'] = tr.find('time').text
         return ret
     else:

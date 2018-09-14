@@ -3,7 +3,7 @@ import os, json, sys, click
 from hackintosh.utils import error, save_conf
 
 __appname__ = 'Hackintosh Workbench'
-__version__ = '3.2'
+__version__ = '3.6'
 
 __all__ = ['CLIENT_SETTINGS_FILE', 'STAGE_DIR', 'OUTPUT_DIR', 'PKG_ROOT', 'REPO_ROOT', 'ENV', 'ALL_META', 'LAPTOP_ROOT',
            'LAPTOP_META', 'CLIENT_SETTINGS', 'IASL', 'PATCHMATIC']

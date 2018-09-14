@@ -59,18 +59,18 @@ def laptop():
 
 
 @cli.command(short_help="Commands for external devices.")
-@click.option('-i', '--id', required=True, type=click.Choice(ALL_META['external_device'].keys()),
+@click.option('-m', '--model', required=True, type=click.Choice(ALL_META['external_device'].keys()),
               help='Choose the device id')
 @cleanup
-def device(id):
-    kexts = download_kexts(ALL_META['external_device'][id]['kexts'])
+def device(model):
+    kexts = download_kexts(ALL_META['external_device'][model]['kexts'])
 
     delete(os.path.join(OUTPUT_DIR, 'kexts'))
     delete(os.path.join(OUTPUT_DIR, 'clover'))
 
     unzip(kexts, 'kexts')
 
-    clover_kext_patches(ALL_META['external_device'][id]['clover']['kexts_to_patch'],
+    clover_kext_patches(ALL_META['external_device'][model]['clover']['kexts_to_patch'],
                         os.path.join(OUTPUT_DIR, 'clover', 'patch.plist'))
 
 
@@ -124,6 +124,7 @@ def download(ctx, projects):
 
 @cli.command(short_help='Show all app projects.')
 def app_info():
+    #TODO
     click.secho('Supported app projects:', bold=True)
     [print_project(v) for v in ALL_META['projects'].values() if v['type'] == 'app']
 

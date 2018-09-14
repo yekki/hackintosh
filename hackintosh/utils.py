@@ -91,6 +91,9 @@ def delete(path, exts=None, keep=True):
 def download(url, folder, filename=None):
     r = requests.get(url, stream=True)
 
+    if r.status_code == 404:
+        error(f'File not exist at url: {url}')
+
     if not filename:
         if "Content-Disposition" in r.headers:
             _, params = cgi.parse_header(r.headers["Content-Disposition"])
